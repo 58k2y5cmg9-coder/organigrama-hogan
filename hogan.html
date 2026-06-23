@@ -353,9 +353,10 @@ function radarSVG(scores,size,color,bgOpacity,dark){
   pts.forEach(p=>{svg+='<circle cx="'+p.x+'" cy="'+p.y+'" r="2.3" fill="'+color+'"/>';});
   const textColor=dark?'#E5E7EB':'#6B7280';
   entries.forEach(([k,v],i)=>{
-    const a=angles[i],lx=cx+(r+16)*Math.cos(a),ly=cy+(r+16)*Math.sin(a);
+    const a=angles[i],lx=cx+(r+14)*Math.cos(a),ly=cy+(r+14)*Math.sin(a);
+    const ab=ABBR[k]||k.slice(0,2);
     const align=a>=-.1&&a<=.1?'middle':(a>0&&a<Math.PI?'start':'end');
-    svg+='<text x="'+lx.toFixed(2)+'" y="'+ly.toFixed(2)+'" font-size="'+(fs-1)+'" fill="'+textColor+'" text-anchor="'+align+'" dominant-baseline="central" font-family="Arial,sans-serif">'+esc(k)+'</text>';
+    svg+='<text x="'+lx.toFixed(2)+'" y="'+ly.toFixed(2)+'" font-size="'+fs+'" fill="'+textColor+'" text-anchor="'+align+'" dominant-baseline="central" font-family="Arial,sans-serif">'+esc(ab)+'</text>';
   });
   svg+='</svg>';
   return svg;
