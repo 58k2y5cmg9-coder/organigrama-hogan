@@ -511,7 +511,7 @@ function directionCardHTML(dir,idx){
 }
 
 /* ── EMPLOYEE CARD (modal) ───────────────────────────────────────────── */
-function empCardHTML(m,perfil){
+function empCardHTML(m,perfil,jefeName){
   const vc=versCode(m.versatilidad);
   const col=versColor(m.versatilidad);
   const hasS=m.scores&&Object.keys(m.scores).length>0;
@@ -533,6 +533,7 @@ function empCardHTML(m,perfil){
       '</div>'+
       '<div style="flex-shrink:0">'+(Object.keys(compS).length?radarSVG(compS,88,col):'')+'</div>'+
     '</div>'+
+    (jefeName?'<div style="font-size:.65rem;color:#6B7280;padding:4px 14px 0;font-weight:500">Jefe: '+esc(jefeName)+'</div>':'')+
     (potVal!=null?'<div class="pot-row"><div class="pot-l">Potencial</div><div class="pot-bg"><div class="pot-fill" style="width:'+potVal+'%;background:'+col+'"></div></div><div class="pot-v" style="color:'+col+'">'+potVal+'</div></div>':'')+
     (hasS&&Object.keys(compS).length?'<div class="comp-sec"><div class="comp-title">Competencias</div>'+compDescLevelHTML(compS,perfil||(curTab==='est'?'V. Ejecutivo':'V. Gerente'))+'</div>':'<div class="nodata">Sin datos de evaluación</div>')+
     (isJ?'<div class="ecard-jefe-link" data-jefe-name="'+esc(m.name)+'" data-jefe-tab="'+tabHint+'">↗ Ver como jefe — equipo a cargo</div>':'')+
@@ -918,16 +919,18 @@ function doFilter(){
     const mc=!clasif||j.team.some(m=>m.clasificacion===clasif);
     return mq&&md&&mv&&mc;
   });
-  // Collect matching team members when searching
+  // Collect matching team members in BOTH tabs
   matchedMembers=[];
   if(q){
     const seen=new Set();
-    curData.forEach(j=>{
-      j.team.forEach(m=>{
-        if(!m.name.toLowerCase().includes(q))return;
-        if(seen.has(m.name))return;
-        seen.add(m.name);
-        matchedMembers.push({member:m,jefe:j});
+    [DATA.est,DATA.op].forEach(data=>{
+      data.forEach(j=>{
+        j.team.forEach(m=>{
+          if(!m.name.toLowerCase().includes(q))return;
+          if(seen.has(m.name))return;
+          seen.add(m.name);
+          matchedMembers.push({member:m,jefe:j});
+        });
       });
     });
   }
@@ -951,7 +954,7 @@ function renderGrid(){
     const perfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
     const memberCards=matchedMembers.map(m=>{
       const jIdx=curData.findIndex(j=>j.name===m.jefe.name);
-      return '<div class="ecard-wrap" data-jefe-idx="'+jIdx+'" style="cursor:pointer">'+empCardHTML(m.member,perfil)+'</div>';
+      return '<div class="ecard-wrap" data-jefe-idx="'+jIdx+'" style="cursor:pointer">'+empCardHTML(m.member,perfil,m.jefe.name)+'</div>';
     }).join('');
     grid.innerHTML=filtered.map((j,i)=>jefeCardHTML(j,i)).join('')+'<div style="grid-column:1/-1;height:2px;background:#E5E7EB;margin:6px 0"></div><div class="emp-grid" style="grid-template-columns:repeat(auto-fill,minmax(275px,1fr));padding:0">'+memberCards+'</div>';
     const totalEval=filtered.reduce((a,j)=>a+j.team.length,0);
