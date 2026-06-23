@@ -823,23 +823,23 @@ async function exportPDF(idx){
     // Strengths & Opportunities
     checkY(24);
     doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...GREEN);
-    doc.text('✓ FORTALEZAS',margin,y);y+=5;
+    doc.text('* FORTALEZAS',margin,y);y+=5;
     sorted.slice(0,3).forEach(([k,v])=>{
       doc.setFillColor(209,250,229);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
       doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(6,95,70);
-      doc.text('✓ '+k+': ',margin+3,y+4.5);
+      doc.text('* '+k, margin+3, y+4.5);
       doc.setTextColor(...(v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28]));
-      doc.text(String(v),margin+3+doc.getTextWidth('✓ '+k+': '),y+4.5);y+=9;
+      doc.text(String(v), W-margin-3, y+4.5, {align:'right'});y+=9;
     });
     y+=3;checkY(24);
     doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...ORANGE);
-    doc.text('⚠ OPORTUNIDADES',margin,y);y+=5;
+    doc.text('* OPORTUNIDADES',margin,y);y+=5;
     sorted.slice(-3).reverse().forEach(([k,v])=>{
       doc.setFillColor(255,247,237);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
       doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(154,52,18);
-      doc.text('⚠ '+k+': ',margin+3,y+4.5);
+      doc.text('* '+k, margin+3, y+4.5);
       doc.setTextColor(...(v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28]));
-      doc.text(String(v),margin+3+doc.getTextWidth('⚠ '+k+': '),y+4.5);y+=9;
+      doc.text(String(v), W-margin-3, y+4.5, {align:'right'});y+=9;
     });
     y+=6;
 
