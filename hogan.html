@@ -758,7 +758,7 @@ async function exportPDF(idx){
       for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.triangle(cx,cy,p1[0],p1[1],p2[0],p2[1],'F');}
       doc.setFillColor(...rgb);pts.forEach(p=>doc.circle(p[0],p[1],.5,'F'));
       entries.forEach(([k,v],i)=>{
-      const a=angles[i],lx=cx+(r+14)*Math.cos(a),ly=cy+(r+14)*Math.sin(a);
+      const a=angles[i],lx=cx+(r+10)*Math.cos(a),ly=cy+(r+10)*Math.sin(a);
       doc.setTextColor(80,80,80);doc.setFontSize(fs);doc.setFont('helvetica','normal');
       const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
       doc.text(k,lx,ly,{align});
@@ -999,7 +999,7 @@ async function exportMemberPDF(member,jefe){
       for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.triangle(cx,cy,p1[0],p1[1],p2[0],p2[1],'F');}
       doc.setFillColor(...rgb);pts.forEach(p=>doc.circle(p[0],p[1],.5,'F'));
       entries.forEach(([k,v],i)=>{
-      const a=angles[i],lx=cx+(r+14)*Math.cos(a),ly=cy+(r+14)*Math.sin(a);
+      const a=angles[i],lx=cx+(r+10)*Math.cos(a),ly=cy+(r+10)*Math.sin(a);
       doc.setTextColor(80,80,80);doc.setFontSize(fs);doc.setFont('helvetica','normal');
       const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
       doc.text(k,lx,ly,{align});
