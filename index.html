@@ -601,6 +601,42 @@ function closeModal(){
   document.getElementById('m-body').innerHTML='';
 }
 
+function openPersonModal(member,jefe){
+  const colHex=versColor(member.versatilidad);
+  const mhdr=document.getElementById('m-hdr');
+  mhdr.style.background=member.versatilidad?(
+    member.versatilidad==='Alta Versatilidad'?'linear-gradient(135deg,#4C1D95 0%,#7C3AED 100%)':
+    member.versatilidad==='Media Versatilidad'?'linear-gradient(135deg,#1E3A5F 0%,#2563EB 100%)':
+    member.versatilidad==='Profundidad'?'linear-gradient(135deg,#78350F 0%,#B45309 100%)':'#6B7280'
+  ):'#6B7280';
+  document.getElementById('m-av').textContent=ini(member.name);
+  document.getElementById('m-av').style.background=colHex;
+  document.getElementById('m-name').textContent=member.name;
+  document.getElementById('m-cargo').textContent=member.cargo||'';
+  document.getElementById('m-meta').textContent='Jefe: '+esc(jefe.name);
+  const hasS=member.scores&&Object.keys(member.scores).length>0;
+  const compS=hasS?Object.fromEntries(Object.entries(member.scores).filter(([k])=>k!=='Potencial'&&k!=='Potential')):{};
+  const potKey=hasS?Object.keys(member.scores).find(k=>k==='Potencial'||k==='Potential'):null;
+  const potVal=potKey?member.scores[potKey]:null;
+  document.getElementById('m-stats').innerHTML=[
+    ...(member.versatilidad?[{n:versLabel(member.versatilidad),l:'Versatilidad'}]:[]),
+    ...(potVal!=null?[{n:potVal,l:'Potencial'}]:[])
+  ].map(s=>'<div class="mst"><div class="n">'+s.n+'</div><div class="l">'+s.l+'</div></div>').join('');
+  document.getElementById('mbtn-pdf').style.display='';
+  currentModalIdx=-1;
+  document.getElementById('mbtn-pdf').onclick=function(){exportMemberPDF(member,jefe);};
+  const radarHTML=Object.keys(compS).length?radarSVG(compS,120,colHex):'';
+  document.getElementById('m-radar').innerHTML=radarHTML;
+  const perfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
+  const compHTML=hasS&&Object.keys(compS).length?compDescLevelHTML(compS,perfil,false):'<div class="nodata">Sin datos de evaluación</div>';
+  document.getElementById('m-body').innerHTML='<div class="msec">'+
+    '<div class="msec-title"><div class="msec-dot"></div>Competencias</div>'+
+    compHTML+
+  '</div>';
+  document.getElementById('moverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
 function openDirectionModal(dirIdx){
   document.getElementById('mbtn-pdf').style.display='none';
   const dirs=groupByDirection(filtered);
@@ -1031,9 +1067,14 @@ document.addEventListener('click',function(e){
   const ecardWrap=e.target.closest('.ecard-wrap');
   if(ecardWrap){
     const jn=ecardWrap.dataset.jefeName;
-    if(!jn)return;
-    const ji=filtered.findIndex(j=>j.name===jn);
-    if(ji>=0)openModal(ji);
+    const mn=ecardWrap.dataset.memberName;
+    if(!mn||!jn)return;
+    let member=null,jefe=null;
+    curData.forEach(j=>{
+      if(j.name===jn)jefe=j;
+      j.team.forEach(m=>{if(m.name===mn)member=m;});
+    });
+    if(member&&jefe)openPersonModal(member,jefe);
     return;
   }
 });
@@ -1086,9 +1127,11 @@ function renderGrid(){
     const perfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
     const memberCards=matchedMembers.map(m=>{
       const jName=m.jefe.name;
-      return '<div class="ecard-wrap" data-jefe-name="'+esc(jName)+'" style="cursor:pointer">'+empCardHTML(m.member,perfil,jName)+'</div>';
+      return '<div class="ecard-wrap" data-member-name="'+esc(m.member.name)+'" data-jefe-name="'+esc(jName)+'" style="cursor:pointer">'+empCardHTML(m.member,perfil,jName)+'</div>';
     }).join('');
-    grid.innerHTML=filtered.map((j,i)=>jefeCardHTML(j,i)).join('')+'<div style="grid-column:1/-1;height:2px;background:#E5E7EB;margin:6px 0"></div><div class="emp-grid" style="grid-template-columns:repeat(auto-fill,minmax(275px,1fr));padding:0">'+memberCards+'</div>';
+    grid.innerHTML='<div class="emp-grid" style="grid-template-columns:repeat(auto-fill,minmax(275px,1fr));padding:0;grid-column:1/-1">'+memberCards+'</div>'+
+      (filtered.length?'<div style="grid-column:1/-1;height:2px;background:#E5E7EB;margin:6px 0"></div>':'')+
+      filtered.map((j,i)=>jefeCardHTML(j,i)).join('');
     const totalEval=filtered.reduce((a,j)=>a+j.team.length,0);
     document.getElementById('rcount').textContent=filtered.length+' jefe'+(filtered.length!==1?'s':'')+' · '+totalEval+' evaluados'+(matchedMembers.length?' · '+matchedMembers.length+' coincidencias directas':'');
   } else {
