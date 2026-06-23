@@ -466,12 +466,7 @@ function jefeCardHTML(j,idx){
 function groupByDirection(data){
   const groups={};
   data.forEach(j=>{
-    let key=j.dir_corp||'';
-    if(!key){
-      const dc={};(j.team||[]).forEach(m=>{const d=m.dir_corp;if(d)dc[d]=(dc[d]||0)+1;});
-      const sorted=Object.entries(dc).sort((a,b)=>b[1]-a[1]);
-      key=sorted.length?sorted[0][0]:'';
-    }
+    const key=getDir(j);
     if(!key)return;
     if(!groups[key]) groups[key]={name:key,jefes:[]};
     groups[key].jefes.push(j);
@@ -1086,6 +1081,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 /* ── FILTER / RENDER ─────────────────────────────────────────────────── */
 let matchedMembers=[];
+function getDir(j){return j.dir_corp||j.dir_area||function(){const dc={};(j.team||[]).forEach(m=>{const d=m.dir_corp;if(d)dc[d]=(dc[d]||0)+1;});const sorted=Object.entries(dc).sort((a,b)=>b[1]-a[1]);return sorted.length?sorted[0][0]:'';}();}
 function doFilter(){
   const q=document.getElementById('q').value.toLowerCase().trim();
   const dir=document.getElementById('fdir').value;
@@ -1093,7 +1089,7 @@ function doFilter(){
   const clasif=document.getElementById('fclasif').value;
   filtered=curData.filter(j=>{
     const mq=!q||j.name.toLowerCase().includes(q)||(j.cargo||'').toLowerCase().includes(q)||(j.dir_corp||'').toLowerCase().includes(q)||(j.dir_area||'').toLowerCase().includes(q)||j.team.some(m=>m.name.toLowerCase().includes(q));
-    const md=!dir||j.dir_corp===dir||j.dir_area===dir||j.gerencia===dir;
+    const md=!dir||getDir(j)===dir;
     const mv=!vers||j.team.some(m=>m.versatilidad===vers);
     const mc=!clasif||j.team.some(m=>m.clasificacion===clasif);
     return mq&&md&&mv&&mc;
@@ -1115,10 +1111,10 @@ function doFilter(){
 }
 
 function populateDirFilter(){
-  const dirs=[...new Set(curData.map(j=>j.dir_corp||j.dir_area).filter(Boolean))].sort();
+  const dirs=new Set(curData.map(j=>getDir(j)).filter(Boolean));
   const sel=document.getElementById('fdir');
   sel.innerHTML='<option value="">Todas las Direcciones</option>';
-  dirs.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d.length>45?d.slice(0,42)+'…':d;sel.appendChild(o);});
+  [...dirs].sort().forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;sel.appendChild(o);});
 }
 
 function renderGrid(){
