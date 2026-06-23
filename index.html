@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Organigrama Hogan · Claro Colombia</title>
+<title>Resultados de Hogan · Claro Colombia</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
@@ -11,8 +11,8 @@
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#EEF1F8;color:#111827;min-height:100vh}
 :root{--alta:#059669;--alta-bg:#D1FAE5;--media:#EA580C;--media-bg:#FFEDD5;--prof:#0033A0;--prof-bg:#DBEAFE;}
 
-.hdr{background:#0033A0;height:60px;display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:200;box-shadow:0 2px 10px rgba(0,0,0,.25)}
-.hdr-logo{width:36px;height:36px;background:#fff;border-radius:9px;display:grid;place-items:center;font-weight:800;color:#0033A0;font-size:1rem;flex-shrink:0}
+.hdr{background:#7C1D24;height:60px;display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:200;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.hdr-logo{width:36px;height:36px;background:#fff;border-radius:9px;display:grid;place-items:center;font-weight:800;color:#7C1D24;font-size:1rem;flex-shrink:0}
 .hdr h1{color:#fff;font-size:1rem;font-weight:700}
 .hdr-sub{color:rgba(255,255,255,.55);font-size:.7rem;margin-top:1px}
 .hdr-stats{margin-left:auto;display:flex;gap:20px}
@@ -182,7 +182,7 @@ select.fsel{padding:7px 10px;border:1px solid #D1D5DB;border-radius:8px;font-siz
 
 <header class="hdr">
   <div class="hdr-logo">C</div>
-  <div><div style="color:#fff;font-size:1rem;font-weight:700">Organigrama Hogan</div><div class="hdr-sub">Evaluación de Liderazgo · Claro Colombia</div></div>
+  <div><div style="color:#fff;font-size:1rem;font-weight:700">Resultados de Hogan</div><div class="hdr-sub">Valoración de Potencial · Claro Colombia</div></div>
   <div class="hdr-stats">
     <div class="hs"><div class="n" id="s-total">—</div><div class="l">Evaluados</div></div>
     <div class="hs"><div class="n" id="s-jefes">—</div><div class="l">Jefes</div></div>
@@ -279,7 +279,7 @@ function versCode(v){
 function versLabel(v){ return v||'Sin dato'; }
 function ini(n){return n.split(' ').filter(w=>w.length>2).slice(0,2).map(w=>w[0]).join('').toUpperCase()||n.slice(0,2).toUpperCase();}
 function cc(c){return{' Muy Alto':'ma','Muy Alto':'ma','Alto':'al','Moderado':'mo','Medio':'mo','Bajo':'ba','Muy Bajo':'mb'}[c]||'sd';}
-function scol(v){if(v===null||v===undefined)return '#9CA3AF';if(v>=75)return '#059669';if(v>=55)return '#D97706';return '#DC2626';}
+function scol(v){if(v===null||v===undefined)return '#9CA3AF';if(v>=70)return '#059669';if(v>=50)return '#D97706';return '#DC2626';}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 /* Dominant versatilidad color for a team */
@@ -343,7 +343,6 @@ function radarSVG(scores,size,color,bgOpacity){
   const angles=entries.map((_,i)=>Math.PI*2*i/n-Math.PI/2);
   const pts=entries.map(([k,v],i)=>({x:+(cx+r*(v/100)*Math.cos(angles[i])).toFixed(2),y:+(cy+r*(v/100)*Math.sin(angles[i])).toFixed(2)}));
   let svg='<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'">';
-  svg+='<rect width="'+size+'" height="'+size+'" fill="#fff" rx="8"/>';
   [.25,.5,.75,1].forEach(p=>{
     const g=angles.map(a=>+(cx+r*p*Math.cos(a)).toFixed(2)+','+(cy+r*p*Math.sin(a)).toFixed(2)).join(' ');
     svg+='<polygon points="'+g+'" fill="none" stroke="#E5E7EB" stroke-width=".8"/>';
@@ -364,7 +363,7 @@ function teamRadarSVG(avgs,size,color){return radarSVG(avgs,size,color,'33');}
 
 /* ── COMPETENCY DESCRIPTIONS ─────────────────────────────────────────── */
 const COMP_DESC={"V. Ejecutivo":{"Toma de Decisiones":{"def":"Capacidad para analizar información, evaluar riesgos y oportunidades, Asi como la  toma decisiones oportunas y fundamentadas que contribuyan al logro de los objetivos estratégicos de la organización.","alto":"Toma decisiones de manera estructurada y bien fundamentada, evaluando riesgos, alternativas e impactos de forma rapida.","medio":"Logra equilibrar el análisis y la agilidad, tomando decisiones oportunas con un nivel adecuado de evaluación.","bajo":"Le toma mas tiempo la toma de decisiones, suele  profundizar  en el análisis previo lo que lo demora en llevarlo a la acción.","dominio":"LIDERAZGO"},"Liderar a otros":{"def":"Capacidad para inspirar, orientar y movilizar a las personas hacia el logro de objetivos comunes, desarrollando equipos de alto desempeño y promoviendo una cultura alineada con la estrategia organizacional.","alto":"Demuestra una capacidad consistente para movilizar, orientar y generar compromiso en las personas hacia los objetivos organizacionales.","medio":"Lidera efectivamente cuando la situación lo requiere, manteniendo un balance entre la orientación a resultados y la gestión de las personas.","bajo":"Tiende a influir más desde su conocimiento o experiencia que desde un rol de liderazgo directo, mostrando menor inclinación a dirigir o movilizar equipos.","dominio":"LIDERAZGO"},"Impulsar el Cambio":{"def":"Capacidad para promover, liderar y facilitar procesos de transformación, adaptándose al entorno y movilizando a otros hacia la adopción efectiva de nuevas formas de trabajo.","alto":"Promueve activamente nuevas iniciativas y busca oportunidades para transformar procesos, prácticas y formas de trabajo.","medio":"Se adapta positivamente a los cambios y participa en iniciativas de transformación cuando identifica beneficios claros.","bajo":"Prefiere contextos estables y predecibles, mostrando una mayor tendencia a mantener prácticas conocidas y probadas.","dominio":"LIDERAZGO"},"Impulsar la Estrategia":{"def":"Capacidad para definir, comunicar y ejecutar una visión de largo plazo, alineando recursos, decisiones e iniciativas con los objetivos estratégicos y las prioridades del negocio.","alto":"Mantiene una visión amplia del negocio, anticipando escenarios futuros y alineando sus acciones con objetivos de largo plazo.","medio":"Comprende la estrategia organizacional y contribuye a su ejecución, combinando perspectivas tácticas y estratégicas.","bajo":"Tiende a enfocarse principalmente en la operación y en los resultados inmediatos, requiriendo apoyo para ampliar su visión de largo plazo.","dominio":"LIDERAZGO"},"Desarrollo de Otros":{"def":"Capacidad para formar y potenciar el aprendizaje y desarrollo de otros. Implica un genuino esfuerzo para fomentar el aprendizaje a largo plazo y/o el desarrollo de otros, más allá de su responsabilidad específica y cotidiana.","alto":"Dedica tiempo y esfuerzo a fortalecer las capacidades de las personas, promoviendo activamente su crecimiento y desarrollo.","medio":"Apoya el desarrollo de otros cuando identifica oportunidades o necesidades específicas dentro del equipo.","bajo":"Tiende a concentrarse en el cumplimiento de objetivos y resultados, brindando menor acompañamiento al crecimiento de los colaboradores.","dominio":"LIDERAZGO"},"Impulsar la Innovación":{"def":"Capacidad para promover y materializar nuevas ideas, enfoques y soluciones que generen valor para la organización, impulsando la mejora continua, la transformación y la adaptación al cambio.","alto":"Busca constantemente nuevas ideas y enfoques, promoviendo soluciones creativas para generar mejoras y valor.","medio":"Mantiene apertura hacia nuevas propuestas, evaluando su viabilidad antes de implementarlas.","bajo":"Prefiere soluciones conocidas y metodologías probadas, priorizando la estabilidad y la eficiencia operativa.","dominio":"NEGOCIOS"},"Escuchar a Otros":{"def":"Capacidad para comprender e integrar diversas perspectivas, necesidades e intereses, fortaleciendo la toma de decisiones y la construcción de relaciones estratégicas.","alto":"Demuestra una alta disposición para comprender perspectivas diversas, fomentando espacios de diálogo y participación.","medio":"Escucha y considera diferentes puntos de vista, integrándolos cuando son relevantes para la situación.","bajo":"Tiende a enfocarse principalmente en los hechos y resultados, pudiendo dedicar menos atención a las necesidades o percepciones de los demás.","dominio":"INTERPERSONAL"},"Influenciar a otros":{"def":"Capacidad para generar compromiso y movilizar a personas, equipos y grupos de interés hacia el logro de objetivos estratégicos mediante credibilidad, visión y comunicación efectiva.","alto":"Logra generar adhesión y compromiso en otros, comunicando sus ideas de manera persuasiva y movilizando acciones.","medio":"Influye a través de argumentos sólidos y relaciones de confianza, adaptando su estilo según la situación.","bajo":"Tiende a influir principalmente desde su conocimiento técnico o experiencia, mostrando menor inclinación a persuadir activamente.","dominio":"INTERPERSONAL"},"Responsabilidad":{"def":"Capacidad para asumir la responsabilidad por las decisiones y resultados de su ámbito de gestión, garantizando el cumplimiento de los objetivos organizacionales y actuando con integridad.","alto":"Asume con compromiso sus obligaciones, mantiene consistencia en el cumplimiento de acuerdos y responde por los resultados obtenidos.","medio":"Cumple adecuadamente con sus compromiso y mantiene un seguimiento razonable de los mismos.","bajo":"Puede mostrar una orientación más flexible frente a normas, procesos o compromisos, requiriendo mayor estructura y seguimiento.","dominio":"INTERPERSONAL"},"Comunicación de Impacto":{"def":"Capacidad para comunicar información estratégica de manera clara, persuasiva y orientada a la toma de decisiones, adaptando el mensaje a diferentes audiencias.","alto":"Comunica sus ideas de manera clara, segura y persuasiva, logrando captar la atención e influir en diferentes audiencias.","medio":"Se comunica efectivamente en la mayoría de situaciones, adaptando su mensaje según el contexto y los interlocutores.","bajo":"Tiende a utilizar un estilo de comunicación más reservado o técnico, requiriendo mayor esfuerzo para generar impacto o visibilidad en sus mensajes.","dominio":"NEGOCIOS"}},"V. Gerente":{"Toma de Decisiones":{"def":"Capacidad para analizar información, evaluar riesgos y oportunidades, Asi como la  toma decisiones oportunas y fundamentadas que contribuyan al logro de los objetivos estratégicos de la organización.","alto":"Toma decisiones de manera estructurada y bien fundamentada, evaluando riesgos, alternativas e impactos de forma rapida.","medio":"Toma decisiones adecuadas, utilizando la información disponible y consultando cuando la situación lo requiere.","bajo":"Tiende a retrasar o escalar decisiones que podría asumir directamente, afectando la oportunidad en la respuesta o la ejecución.","dominio":"LIDERAZGO"},"Construcción de Equipos":{"def":"Capacidad para conformar, fortalecer y desarrollar equipos de trabajo efectivos, promoviendo la colaboración y el cumplimiento de objetivos planteados.","alto":"Fortalece el desempeño del equipo, promueve la colaboración y desarrolla las capacidades de las personas para alcanzar los resultados del área.","medio":"Mantiene un ambiente de trabajo adecuado y facilita la coordinación entre los integrantes del equipo para cumplir los objetivos establecidos.","bajo":"Presenta dificultades para integrar al equipo, generar compromiso o desarrollar las capacidades necesarias para alcanzar los resultados esperados.","dominio":"LIDERAZGO"},"Impulsar la Ejecución":{"def":"Capacidad para asegurar el cumplimiento oportuno y eficiente de las actividades, metas y procesos definidos.","alto":"Asegura el cumplimiento de los planes de trabajo mediante seguimiento constante, priorización efectiva y gestión oportuna de desviaciones.","medio":"Mantiene el avance de las actividades y realiza seguimiento a los compromisos más relevantes para garantizar los resultados esperados.","bajo":"Puede presentar dificultades para dar seguimiento, gestionar prioridades o asegurar el cumplimiento oportuno de los compromisos.","dominio":"LIDERAZGO"},"Delegación":{"def":"Capacidad para asignar tareas y responsabilidades de manera clara, asegurando su adecuada ejecución y seguimiento.","alto":"Asigna responsabilidades de manera clara, empodera a las personas y realiza seguimiento efectivo sin necesidad de intervenir constantemente.","medio":"Distribuye tareas de acuerdo con las capacidades del equipo y realiza seguimiento cuando las situaciones lo requieren.","bajo":"Tiende a centralizar actividades o a realizar un seguimiento insuficiente, limitando la autonomía y efectividad del equipo.","dominio":"LIDERAZGO"},"Visión del Negocio":{"def":"Capacidad para comprender el funcionamiento del negocio y reconocer cómo su rol y sus acciones impactan en los resultados del área y de la organización.","alto":"Comprende cómo las decisiones y resultados de su área impactan los objetivos del negocio, orientando las acciones del equipo hacia la generación de valor.","medio":"Reconoce la relación entre las actividades de su área y los resultados organizacionales, alineando su gestión con las prioridades establecidas.","bajo":"Se enfoca principalmente en la operación de corto plazo, con menor comprensión del impacto de sus decisiones en los resultados del negocio.","dominio":"NEGOCIOS"},"Resolución de Problemas":{"def":"Capacidad para identificar, analizar y dar solución a problemas.","alto":"Identifica oportunamente problemas, analiza sus causas y lidera la implementación de soluciones efectivas para evitar su recurrencia.","medio":"Resuelve los problemas habituales de su gestión y busca apoyo cuando enfrenta situaciones de mayor complejidad.","bajo":"Puede presentar dificultades para identificar causas raíz o implementar soluciones sostenibles ante problemas recurrentes.","dominio":"NEGOCIOS"},"Impulsar la Diversidad":{"def":"Capacidad para promover el respeto por las diferencias individuales y contribuir a un ambiente de trabajo inclusivo.","alto":"Promueve activamente el respeto por las diferencias, fomenta la participación de diversas perspectivas y contribuye a un ambiente inclusivo.","medio":"Mantiene relaciones respetuosas y favorece la participación de los diferentes integrantes del equipo.","bajo":"Puede mostrar dificultades para valorar perspectivas distintas o generar espacios de participación equitativos.","dominio":"INTERPERSONAL"},"Trabajo en Equipo":{"def":"Capacidad para colaborar activamente con otros, compartiendo información y esfuerzos para el logro de objetivos comunes.","alto":"Fomenta la colaboración entre áreas y personas, compartiendo información y recursos para alcanzar objetivos comunes.","medio":"Trabaja de manera colaborativa con otros y contribuye al logro de metas compartidas cuando la situación lo requiere.","bajo":"Tiende a trabajar de manera aislada o a priorizar los objetivos individuales sobre los colectivos.","dominio":"INTERPERSONAL"},"Responsabilidad":{"def":"Capacidad para asumir la responsabilidad por las decisiones y resultados de su ámbito de gestión, garantizando el cumplimiento de los objetivos organizacionales y actuando con integridad.","alto":"Asume la responsabilidad por los resultados de su gestión, cumple sus compromisos y actúa con integridad frente a las decisiones que toma.","medio":"Responde adecuadamente por sus responsabilidades y cumple con los compromisos establecidos en su rol.","bajo":"Puede requerir mayor seguimiento para asegurar el cumplimiento de compromisos o la asunción de responsabilidades frente a los resultados.","dominio":"INTERPERSONAL"},"Manejo de la Ambigüedad":{"def":"Se maneja cómodamente en situaciones turbias e impredecibles.","alto":"Mantiene la efectividad ante cambios, incertidumbre o información incompleta, guiando al equipo en contextos de transformación.","medio":"Se adapta a situaciones cambiantes y mantiene el foco en los resultados aun cuando existen elementos de incertidumbre.","bajo":"Prefiere contextos definidos y puede requerir mayor claridad, estructura o dirección cuando enfrenta escenarios ambiguos.","dominio":"INTERPERSONAL"}}};
-function getCompLevel(score){if(score>=75)return 'alto';if(score>=55)return 'medio';return 'bajo';}
+function getCompLevel(score){if(score>=70)return 'alto';if(score>=50)return 'medio';return 'bajo';}
 function getCompDesc(perfil,comp,score){
   let d=COMP_DESC[perfil]&&COMP_DESC[perfil][comp];
   if(!d){const alt=perfil==='V. Ejecutivo'?'V. Gerente':'V. Ejecutivo';d=COMP_DESC[alt]&&COMP_DESC[alt][comp];}
@@ -605,7 +604,11 @@ function closeModal(){
 function openPersonModal(member,jefe){
   const colHex=Object.keys(member.scores||{}).filter(k=>k!=='Potencial'&&k!=='Potential').length>=3?'#0033A0':'#6B7280';
   const mhdr=document.getElementById('m-hdr');
-  mhdr.style.background='linear-gradient(135deg,#0F172A 0%,#1E293B 100%)';
+  mhdr.style.background=member.versatilidad?(
+    member.versatilidad==='Alta Versatilidad'?'linear-gradient(135deg,#4C1D95 0%,#7C3AED 100%)':
+    member.versatilidad==='Media Versatilidad'?'linear-gradient(135deg,#1E3A5F 0%,#2563EB 100%)':
+    member.versatilidad==='Profundidad'?'linear-gradient(135deg,#78350F 0%,#B45309 100%)':'linear-gradient(135deg,#1E3A5F 0%,#2563EB 100%)'
+  ):'linear-gradient(135deg,#1E3A5F 0%,#2563EB 100%)';
   document.getElementById('m-av').textContent=ini(member.name);
   document.getElementById('m-av').style.background=colHex;
   document.getElementById('m-name').textContent=member.name;
@@ -719,10 +722,10 @@ async function exportPDF(idx){
     const W=210,H=297,margin=14;let y=margin;
     const BLUE=[0,51,160],GREEN=[5,150,105],ORANGE=[234,88,12],GRAY=[107,114,128],DARK=[17,24,39],LIGHT=[243,244,246];
     function hexToRgb(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return[r,g,b];}
-    function scRgb(v){if(v>=75)return GREEN;if(v>=55)return ORANGE;return[220,38,38];}
+    function scRgb(v){if(v>=70)return GREEN;if(v>=50)return ORANGE;return[220,38,38];}
     function addPage(){doc.addPage();y=margin;}
     function checkY(needed){if(y+needed>H-margin)addPage();}
-    function compDescBg(v){if(v>=75)return[209,250,229];if(v>=55)return[255,237,213];return[254,226,226];}
+    function compDescBg(v){if(v>=70)return[209,250,229];if(v>=50)return[255,237,213];return[254,226,226];}
     function compDescBorder(v){if(v>=75)return[167,243,208];if(v>=55)return[254,215,170];return[254,202,202];}
     function compDescText(v){if(v>=75)return[6,95,70];if(v>=55)return[154,52,18];return[153,27,27];}
     function pdfRadar(doc,comps,x,y,w,color){
@@ -738,20 +741,20 @@ async function exportPDF(idx){
       const pts=entries.map(([k,v],i)=>[cx+r*(v/100)*Math.cos(angles[i]),cy+r*(v/100)*Math.sin(angles[i])]);
       doc.setFillColor(...rgb);doc.setDrawColor(...rgb);doc.setLineWidth(.5);
       for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.triangle(cx,cy,p1[0],p1[1],p2[0],p2[1],'F');}
-      doc.setFillColor(255,255,255);pts.forEach(p=>doc.circle(p[0],p[1],1,'F'));
+      doc.setFillColor(...rgb);pts.forEach(p=>doc.circle(p[0],p[1],.5,'F'));
       entries.forEach(([k,v],i)=>{
         const a=angles[i],lx=cx+(r+5)*Math.cos(a),ly=cy+(r+5)*Math.sin(a);
         const ab=ABBR[k]||k.slice(0,2);
         doc.setTextColor(80,80,80);doc.setFontSize(fs);doc.setFont('helvetica','normal');
         const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
-        doc.text(ab,lx,ly,{align});
+        doc.text(k,lx,ly,{align});
       });
     }
 
     // Header
     doc.setFillColor(...BLUE);doc.rect(0,0,W,32,'F');
     doc.setTextColor(255,255,255);doc.setFontSize(16);doc.setFont('helvetica','bold');
-    doc.text('Informe de equipo',margin,13);
+    doc.text('Valoración de Potencial',margin,13);
     doc.setFontSize(9);doc.setFont('helvetica','normal');
     doc.text(j.name,margin,20);
     doc.setFontSize(8);
@@ -803,7 +806,7 @@ async function exportPDF(idx){
       const cx=margin+(ci%2)*(descCardW+4);
       doc.setFillColor(...bg);doc.setDrawColor(...border);doc.roundedRect(cx,y,descCardW,10,1.5,1.5,'FD');
       doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(...DARK);
-      doc.text(k.length>22?k.slice(0,20)+'…':k,cx+3,y+3.5);
+      doc.text(k,cx+3,y+3.5);
       doc.setFont('helvetica','bold');doc.setFontSize(6);doc.setTextColor(...scRgb(v));
       doc.text(String(v),cx+descCardW-3,y+3.5,{align:'right'});
       const desc=getCompDesc(teamPerfil,k,v);
@@ -861,6 +864,16 @@ async function exportPDF(idx){
       y+=11;
       doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...GRAY);
       doc.text((m.cargo||'')+(m.versatilidad?' · '+m.versatilidad:''),margin,y);y+=5;
+      // Individual radar before cards
+      const compEntries2=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential');
+      if(compEntries2.length>=3){
+        checkY(38);
+        doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(...DARK);
+        doc.text('RADAR — '+esc(m.name),margin,y);y+=3;
+        pdfRadar(doc,compS,(W-30)/2,y,30,mColHex);
+        y+=33;
+      }
+      y+=3;
       // Competency description cards
       const cardW=(W-margin*2-4)/2,cardPad=3,textW=cardW-cardPad*2-4;
       compEntries.forEach(([k,v],ci)=>{
@@ -871,7 +884,7 @@ async function exportPDF(idx){
         const cx=margin+(ci%2)*(cardW+4);
         doc.setFillColor(...bg);doc.setDrawColor(...border);doc.roundedRect(cx,y,cardW,10,1.5,1.5,'FD');
         doc.setFont('helvetica','bold');doc.setFontSize(6);doc.setTextColor(...DARK);
-        doc.text(k.length>18?k.slice(0,16)+'…':k,cx+cardPad,y+3);
+        doc.text(k,cx+cardPad,y+3);
         doc.setFont('helvetica','bold');doc.setFontSize(5.5);doc.setTextColor(...col);
         doc.text(String(v),cx+cardW-cardPad-1,y+3,{align:'right'});
         const desc=getCompDesc(indvPerfil,k,v);
@@ -895,15 +908,6 @@ async function exportPDF(idx){
         doc.setFillColor(224,231,255);doc.roundedRect(pb,y-1,pbW,3.5,1,1,'F');
         doc.setFillColor(...BLUE);doc.roundedRect(pb,y-1,pbW*pv/100,3.5,1,1,'F');
         y+=5;
-      }
-      // Individual radar after cards
-      const compEntries2=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential');
-      if(compEntries2.length>=3){
-        checkY(38);
-        doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(...DARK);
-        doc.text('RADAR — '+esc(m.name),margin,y);y+=3;
-        pdfRadar(doc,compS,(W-30)/2,y,30,mColHex);
-        y+=33;
       }
       y+=5;
     }
@@ -931,12 +935,12 @@ async function exportMemberPDF(member,jefe){
     const W=210,H=297,margin=14;let y=margin;
     const BLUE=[0,51,160],GRAY=[107,114,128],DARK=[17,24,39];
     function hexToRgb(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return[r,g,b];}
-    function scRgb(v){if(v>=75)return[5,150,105];if(v>=55)return[234,88,12];return[220,38,38];}
+    function scRgb(v){if(v>=70)return[5,150,105];if(v>=50)return[234,88,12];return[220,38,38];}
     function addPage(){doc.addPage();y=margin;}
     function checkY(needed){if(y+needed>H-margin)addPage();}
-    function compDescBg(v){if(v>=75)return[209,250,229];if(v>=55)return[255,237,213];return[254,226,226];}
-    function compDescBorder(v){if(v>=75)return[167,243,208];if(v>=55)return[254,215,170];return[254,202,202];}
-    function compDescText(v){if(v>=75)return[6,95,70];if(v>=55)return[154,52,18];return[153,27,27];}
+    function compDescBg(v){if(v>=70)return[209,250,229];if(v>=50)return[255,237,213];return[254,226,226];}
+    function compDescBorder(v){if(v>=70)return[167,243,208];if(v>=50)return[254,215,170];return[254,202,202];}
+    function compDescText(v){if(v>=70)return[6,95,70];if(v>=50)return[154,52,18];return[153,27,27];}
     function pdfRadar(doc,comps,x,y,w,color){
       const entries=Object.entries(comps).filter(([k,v])=>k!=='Potencial'&&k!=='Potential'&&v!=null);
       if(entries.length<3)return;
@@ -950,17 +954,15 @@ async function exportMemberPDF(member,jefe){
       const pts=entries.map(([k,v],i)=>[cx+r*(v/100)*Math.cos(angles[i]),cy+r*(v/100)*Math.sin(angles[i])]);
       doc.setFillColor(...rgb);doc.setDrawColor(...rgb);doc.setLineWidth(.5);
       for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.triangle(cx,cy,p1[0],p1[1],p2[0],p2[1],'F');}
-      doc.setFillColor(255,255,255);pts.forEach(p=>doc.circle(p[0],p[1],1,'F'));
+      doc.setFillColor(...rgb);pts.forEach(p=>doc.circle(p[0],p[1],.5,'F'));
       entries.forEach(([k,v],i)=>{
         const a=angles[i],lx=cx+(r+5)*Math.cos(a),ly=cy+(r+5)*Math.sin(a);
         const ab=ABBR[k]||k.slice(0,2);
         doc.setTextColor(80,80,80);doc.setFontSize(fs);doc.setFont('helvetica','normal');
         const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
-        doc.text(ab,lx,ly,{align});
+        doc.text(k,lx,ly,{align});
       });
     }
-
-    const colHex=versColor(member.versatilidad);
     const colRgb=hexToRgb(colHex);
     const compS=member.scores||{};
     const compEntries=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential');
@@ -994,7 +996,7 @@ async function exportMemberPDF(member,jefe){
       const cx=margin+(ci%2)*(cardW+4);
       doc.setFillColor(...bg);doc.setDrawColor(...border);doc.roundedRect(cx,y,cardW,10,1.5,1.5,'FD');
       doc.setFont('helvetica','bold');doc.setFontSize(6);doc.setTextColor(...DARK);
-      doc.text(k.length>18?k.slice(0,16)+'…':k,cx+cardPad,y+3);
+      doc.text(k,cx+cardPad,y+3);
       doc.setFont('helvetica','bold');doc.setFontSize(5.5);doc.setTextColor(...scRgb(v));
       doc.text(String(v),cx+cardW-cardPad-1,y+3,{align:'right'});
       const desc=getCompDesc(perfil,k,v);
