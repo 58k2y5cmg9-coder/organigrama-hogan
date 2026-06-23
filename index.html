@@ -684,6 +684,10 @@ async function exportPDF(idx){
     function scRgb(v){if(v>=75)return GREEN;if(v>=55)return ORANGE;return[220,38,38];}
     function addPage(){doc.addPage();y=margin;}
     function checkY(needed){if(y+needed>H-margin)addPage();}
+    function svgToPng(svg,w,h){return new Promise((ok,fail)=>{const b=new Blob([svg],{type:'image/svg+xml;charset=utf-8'}),u=URL.createObjectURL(b),i=new Image();i.onload=function(){const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(i,0,0,w,h);URL.revokeObjectURL(u);ok(c.toDataURL('image/png'));};i.onerror=function(){URL.revokeObjectURL(u);fail('svg load error');};i.src=u;});}
+    function compDescBg(v){if(v>=75)return[209,250,229];if(v>=55)return[255,237,213];return[254,226,226];}
+    function compDescBorder(v){if(v>=75)return[167,243,208];if(v>=55)return[254,215,170];return[254,202,202];}
+    function compDescText(v){if(v>=75)return[6,95,70];if(v>=55)return[154,52,18];return[153,27,27];}
 
     // Header
     doc.setFillColor(...BLUE);doc.rect(0,0,W,32,'F');
@@ -718,22 +722,31 @@ async function exportPDF(idx){
     distItems.forEach(d=>{doc.setFillColor(...d.h);doc.circle(lx+1.5,y+1,1.5,'F');doc.setTextColor(...GRAY);doc.text(d.l+': '+stats.dist[d.k],lx+5,y+2.5);lx+=doc.getTextWidth(d.l+': '+stats.dist[d.k])+12;if(lx>W-margin-20){lx=margin;y+=6;}});
     y+=10;
 
-    // Competency averages
+    // Team competency descriptions
+    const teamPerfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
     doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...DARK);
     doc.text('PROMEDIO DEL EQUIPO POR COMPETENCIA',margin,y);y+=5;
     const sorted=Object.entries(stats.avgs).sort((a,b)=>b[1]-a[1]);
-    sorted.forEach(([k,v])=>{
-      checkY(7);
-      const col=scRgb(v);
-      doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...DARK);
-      doc.text(k.length>28?k.slice(0,26)+'…':k,margin,y+2);
-      const barStart=margin+65,barEnd=W-margin-10;
-      doc.setFillColor(...LIGHT);doc.roundedRect(barStart,y-1.5,barEnd-barStart,4,1,1,'F');
-      doc.setFillColor(...col);doc.roundedRect(barStart,y-1.5,(barEnd-barStart)*v/100,4,1,1,'F');
-      doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(...col);
-      doc.text(String(v),barEnd+2,y+2);
-      y+=6;
+    const descCardW=(W-margin*2-4)/2,descTextW=descCardW-8;
+    sorted.forEach(([k,v],ci)=>{
+      checkY(12);
+      const bg=compDescBg(v),border=compDescBorder(v);
+      const col=compDescText(v);
+      const cx=margin+(ci%2)*(descCardW+4);
+      if(ci>0&&ci%2===0)y+=11;
+      doc.setFillColor(...bg);doc.setDrawColor(...border);doc.roundedRect(cx,y,descCardW,10,1.5,1.5,'FD');
+      doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(...DARK);
+      doc.text(k.length>22?k.slice(0,20)+'…':k,cx+3,y+3.5);
+      doc.setFont('helvetica','bold');doc.setFontSize(6);doc.setTextColor(...scRgb(v));
+      doc.text(String(v),cx+descCardW-3,y+3.5,{align:'right'});
+      const desc=getCompDesc(teamPerfil,k,v);
+      if(desc.text){
+        doc.setFont('helvetica','normal');doc.setFontSize(5);doc.setTextColor(...col);
+        const lines=doc.splitTextToSize(desc.text,descTextW);
+        doc.text(lines.slice(0,2),cx+3,y+6);
+      }
     });
+    if(sorted.length%2!==0)y+=11;
     y+=4;
 
     // Strengths & Opportunities
@@ -762,39 +775,57 @@ async function exportPDF(idx){
     doc.text('RESULTADOS INDIVIDUALES ('+j.team.length+' personas)',margin,7);
     y=16;
 
-    j.team.forEach((m,mi)=>{
-      checkY(48);
+    const indvPerfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
+    for(const m of j.team){
+      checkY(55);
       const mColHex=versColor(m.versatilidad);
       const mColRgb=hexToRgb(mColHex);
       doc.setFillColor(...mColRgb);doc.roundedRect(margin,y,W-margin*2,9,2,2,'F');
       doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(8.5);
-      doc.text((mi+1)+'. '+(m.name.length>40?m.name.slice(0,38)+'…':m.name),margin+3,y+6);
+      doc.text((j.team.indexOf(m)+1)+'. '+(m.name.length>40?m.name.slice(0,38)+'…':m.name),margin+3,y+6);
       doc.setFontSize(7);doc.text(m.clasificacion||'Sin dato',W-margin-3,y+6,{align:'right'});
+      // Radar chart
+      const compS=m.scores||{};
+      const compEntries=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential');
+      if(compEntries.length){
+        const radarSvg=radarSVG(compS,200,mColHex);
+        try{
+          const radarPng=await svgToPng(radarSvg,30,30);
+          doc.addImage(radarPng,'PNG',W-margin-38,y-1.5,30,30);
+        }catch(e){}
+      }
       y+=11;
       doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...GRAY);
       doc.text((m.cargo||'')+(m.versatilidad?' · '+m.versatilidad:''),margin,y);y+=5;
-      const compE=Object.entries(m.scores||{}).filter(([k])=>k!=='Potencial'&&k!=='Potential');
-      if(compE.length){
-        const colsPerRow=2,rowH=5.5,colW=(W-margin*2)/colsPerRow;
-        compE.forEach(([k,v],ci)=>{
-          if(v===null||v===undefined)return;
-          checkY(rowH+1);
-          const col2=scRgb(v);
-          const cx2=margin+(ci%colsPerRow)*colW;
-          if(ci>0&&ci%colsPerRow===0)y+=rowH;
-          const sk=k.length>16?k.slice(0,14)+'…':k;
-          doc.setFont('helvetica','normal');doc.setFontSize(6);doc.setTextColor(...DARK);
-          doc.text(sk,cx2,y+2);
-          const bs=cx2+42,bw2=colW-52;
-          doc.setFillColor(...LIGHT);doc.roundedRect(bs,y-1,bw2,3.5,1,1,'F');
-          doc.setFillColor(...col2);doc.roundedRect(bs,y-1,bw2*v/100,3.5,1,1,'F');
-          doc.setFont('helvetica','bold');doc.setFontSize(6);doc.setTextColor(...col2);
-          doc.text(String(v),cx2+colW-3,y+2,{align:'right'});
-        });
-        if(compE.length%colsPerRow!==0||compE.length>0)y+=rowH;
-      }
-      const pk=Object.keys(m.scores||{}).find(k=>k==='Potencial'||k==='Potential');
-      const pv=pk?m.scores[pk]:null;
+      // Competency description cards
+      const cardW=(W-margin*2-4)/2,cardPad=3,textW=cardW-cardPad*2-4;
+      compEntries.forEach(([k,v],ci)=>{
+        if(v===null||v===undefined)return;
+        checkY(11);
+        const col=scRgb(v);
+        const bg=compDescBg(v),border=compDescBorder(v);
+        const cx=margin+(ci%2)*(cardW+4);
+        if(ci>0&&ci%2===0)y+=11;
+        // Background
+        doc.setFillColor(...bg);doc.setDrawColor(...border);doc.roundedRect(cx,y,cardW,10,1.5,1.5,'FD');
+        // Name + score
+        doc.setFont('helvetica','bold');doc.setFontSize(6);doc.setTextColor(...DARK);
+        doc.text(k.length>18?k.slice(0,16)+'…':k,cx+cardPad,y+3);
+        doc.setFont('helvetica','bold');doc.setFontSize(5.5);doc.setTextColor(...col);
+        doc.text(String(v),cx+cardW-cardPad-1,y+3,{align:'right'});
+        // Description
+        const desc=getCompDesc(indvPerfil,k,v);
+        if(desc.text){
+          doc.setFont('helvetica','normal');doc.setFontSize(5);doc.setTextColor(...compDescText(v));
+          const lines=doc.splitTextToSize(desc.text,textW);
+          const maxLines=2;
+          const showLines=lines.slice(0,maxLines);
+          doc.text(showLines,cx+cardPad,y+5.5);
+        }
+      });
+      if(compEntries.length%2!==0)y+=11;
+      const pk=Object.keys(compS).find(k=>k==='Potencial'||k==='Potential');
+      const pv=pk?compS[pk]:null;
       if(pv!=null){
         checkY(6);
         doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(...BLUE);
@@ -805,7 +836,7 @@ async function exportPDF(idx){
         y+=5;
       }
       y+=5;
-    });
+    }
 
     const totalPages=doc.getNumberOfPages();
     for(let p=1;p<=totalPages;p++){
