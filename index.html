@@ -998,6 +998,7 @@ async function exportMemberPDF(member,jefe){
       doc.text(ab,lx,ly,{align});
       });
     }
+    const colHex=Object.keys(member.scores||{}).filter(k=>k!=='Potencial'&&k!=='Potential').length>=3?'#0033A0':'#6B7280';
     const colRgb=hexToRgb(colHex);
     const compS=member.scores||{};
     const compEntries=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential');
