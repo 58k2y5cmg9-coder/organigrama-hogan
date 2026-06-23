@@ -823,7 +823,9 @@ async function exportPDF(idx){
     sorted.slice(0,3).forEach(([k,v])=>{
       doc.setFillColor(209,250,229);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
       doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(6,95,70);
-      doc.text('✓ '+k+': '+v,margin+3,y+4.5);y+=9;
+      doc.text('✓ '+k+': ',margin+3,y+4.5);
+      doc.setTextColor(...(v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28]));
+      doc.text(String(v),margin+3+doc.getTextWidth('✓ '+k+': '),y+4.5);y+=9;
     });
     y+=3;checkY(24);
     doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...ORANGE);
@@ -831,7 +833,9 @@ async function exportPDF(idx){
     sorted.slice(-3).reverse().forEach(([k,v])=>{
       doc.setFillColor(255,247,237);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
       doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(154,52,18);
-      doc.text('⚠ '+k+': '+v,margin+3,y+4.5);y+=9;
+      doc.text('⚠ '+k+': ',margin+3,y+4.5);
+      doc.setTextColor(...(v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28]));
+      doc.text(String(v),margin+3+doc.getTextWidth('⚠ '+k+': '),y+4.5);y+=9;
     });
     y+=6;
 
@@ -879,11 +883,11 @@ async function exportPDF(idx){
         if(ci%2===1)y+=11;
       });
       if(compEntries.length%2===1)y+=11;
-      y+=2;
+      y+=5;
       const pk=Object.keys(compS).find(k=>k==='Potencial'||k==='Potential');
       const pv=pk?compS[pk]:null;
       if(pv!=null){
-        checkY(6);
+        checkY(8);
         doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(...BLUE);
         doc.text('Potencial: '+pv,margin,y+2);
         const pb=margin+28,pbW=W-margin*2-28-10;
@@ -1001,12 +1005,12 @@ async function exportMemberPDF(member,jefe){
       if(ci%2===1)y+=11;
     });
     if(compEntries.length%2===1)y+=11;
-    y+=2;
+    y+=5;
 
     const pk=Object.keys(compS).find(k=>k==='Potencial'||k==='Potential');
     const pv=pk?compS[pk]:null;
     if(pv!=null){
-      checkY(6);
+      checkY(8);
       doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(...BLUE);
       doc.text('Potencial: '+pv,margin,y+2);
       const pb=margin+28,pbW=W-margin*2-28-10;
