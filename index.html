@@ -576,7 +576,7 @@ function openModal(idx){
   const sec1='<div class="msec">'+
     '<div class="msec-title"><div class="msec-dot"></div>Resumen del Equipo</div>'+
     '<div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">'+versDistItems+'</div>'+
-    '<div style="font-size:.7rem;font-weight:700;color:#374151;margin-bottom:8px">Competencias del equipo</div>'+
+    '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#0033A0;text-align:center;margin-bottom:12px;padding:6px 0;border-bottom:2px solid #DBEAFE">Competencias del equipo</div>'+
     '<div style="display:flex;flex-direction:column;gap:4px">'+avgBarsFull+'</div>'+
     '<div style="margin-top:10px">'+
       '<div style="font-size:.7rem;font-weight:700;color:#059669;margin-bottom:4px">✓ Fortalezas del equipo</div>'+
@@ -639,7 +639,7 @@ function openDirectionModal(dirIdx){
   const sec1='<div class="msec"><div class="msec-title"><div class="msec-dot"></div>Resumen de la Dirección</div>'+
     '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">'+
     ['Alta Versatilidad','Media Versatilidad','Profundidad'].map(v=>{const cnt=allMembers.filter(m=>m.versatilidad===v).length;if(!cnt)return '';return '<div class="dleg-item"><div class="dleg-dot" style="background:'+versColor(v)+'"></div>'+esc(v)+': '+cnt+'</div>';}).filter(Boolean).join('')+'</div>'+
-    '<div style="font-size:.7rem;font-weight:700;color:#374151;margin-bottom:8px">Promedio por competencia</div><div>'+avgBarsFull+'</div>'+
+    '<div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#0033A0;text-align:center;margin-bottom:12px;padding:6px 0;border-bottom:2px solid #DBEAFE">Competencias del equipo</div><div>'+avgBarsFull+'</div>'+
     '<div style="margin-top:10px"><div style="font-size:.7rem;font-weight:700;color:#059669;margin-bottom:4px">✓ Fortalezas</div><div class="insights-row">'+best3+'</div>'+
     '<div style="font-size:.7rem;font-weight:700;color:#EA580C;margin-bottom:4px;margin-top:8px">⚠ Oportunidades</div><div class="insights-row">'+weak3+'</div></div></div>';
   const sec2='<div class="msec"><div class="msec-title"><div class="msec-dot"></div>Jefes ('+dir.jefes.length+')</div></div>'+
@@ -745,10 +745,18 @@ async function exportPDF(idx){
     distItems.forEach(d=>{doc.setFillColor(...d.h);doc.circle(lx+1.5,y+1,1.5,'F');doc.setTextColor(...GRAY);doc.text(d.l+': '+stats.dist[d.k],lx+5,y+2.5);lx+=doc.getTextWidth(d.l+': '+stats.dist[d.k])+12;if(lx>W-margin-20){lx=margin;y+=6;}});
     y+=10;
 
+    // Team radar
+    if(Object.keys(stats.avgs).length>=3){
+      checkY(50);
+      doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...DARK);
+      doc.text('RADAR DEL EQUIPO',margin,y);y+=3;
+      pdfRadar(doc,stats.avgs,(W-40)/2,y+10,40,RADAR_COL[teamDomVers(j.team)]||RADAR_COL.prof);
+      y+=55;
+    }
     // Team competency descriptions
     const teamPerfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
     doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...DARK);
-    doc.text('PROMEDIO DEL EQUIPO POR COMPETENCIA',margin,y);y+=5;
+    doc.text('COMPETENCIAS DEL EQUIPO',margin,y);y+=5;
     const sorted=Object.entries(stats.avgs).sort((a,b)=>b[1]-a[1]);
     const descCardW=(W-margin*2-4)/2,descTextW=descCardW-8;
     sorted.forEach(([k,v],ci)=>{
@@ -803,17 +811,18 @@ async function exportPDF(idx){
       checkY(55);
       const mColHex=versColor(m.versatilidad);
       const mColRgb=hexToRgb(mColHex);
-      doc.setFillColor(...mColRgb);doc.roundedRect(margin,y,W-margin*2,9,2,2,'F');
-      doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(8.5);
-      doc.text((j.team.indexOf(m)+1)+'. '+(m.name.length>40?m.name.slice(0,38)+'…':m.name),margin+3,y+6);
-      doc.setFontSize(7);doc.text(m.versatilidad&&versLabel(m.versatilidad)||'',W-margin-3,y+6,{align:'right'});
-      // Radar chart
       const compS=m.scores||{};
       const compEntries=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential');
-      if(compEntries.length>=3){
-        pdfRadar(doc,compS,W-margin-40,y,32,mColHex);
+      const hasRadar=compEntries.length>=3;
+      const hdrH=hasRadar?14:9;
+      doc.setFillColor(...mColRgb);doc.roundedRect(margin,y,W-margin*2,hdrH,2,2,'F');
+      doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(8.5);
+      doc.text((j.team.indexOf(m)+1)+'. '+(m.name.length>40?m.name.slice(0,38)+'…':m.name),margin+3,y+hdrH/2+2);
+      doc.setFontSize(7);doc.text(m.versatilidad&&versLabel(m.versatilidad)||'',W-margin-3,y+hdrH/2+2,{align:'right'});
+      if(hasRadar){
+        pdfRadar(doc,compS,W-margin-hdrH-4,y+(hdrH-12)/2,12,mColHex);
       }
-      y+=11;
+      y+=hdrH+2;
       doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...GRAY);
       doc.text((m.cargo||'')+(m.versatilidad?' · '+m.versatilidad:''),margin,y);y+=5;
       // Competency description cards
