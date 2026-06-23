@@ -537,6 +537,7 @@ function empCardHTML(m,perfil,jefeName){
     (potVal!=null?'<div class="pot-row"><div class="pot-l">Potencial</div><div class="pot-bg"><div class="pot-fill" style="width:'+potVal+'%;background:'+col+'"></div></div><div class="pot-v" style="color:'+col+'">'+potVal+'</div></div>':'')+
     (hasS&&Object.keys(compS).length?'<div class="comp-sec"><div class="comp-title">Competencias</div>'+compDescLevelHTML(compS,perfil||(curTab==='est'?'V. Ejecutivo':'V. Gerente'))+'</div>':'<div class="nodata">Sin datos de evaluación</div>')+
     (isJ?'<div class="ecard-jefe-link" data-jefe-name="'+esc(m.name)+'" data-jefe-tab="'+tabHint+'">↗ Ver como jefe — equipo a cargo</div>':'')+
+    (jefeName?'<div class="jcf"><button class="emp-pdf-btn" data-member-name="'+esc(m.name)+'" data-jefe-name="'+esc(jefeName)+'" style="margin-left:auto;font-size:.68rem;font-weight:700;color:#6B7280;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:7px;padding:4px 9px;cursor:pointer">PDF</button></div>':'')+
   '</div>';
 }
 
@@ -882,6 +883,119 @@ async function exportPDF(idx){
   loading.classList.remove('show');
 }
 
+/* ── INDIVIDUAL PDF EXPORT ──────────────────────────────────────────── */
+async function exportMemberPDF(member,jefe){
+  const loading=document.getElementById('pdf-loading');
+  loading.classList.add('show');
+  try{
+    const{jsPDF}=window.jspdf;
+    const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const W=210,H=297,margin=14;let y=margin;
+    const BLUE=[0,51,160],GRAY=[107,114,128],DARK=[17,24,39];
+    function hexToRgb(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return[r,g,b];}
+    function scRgb(v){if(v>=75)return[5,150,105];if(v>=55)return[234,88,12];return[220,38,38];}
+    function addPage(){doc.addPage();y=margin;}
+    function checkY(needed){if(y+needed>H-margin)addPage();}
+    function compDescBg(v){if(v>=75)return[209,250,229];if(v>=55)return[255,237,213];return[254,226,226];}
+    function compDescBorder(v){if(v>=75)return[167,243,208];if(v>=55)return[254,215,170];return[254,202,202];}
+    function compDescText(v){if(v>=75)return[6,95,70];if(v>=55)return[154,52,18];return[153,27,27];}
+    function pdfRadar(doc,comps,x,y,w,color){
+      const entries=Object.entries(comps).filter(([k,v])=>k!=='Potencial'&&k!=='Potential'&&v!=null);
+      if(entries.length<3)return;
+      const n=entries.length,cx=x+w/2,cy=y+w/2,r=Math.max(w/2-3,4),fs=Math.max(3,w/20);
+      const angles=entries.map((_,i)=>Math.PI*2*i/n-Math.PI/2);
+      const rgb=hexToRgb(color);
+      doc.setDrawColor(200,200,200);doc.setLineWidth(.25);
+      [.25,.5,.75,1].forEach(p=>{for(let i=0;i<n;i++){const a1=angles[i],a2=angles[(i+1)%n];doc.line(cx+r*p*Math.cos(a1),cy+r*p*Math.sin(a1),cx+r*p*Math.cos(a2),cy+r*p*Math.sin(a2));}});
+      doc.setDrawColor(200,200,200);doc.setLineWidth(.2);
+      angles.forEach(a=>{doc.line(cx,cy,cx+r*Math.cos(a),cy+r*Math.sin(a));});
+      const pts=entries.map(([k,v],i)=>[cx+r*(v/100)*Math.cos(angles[i]),cy+r*(v/100)*Math.sin(angles[i])]);
+      doc.setFillColor(...rgb);doc.setDrawColor(...rgb);doc.setLineWidth(.5);
+      for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.triangle(cx,cy,p1[0],p1[1],p2[0],p2[1],'F');}
+      doc.setFillColor(255,255,255);pts.forEach(p=>doc.circle(p[0],p[1],1,'F'));
+      entries.forEach(([k,v],i)=>{
+        const a=angles[i],lx=cx+(r+5)*Math.cos(a),ly=cy+(r+5)*Math.sin(a);
+        const ab=ABBR[k]||k.slice(0,2);
+        doc.setTextColor(80,80,80);doc.setFontSize(fs);doc.setFont('helvetica','normal');
+        const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
+        doc.text(ab,lx,ly,{align});
+      });
+    }
+
+    const colHex=versColor(member.versatilidad);
+    const colRgb=hexToRgb(colHex);
+    const compS=member.scores||{};
+    const compEntries=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential');
+    const perfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
+
+    // Header
+    doc.setFillColor(...colRgb);doc.rect(0,0,W,28,'F');
+    doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','bold');
+    doc.text(member.name,margin,12);
+    doc.setFontSize(9);doc.setFont('helvetica','normal');
+    doc.text((member.cargo||'')+' · '+(member.versatilidad||''),margin,19);
+    doc.text('Jefe: '+jefe.name,margin,25);
+    y=36;
+
+    // Radar centered
+    if(compEntries.length>=3){
+      doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...DARK);
+      doc.text('RADAR',margin,y);y+=3;
+      pdfRadar(doc,compS,(W-40)/2,y,40,colHex);
+      y+=48;
+    }
+
+    // Competency cards
+    doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...DARK);
+    doc.text('COMPETENCIAS',margin,y);y+=5;
+    const cardW=(W-margin*2-4)/2,cardPad=3,textW=cardW-cardPad*2-4;
+    compEntries.forEach(([k,v],ci)=>{
+      if(v===null||v===undefined)return;
+      checkY(11);
+      const bg=compDescBg(v),border=compDescBorder(v);
+      const cx=margin+(ci%2)*(cardW+4);
+      doc.setFillColor(...bg);doc.setDrawColor(...border);doc.roundedRect(cx,y,cardW,10,1.5,1.5,'FD');
+      doc.setFont('helvetica','bold');doc.setFontSize(6);doc.setTextColor(...DARK);
+      doc.text(k.length>18?k.slice(0,16)+'…':k,cx+cardPad,y+3);
+      doc.setFont('helvetica','bold');doc.setFontSize(5.5);doc.setTextColor(...scRgb(v));
+      doc.text(String(v),cx+cardW-cardPad-1,y+3,{align:'right'});
+      const desc=getCompDesc(perfil,k,v);
+      if(desc.text){
+        doc.setFont('helvetica','normal');doc.setFontSize(5);doc.setTextColor(...compDescText(v));
+        const lines=doc.splitTextToSize(desc.text,textW);
+        doc.text(lines.slice(0,2),cx+cardPad,y+5.5);
+      }
+      if(ci%2===1)y+=11;
+    });
+    if(compEntries.length%2===1)y+=11;
+
+    // Potential
+    const pk=Object.keys(compS).find(k=>k==='Potencial'||k==='Potential');
+    const pv=pk?compS[pk]:null;
+    if(pv!=null){
+      checkY(6);
+      doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(...BLUE);
+      doc.text('Potencial: '+pv,margin,y+2);
+      const pb=margin+28,pbW=W-margin*2-28-10;
+      doc.setFillColor(224,231,255);doc.roundedRect(pb,y-1,pbW,3.5,1,1,'F');
+      doc.setFillColor(...BLUE);doc.roundedRect(pb,y-1,pbW*pv/100,3.5,1,1,'F');
+      y+=8;
+    }
+
+    // Footer
+    const totalPages=doc.getNumberOfPages();
+    for(let p=1;p<=totalPages;p++){
+      doc.setPage(p);
+      doc.setFillColor(249,250,251);doc.rect(0,H-8,W,8,'F');
+      doc.setTextColor(...GRAY);doc.setFontSize(6);doc.setFont('helvetica','normal');
+      doc.text('Claro Colombia · Evaluación Hogan · '+new Date().toLocaleDateString('es-CO'),margin,H-3);
+      doc.text('Pág. '+p+' / '+totalPages,W-margin,H-3,{align:'right'});
+    }
+    doc.save('Hogan_'+member.name.replace(/\s+/g,'_').slice(0,30)+'.pdf');
+  }catch(e){console.error(e);alert('Error generando PDF: '+e.message);}
+  loading.classList.remove('show');
+}
+
 /* ── EVENT DELEGATION ────────────────────────────────────────────────── */
 document.addEventListener('click',function(e){
   if(e.target.id==='mbtn-close'||e.target.id==='moverlay'){closeModal();return;}
@@ -900,18 +1014,26 @@ document.addEventListener('click',function(e){
   if(dirCard){openDirectionModal(parseInt(dirCard.dataset.dirIdx,10));return;}
   const card=e.target.closest('.jcard');
   if(card&&card.dataset.idx!==undefined){openModal(parseInt(card.dataset.idx,10));return;}
+  const empPdfBtn=e.target.closest('.emp-pdf-btn');
+  if(empPdfBtn){
+    e.stopPropagation();
+    const mName=empPdfBtn.dataset.memberName;
+    const jName=empPdfBtn.dataset.jefeName;
+    if(!mName||!jName)return;
+    let member=null,jefe=null;
+    curData.forEach(j=>{
+      if(j.name===jName)jefe=j;
+      j.team.forEach(m=>{if(m.name===mName)member=m;});
+    });
+    if(member&&jefe)exportMemberPDF(member,jefe);
+    return;
+  }
   const ecardWrap=e.target.closest('.ecard-wrap');
   if(ecardWrap){
-    const ji=parseInt(ecardWrap.dataset.jefeIdx,10);
-    const jt=ecardWrap.dataset.jefeTab;
-    if(ji<0)return;
-    if(jt&&jt!==curTab){
-      const btn=document.querySelector('.tab'+(jt==='est'?':first-child':':last-child'));
-      if(btn)switchTab(jt,btn);
-      setTimeout(()=>openModal(ji),100);
-    } else {
-      openModal(ji);
-    }
+    const jn=ecardWrap.dataset.jefeName;
+    if(!jn)return;
+    const ji=filtered.findIndex(j=>j.name===jn);
+    if(ji>=0)openModal(ji);
     return;
   }
 });
@@ -931,18 +1053,16 @@ function doFilter(){
     const mc=!clasif||j.team.some(m=>m.clasificacion===clasif);
     return mq&&md&&mv&&mc;
   });
-  // Collect matching team members in BOTH tabs
+  // Collect matching team members in current tab only
   matchedMembers=[];
   if(q){
     const seen=new Set();
-    [DATA.est,DATA.op].forEach(data=>{
-      data.forEach(j=>{
-        j.team.forEach(m=>{
-          if(!m.name.toLowerCase().includes(q))return;
-          if(seen.has(m.name))return;
-          seen.add(m.name);
-          matchedMembers.push({member:m,jefe:j});
-        });
+    curData.forEach(j=>{
+      j.team.forEach(m=>{
+        if(!m.name.toLowerCase().includes(q))return;
+        if(seen.has(m.name))return;
+        seen.add(m.name);
+        matchedMembers.push({member:m,jefe:j});
       });
     });
   }
@@ -966,11 +1086,7 @@ function renderGrid(){
     const perfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
     const memberCards=matchedMembers.map(m=>{
       const jName=m.jefe.name;
-      const estIdx=DATA.est.findIndex(j=>j.name===jName);
-      const opIdx=DATA.op.findIndex(j=>j.name===jName);
-      const jTab=estIdx>=0?'est':'op';
-      const jIdx=estIdx>=0?estIdx:opIdx;
-      return '<div class="ecard-wrap" data-jefe-idx="'+jIdx+'" data-jefe-tab="'+jTab+'" style="cursor:pointer">'+empCardHTML(m.member,perfil,jName)+'</div>';
+      return '<div class="ecard-wrap" data-jefe-name="'+esc(jName)+'" style="cursor:pointer">'+empCardHTML(m.member,perfil,jName)+'</div>';
     }).join('');
     grid.innerHTML=filtered.map((j,i)=>jefeCardHTML(j,i)).join('')+'<div style="grid-column:1/-1;height:2px;background:#E5E7EB;margin:6px 0"></div><div class="emp-grid" style="grid-template-columns:repeat(auto-fill,minmax(275px,1fr));padding:0">'+memberCards+'</div>';
     const totalEval=filtered.reduce((a,j)=>a+j.team.length,0);
