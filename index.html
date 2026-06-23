@@ -530,7 +530,12 @@ function empCardHTML(m,perfil,jefeName){
     '</div>'+
     (jefeName?'<div style="font-size:.65rem;color:#6B7280;padding:4px 14px 0;font-weight:500">Jefe: '+esc(jefeName)+'</div>':'')+
     (potVal!=null?'<div class="pot-row"><div class="pot-l">Potencial</div><div class="pot-bg"><div class="pot-fill" style="width:'+potVal+'%;background:'+col+'"></div></div><div class="pot-v" style="color:'+col+'">'+potVal+'</div></div>':'')+
-    (hasS&&Object.keys(compS).length?'<div class="comp-sec"><div class="comp-title">Competencias</div>'+compDescLevelHTML(compS,perfil||(curTab==='est'?'V. Ejecutivo':'V. Gerente'))+'</div>':'<div class="nodata">Sin datos de evaluación</div>')+
+    (hasS&&Object.keys(compS).length?function(){
+      const sorted=Object.entries(compS).sort((a,b)=>b[1]-a[1]);
+      const best=sorted.slice(0,3).map(([k,v])=>'<div class="ins best">* '+esc(k)+': '+v+'</div>').join('');
+      const weak=sorted.slice(-3).reverse().map(([k,v])=>'<div class="ins weak">* '+esc(k)+' ('+v+')</div>').join('');
+      return '<div class="comp-sec"><div class="comp-title">Competencias</div>'+compDescLevelHTML(compS,perfil||(curTab==='est'?'V. Ejecutivo':'V. Gerente'))+'<div class="eq-insight" style="margin-top:8px">'+best+weak+'</div></div>';
+    }():'<div class="nodata">Sin datos de evaluación</div>')+
     (isJ?'<div class="ecard-jefe-link" data-jefe-name="'+esc(m.name)+'" data-jefe-tab="'+tabHint+'">↗ Ver como jefe — equipo a cargo</div>':'')+
     (jefeName?'<div class="jcf"><button class="emp-pdf-btn" data-member-name="'+esc(m.name)+'" data-jefe-name="'+esc(jefeName)+'" style="margin-left:auto;font-size:.68rem;font-weight:700;color:#6B7280;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:7px;padding:4px 9px;cursor:pointer">PDF</button></div>':'')+
   '</div>';
@@ -623,7 +628,13 @@ function openPersonModal(member,jefe){
   const radarHTML=Object.keys(compS).length?radarSVG(compS,120,colHex):'';
   document.getElementById('m-radar').innerHTML=radarHTML;
   const perfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
-  const compHTML=hasS&&Object.keys(compS).length?compDescLevelHTML(compS,perfil,false):'<div class="nodata">Sin datos de evaluación</div>';
+  const compHTML=hasS&&Object.keys(compS).length?function(){
+    const sorted=Object.entries(compS).sort((a,b)=>b[1]-a[1]);
+    const best=sorted.slice(0,3).map(([k,v])=>'<div class="ins best">* '+esc(k)+': '+v+'</div>').join('');
+    const weak=sorted.slice(-3).reverse().map(([k,v])=>'<div class="ins weak">* '+esc(k)+' ('+v+')</div>').join('');
+    const insHTML='<div class="eq-insight">'+best+weak+'</div>';
+    return compDescLevelHTML(compS,perfil,false)+insHTML;
+  }():'<div class="nodata">Sin datos de evaluación</div>';
   document.getElementById('m-body').innerHTML='<div class="msec">'+
     '<div class="msec-title"><div class="msec-dot"></div>Competencias</div>'+
     compHTML+
@@ -738,11 +749,11 @@ async function exportPDF(idx){
       for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.triangle(cx,cy,p1[0],p1[1],p2[0],p2[1],'F');}
       doc.setFillColor(...rgb);pts.forEach(p=>doc.circle(p[0],p[1],.5,'F'));
       entries.forEach(([k,v],i)=>{
-        const a=angles[i],lx=cx+(r+5)*Math.cos(a),ly=cy+(r+5)*Math.sin(a);
-        const ab=ABBR[k]||k.slice(0,2);
-        doc.setTextColor(80,80,80);doc.setFontSize(fs);doc.setFont('helvetica','normal');
-        const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
-        doc.text(k,lx,ly,{align});
+      const a=angles[i],lx=cx+(r+8)*Math.cos(a),ly=cy+(r+8)*Math.sin(a);
+      const ab=ABBR[k]||k.slice(0,2);
+      doc.setTextColor(60,60,60);doc.setFontSize(fs+1);doc.setFont('helvetica','bold');
+      const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
+      doc.text(ab,lx,ly,{align});
       });
     }
 
@@ -891,9 +902,36 @@ async function exportPDF(idx){
         }
         if(ci%2===1)y+=11;
       });
-      if(compEntries.length%2===1)y+=11;
-      y+=8;
-      const pk=Object.keys(compS).find(k=>k==='Potencial'||k==='Potential');
+    if(compEntries.length%2===1)y+=11;
+    y+=5;
+
+    // Strengths & Opportunities
+    const sortedScores=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential').sort((a,b)=>b[1]-a[1]);
+    if(sortedScores.length){
+      checkY(24);
+      doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...GREEN);
+      doc.text('* FORTALEZAS',margin,y);y+=5;
+      sortedScores.slice(0,3).forEach(([k,v])=>{
+        doc.setFillColor(209,250,229);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
+        doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(6,95,70);
+        doc.text('* '+k, margin+3, y+4.5);
+        doc.setTextColor(...(v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28]));
+        doc.text(String(v), W-margin-3, y+4.5, {align:'right'});y+=9;
+      });
+      y+=3;checkY(24);
+      doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...ORANGE);
+      doc.text('* OPORTUNIDADES',margin,y);y+=5;
+      sortedScores.slice(-3).reverse().forEach(([k,v])=>{
+        doc.setFillColor(255,247,237);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
+        doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(154,52,18);
+        doc.text('* '+k, margin+3, y+4.5);
+        doc.setTextColor(...(v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28]));
+        doc.text(String(v), W-margin-3, y+4.5, {align:'right'});y+=9;
+      });
+      y+=5;
+    }
+
+    const pk=Object.keys(compS).find(k=>k==='Potencial'||k==='Potential');
       const pv=pk?compS[pk]:null;
       if(pv!=null){
         checkY(10);
@@ -951,11 +989,11 @@ async function exportMemberPDF(member,jefe){
       for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.triangle(cx,cy,p1[0],p1[1],p2[0],p2[1],'F');}
       doc.setFillColor(...rgb);pts.forEach(p=>doc.circle(p[0],p[1],.5,'F'));
       entries.forEach(([k,v],i)=>{
-        const a=angles[i],lx=cx+(r+5)*Math.cos(a),ly=cy+(r+5)*Math.sin(a);
-        const ab=ABBR[k]||k.slice(0,2);
-        doc.setTextColor(80,80,80);doc.setFontSize(fs);doc.setFont('helvetica','normal');
-        const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
-        doc.text(k,lx,ly,{align});
+      const a=angles[i],lx=cx+(r+8)*Math.cos(a),ly=cy+(r+8)*Math.sin(a);
+      const ab=ABBR[k]||k.slice(0,2);
+      doc.setTextColor(60,60,60);doc.setFontSize(fs+1);doc.setFont('helvetica','bold');
+      const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
+      doc.text(ab,lx,ly,{align});
       });
     }
     const colRgb=hexToRgb(colHex);
@@ -1003,7 +1041,44 @@ async function exportMemberPDF(member,jefe){
       if(ci%2===1)y+=11;
     });
     if(compEntries.length%2===1)y+=11;
-    y+=8;
+    y+=5;
+
+    // Strengths & Opportunities
+    const sortedScores=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential').sort((a,b)=>b[1]-a[1]);
+    if(sortedScores.length){
+      checkY(24);
+      doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(5,150,105);
+      doc.text('* FORTALEZAS',margin,y);y+=5;
+      sortedScores.slice(0,3).forEach(([k,v])=>{
+        doc.setFillColor(209,250,229);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
+        doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(6,95,70);
+        doc.text('* '+k, margin+3, y+4.5);
+        doc.setTextColor(...(v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28]));
+        doc.text(String(v), W-margin-3, y+4.5, {align:'right'});y+=9;
+      });
+      y+=3;checkY(24);
+      doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(234,88,12);
+      doc.text('* OPORTUNIDADES',margin,y);y+=5;
+      sortedScores.slice(-3).reverse().forEach(([k,v])=>{
+        doc.setFillColor(255,247,237);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
+        doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(154,52,18);
+        doc.text('* '+k, margin+3, y+4.5);
+        doc.setTextColor(...(v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28]));
+        doc.text(String(v), W-margin-3, y+4.5, {align:'right'});y+=9;
+      });
+      y+=5;
+    }
+
+    const pk=Object.keys(compS).find(k=>k==='Potencial'||k==='Potential');
+      sortedScores.slice(-3).reverse().forEach(([k,v])=>{
+        doc.setFillColor(255,247,237);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
+        doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(154,52,18);
+        doc.text('* '+k, margin+3, y+4.5);
+        doc.setTextColor(...(v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28]));
+        doc.text(String(v), W-margin-3, y+4.5, {align:'right'});y+=9;
+      });
+      y+=5;
+    }
 
     const pk=Object.keys(compS).find(k=>k==='Potencial'||k==='Potential');
     const pv=pk?compS[pk]:null;
