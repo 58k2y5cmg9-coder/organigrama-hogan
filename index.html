@@ -351,9 +351,10 @@ function radarSVG(scores,size,color,bgOpacity){
   svg+='<polygon points="'+pts.map(p=>p.x+','+p.y).join(' ')+'" fill="'+color+bgOpacity+'" stroke="'+color+'" stroke-width="1.5" stroke-linejoin="round"/>';
   pts.forEach(p=>{svg+='<circle cx="'+p.x+'" cy="'+p.y+'" r="2.3" fill="'+color+'"/>';});
   entries.forEach(([k,v],i)=>{
-    const a=angles[i],lx=cx+(r+12)*Math.cos(a),ly=cy+(r+12)*Math.sin(a);
+    const a=angles[i],lx=cx+(r+14)*Math.cos(a),ly=cy+(r+14)*Math.sin(a);
     const ab=ABBR[k]||k.slice(0,2);
-    svg+='<text x="'+lx.toFixed(2)+'" y="'+ly.toFixed(2)+'" font-size="'+fs+'" fill="#6B7280" text-anchor="middle" dominant-baseline="central" font-family="Arial,sans-serif">'+esc(ab)+'</text>';
+    const align=a>=-.1&&a<=.1?'middle':(a>0&&a<Math.PI?'start':'end');
+    svg+='<text x="'+lx.toFixed(2)+'" y="'+ly.toFixed(2)+'" font-size="'+fs+'" fill="#6B7280" text-anchor="'+align+'" dominant-baseline="central" font-family="Arial,sans-serif">'+esc(ab)+'</text>';
   });
   svg+='</svg>';
   return svg;
@@ -692,7 +693,7 @@ async function exportPDF(idx){
     function pdfRadar(doc,comps,x,y,w,color){
       const entries=Object.entries(comps).filter(([k,v])=>k!=='Potencial'&&k!=='Potential'&&v!=null);
       if(entries.length<3)return;
-      const n=entries.length,cx=x+w/2,cy=y+w/2,r=w/2-6,fs=Math.max(3,w/22);
+      const n=entries.length,cx=x+w/2,cy=y+w/2,r=Math.max(w/2-3,4),fs=Math.max(3,w/20);
       const angles=entries.map((_,i)=>Math.PI*2*i/n-Math.PI/2);
       const rgb=hexToRgb(color);
       doc.setDrawColor(200,200,200);doc.setLineWidth(.25);
@@ -704,7 +705,7 @@ async function exportPDF(idx){
       for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.triangle(cx,cy,p1[0],p1[1],p2[0],p2[1],'F');}
       doc.setFillColor(255,255,255);pts.forEach(p=>doc.circle(p[0],p[1],1,'F'));
       entries.forEach(([k,v],i)=>{
-        const a=angles[i],lx=cx+(r+4)*Math.cos(a),ly=cy+(r+4)*Math.sin(a);
+        const a=angles[i],lx=cx+(r+5)*Math.cos(a),ly=cy+(r+5)*Math.sin(a);
         const ab=ABBR[k]||k.slice(0,2);
         doc.setTextColor(80,80,80);doc.setFontSize(fs);doc.setFont('helvetica','normal');
         const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
@@ -735,6 +736,15 @@ async function exportPDF(idx){
     });
     y+=20;
 
+    // Team radar at top
+    if(Object.keys(stats.avgs).length>=3){
+      checkY(40);
+      doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...DARK);
+      doc.text('RADAR DEL EQUIPO',margin,y);y+=3;
+      pdfRadar(doc,stats.avgs,(W-50)/2,y,50,RADAR_COL[teamDomVers(j.team)]||RADAR_COL.prof);
+      y+=55;
+    }
+
     // Dist bar
     doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...DARK);
     doc.text('DISTRIBUCIÓN DEL EQUIPO',margin,y);y+=5;
@@ -745,14 +755,6 @@ async function exportPDF(idx){
     distItems.forEach(d=>{doc.setFillColor(...d.h);doc.circle(lx+1.5,y+1,1.5,'F');doc.setTextColor(...GRAY);doc.text(d.l+': '+stats.dist[d.k],lx+5,y+2.5);lx+=doc.getTextWidth(d.l+': '+stats.dist[d.k])+12;if(lx>W-margin-20){lx=margin;y+=6;}});
     y+=10;
 
-    // Team radar
-    if(Object.keys(stats.avgs).length>=3){
-      checkY(50);
-      doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...DARK);
-      doc.text('RADAR DEL EQUIPO',margin,y);y+=3;
-      pdfRadar(doc,stats.avgs,(W-40)/2,y+10,40,RADAR_COL[teamDomVers(j.team)]||RADAR_COL.prof);
-      y+=55;
-    }
     // Team competency descriptions
     const teamPerfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
     doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...DARK);
@@ -813,16 +815,11 @@ async function exportPDF(idx){
       const mColRgb=hexToRgb(mColHex);
       const compS=m.scores||{};
       const compEntries=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential');
-      const hasRadar=compEntries.length>=3;
-      const hdrH=hasRadar?14:9;
-      doc.setFillColor(...mColRgb);doc.roundedRect(margin,y,W-margin*2,hdrH,2,2,'F');
+      doc.setFillColor(...mColRgb);doc.roundedRect(margin,y,W-margin*2,9,2,2,'F');
       doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(8.5);
-      doc.text((j.team.indexOf(m)+1)+'. '+(m.name.length>40?m.name.slice(0,38)+'…':m.name),margin+3,y+hdrH/2+2);
-      doc.setFontSize(7);doc.text(m.versatilidad&&versLabel(m.versatilidad)||'',W-margin-3,y+hdrH/2+2,{align:'right'});
-      if(hasRadar){
-        pdfRadar(doc,compS,W-margin-hdrH-4,y+(hdrH-12)/2,12,mColHex);
-      }
-      y+=hdrH+2;
+      doc.text((j.team.indexOf(m)+1)+'. '+(m.name.length>40?m.name.slice(0,38)+'…':m.name),margin+3,y+6);
+      doc.setFontSize(7);doc.text(m.versatilidad&&versLabel(m.versatilidad)||'',W-margin-3,y+6,{align:'right'});
+      y+=11;
       doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...GRAY);
       doc.text((m.cargo||'')+(m.versatilidad?' · '+m.versatilidad:''),margin,y);y+=5;
       // Competency description cards
@@ -859,6 +856,15 @@ async function exportPDF(idx){
         doc.setFillColor(...BLUE);doc.roundedRect(pb,y-1,pbW*pv/100,3.5,1,1,'F');
         y+=5;
       }
+      // Individual radar after cards
+      const compEntries2=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential');
+      if(compEntries2.length>=3){
+        checkY(38);
+        doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(...DARK);
+        doc.text('RADAR — '+esc(m.name),margin,y);y+=3;
+        pdfRadar(doc,compS,(W-30)/2,y,30,mColHex);
+        y+=33;
+      }
       y+=5;
     }
 
@@ -893,22 +899,38 @@ document.addEventListener('click',function(e){
   if(dirCard){openDirectionModal(parseInt(dirCard.dataset.dirIdx,10));return;}
   const card=e.target.closest('.jcard');
   if(card&&card.dataset.idx!==undefined){openModal(parseInt(card.dataset.idx,10));return;}
+  const ecardWrap=e.target.closest('.ecard-wrap');
+  if(ecardWrap){const ji=parseInt(ecardWrap.dataset.jefeIdx,10);if(ji>=0)openModal(ji);return;}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 /* ── FILTER / RENDER ─────────────────────────────────────────────────── */
+let matchedMembers=[];
 function doFilter(){
   const q=document.getElementById('q').value.toLowerCase().trim();
   const dir=document.getElementById('fdir').value;
   const vers=document.getElementById('fvers').value;
   const clasif=document.getElementById('fclasif').value;
   filtered=curData.filter(j=>{
-    const mq=!q||j.name.toLowerCase().includes(q)||(j.cargo||'').toLowerCase().includes(q)||(j.dir_corp||'').toLowerCase().includes(q)||(j.dir_area||'').toLowerCase().includes(q);
+    const mq=!q||j.name.toLowerCase().includes(q)||(j.cargo||'').toLowerCase().includes(q)||(j.dir_corp||'').toLowerCase().includes(q)||(j.dir_area||'').toLowerCase().includes(q)||j.team.some(m=>m.name.toLowerCase().includes(q));
     const md=!dir||j.dir_corp===dir||j.dir_area===dir||j.gerencia===dir;
     const mv=!vers||j.team.some(m=>m.versatilidad===vers);
     const mc=!clasif||j.team.some(m=>m.clasificacion===clasif);
     return mq&&md&&mv&&mc;
   });
+  // Collect matching team members when searching
+  matchedMembers=[];
+  if(q){
+    const seen=new Set();
+    curData.forEach(j=>{
+      j.team.forEach(m=>{
+        if(!m.name.toLowerCase().includes(q))return;
+        if(seen.has(m.name))return;
+        seen.add(m.name);
+        matchedMembers.push({member:m,jefe:j});
+      });
+    });
+  }
   renderGrid();
 }
 
@@ -923,11 +945,17 @@ function renderGrid(){
   const grid=document.getElementById('maingrid');
   const empty=document.getElementById('empty');
   const q=document.getElementById('q').value.trim();
-  if(!filtered.length){grid.innerHTML='';empty.style.display='block';document.getElementById('rcount').textContent='';return;}
+  if(!filtered.length&&!matchedMembers.length){grid.innerHTML='';empty.style.display='block';document.getElementById('rcount').textContent='';return;}
   empty.style.display='none';
   if(q){
-    grid.innerHTML=filtered.map((j,i)=>jefeCardHTML(j,i)).join('');
-    document.getElementById('rcount').textContent=filtered.length+' jefe'+(filtered.length!==1?'s':'')+' · '+filtered.reduce((a,j)=>a+j.team.length,0)+' evaluados';
+    const perfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
+    const memberCards=matchedMembers.map(m=>{
+      const jIdx=curData.findIndex(j=>j.name===m.jefe.name);
+      return '<div class="ecard-wrap" data-jefe-idx="'+jIdx+'" style="cursor:pointer">'+empCardHTML(m.member,perfil)+'</div>';
+    }).join('');
+    grid.innerHTML=filtered.map((j,i)=>jefeCardHTML(j,i)).join('')+'<div style="grid-column:1/-1;height:2px;background:#E5E7EB;margin:6px 0"></div><div class="emp-grid" style="grid-template-columns:repeat(auto-fill,minmax(275px,1fr));padding:0">'+memberCards+'</div>';
+    const totalEval=filtered.reduce((a,j)=>a+j.team.length,0);
+    document.getElementById('rcount').textContent=filtered.length+' jefe'+(filtered.length!==1?'s':'')+' · '+totalEval+' evaluados'+(matchedMembers.length?' · '+matchedMembers.length+' coincidencias directas':'');
   } else {
     const dirs=groupByDirection(filtered);
     if(!dirs.length){grid.innerHTML='';empty.style.display='block';document.getElementById('rcount').textContent='';return;}
