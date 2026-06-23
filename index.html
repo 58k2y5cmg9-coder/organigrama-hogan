@@ -588,7 +588,7 @@ function openModal(idx){
     '</div>'+
   '</div>';
   const sec2='<div class="msec"><div class="msec-title"><div class="msec-dot"></div>Resultados Individuales ('+j.team.length+' personas)</div></div>'+
-    '<div class="emp-grid">'+j.team.map(empCardHTML).join('')+'</div>';
+    '<div class="emp-grid">'+j.team.map(function(mi){return empCardHTML(mi,perfil);}).join('')+'</div>';
   document.getElementById('m-body').innerHTML=sec1+sec2;
   document.getElementById('moverlay').classList.add('open');
   document.body.style.overflow='hidden';
@@ -901,7 +901,19 @@ document.addEventListener('click',function(e){
   const card=e.target.closest('.jcard');
   if(card&&card.dataset.idx!==undefined){openModal(parseInt(card.dataset.idx,10));return;}
   const ecardWrap=e.target.closest('.ecard-wrap');
-  if(ecardWrap){const ji=parseInt(ecardWrap.dataset.jefeIdx,10);if(ji>=0)openModal(ji);return;}
+  if(ecardWrap){
+    const ji=parseInt(ecardWrap.dataset.jefeIdx,10);
+    const jt=ecardWrap.dataset.jefeTab;
+    if(ji<0)return;
+    if(jt&&jt!==curTab){
+      const btn=document.querySelector('.tab'+(jt==='est'?':first-child':':last-child'));
+      if(btn)switchTab(jt,btn);
+      setTimeout(()=>openModal(ji),100);
+    } else {
+      openModal(ji);
+    }
+    return;
+  }
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
@@ -953,8 +965,12 @@ function renderGrid(){
   if(q){
     const perfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
     const memberCards=matchedMembers.map(m=>{
-      const jIdx=curData.findIndex(j=>j.name===m.jefe.name);
-      return '<div class="ecard-wrap" data-jefe-idx="'+jIdx+'" style="cursor:pointer">'+empCardHTML(m.member,perfil,m.jefe.name)+'</div>';
+      const jName=m.jefe.name;
+      const estIdx=DATA.est.findIndex(j=>j.name===jName);
+      const opIdx=DATA.op.findIndex(j=>j.name===jName);
+      const jTab=estIdx>=0?'est':'op';
+      const jIdx=estIdx>=0?estIdx:opIdx;
+      return '<div class="ecard-wrap" data-jefe-idx="'+jIdx+'" data-jefe-tab="'+jTab+'" style="cursor:pointer">'+empCardHTML(m.member,perfil,jName)+'</div>';
     }).join('');
     grid.innerHTML=filtered.map((j,i)=>jefeCardHTML(j,i)).join('')+'<div style="grid-column:1/-1;height:2px;background:#E5E7EB;margin:6px 0"></div><div class="emp-grid" style="grid-template-columns:repeat(auto-fill,minmax(275px,1fr));padding:0">'+memberCards+'</div>';
     const totalEval=filtered.reduce((a,j)=>a+j.team.length,0);
