@@ -334,11 +334,12 @@ function distBarHTML(dist,total){
 }
 
 /* ── RADAR SVG ───────────────────────────────────────────────────────── */
+const ABBR={"Toma de Decisiones":"TD","Liderar a otros":"LO","Impulsar el Cambio":"IC","Impulsar la Estrategia":"IE","Desarrollo de Otros":"DO","Impulsar la Innovación":"IN","Escuchar a Otros":"EO","Influenciar a otros":"IF","Responsabilidad":"RE","Comunicación de Impacto":"CI","Construcción de Equipos":"CE","Impulsar la Ejecución":"EJ","Delegación":"DG","Visión del Negocio":"VN","Resolución de Problemas":"RP","Impulsar la Diversidad":"DV","Trabajo en Equipo":"TE","Manejo de la Ambigüedad":"MA"};
 function radarSVG(scores,size,color,bgOpacity){
   size=size||110;color=color||'#0033A0';bgOpacity=bgOpacity||'22';
   const entries=Object.entries(scores).filter(([k,v])=>k!=='Potencial'&&k!=='Potential'&&v!=null);
   if(!entries.length)return '';
-  const n=entries.length,cx=size/2,cy=size/2,r=size/2-12;
+  const n=entries.length,cx=size/2,cy=size/2,r=size/2-16,fs=Math.max(5,size/18);
   const angles=entries.map((_,i)=>Math.PI*2*i/n-Math.PI/2);
   const pts=entries.map(([k,v],i)=>({x:+(cx+r*(v/100)*Math.cos(angles[i])).toFixed(2),y:+(cy+r*(v/100)*Math.sin(angles[i])).toFixed(2)}));
   let svg='<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'">';
@@ -349,6 +350,11 @@ function radarSVG(scores,size,color,bgOpacity){
   angles.forEach(a=>{svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+r*Math.cos(a)).toFixed(2)+'" y2="'+(cy+r*Math.sin(a)).toFixed(2)+'" stroke="#E5E7EB" stroke-width=".7"/>';});
   svg+='<polygon points="'+pts.map(p=>p.x+','+p.y).join(' ')+'" fill="'+color+bgOpacity+'" stroke="'+color+'" stroke-width="1.5" stroke-linejoin="round"/>';
   pts.forEach(p=>{svg+='<circle cx="'+p.x+'" cy="'+p.y+'" r="2.3" fill="'+color+'"/>';});
+  entries.forEach(([k,v],i)=>{
+    const a=angles[i],lx=cx+(r+12)*Math.cos(a),ly=cy+(r+12)*Math.sin(a);
+    const ab=ABBR[k]||k.slice(0,2);
+    svg+='<text x="'+lx.toFixed(2)+'" y="'+ly.toFixed(2)+'" font-size="'+fs+'" fill="#6B7280" text-anchor="middle" dominant-baseline="central" font-family="Arial,sans-serif">'+esc(ab)+'</text>';
+  });
   svg+='</svg>';
   return svg;
 }
@@ -420,7 +426,6 @@ function jefeCardHTML(j,idx){
       '</div>'+
       '<div style="display:flex;gap:4px;align-items:center;flex-shrink:0">'+
         (m.versatilidad?'<span class="vpill '+vc+'">'+esc(versLabel(m.versatilidad))+'</span>':'')+
-        '<span class="cpill '+cc(m.clasificacion)+'">'+(m.clasificacion||'Sin dato')+'</span>'+
         (isJ?'<span class="jefe-badge">Jefe</span>':'')+
       '</div>'+
     '</div>';
@@ -522,7 +527,6 @@ function empCardHTML(m,perfil){
         '<div class="ename">'+esc(m.name)+(isJ?' <span style="font-size:.65rem;color:#4338CA">↗ Jefe</span>':'')+'</div>'+
         '<div class="ecargo">'+esc(m.cargo||'')+'</div>'+
         '<div class="ebadges">'+
-          '<span class="cpill '+cc(m.clasificacion)+'">'+(m.clasificacion||'Sin dato')+'</span>'+
           (m.versatilidad?'<span class="evers '+vc+'">'+esc(versLabel(m.versatilidad))+'</span>':'')+
         '</div>'+
       '</div>'+
@@ -552,8 +556,6 @@ function openModal(idx){
   const stats=teamStats(j.team);
   document.getElementById('m-stats').innerHTML=[
     {n:j.team.length,l:'A cargo'},
-    {n:(stats.dist.ma||0)+(stats.dist.al||0),l:'Alto perf.'},
-    {n:stats.dist.ma||0,l:'Muy Alto'},
     ...(stats.avgPot!=null?[{n:stats.avgPot,l:'Pot. prom.'}]:[])
   ].map(s=>'<div class="mst"><div class="n">'+s.n+'</div><div class="l">'+s.l+'</div></div>').join('');
   document.getElementById('mbtn-pdf').style.display='';
@@ -562,8 +564,8 @@ function openModal(idx){
 
   const perfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
   const sorted=Object.entries(stats.avgs).sort((a,b)=>b[1]-a[1]);
-  const avgBarsFull=compDescLevelHTML(stats.avgs,perfil,true);
-  const best3=sorted.slice(0,3).map(([k,v])=>'<div class="ins-big best">✓ '+esc(k)+': '+v+'</div>').join('');
+  const avgBarsFull=compDescLevelHTML(stats.avgs,perfil,false);
+  const best3=sorted.filter(([k,v])=>v>69).map(([k,v])=>'<div class="ins-big best">✓ '+esc(k)+': '+v+'</div>').join('');
   const weak3=sorted.slice(-3).reverse().map(([k,v])=>'<div class="ins-big weak">⚠ Oportunidad: '+esc(k)+' ('+v+')</div>').join('');
   const versDistItems=['Alta Versatilidad','Media Versatilidad','Profundidad'].map(v=>{
     const cnt=j.team.filter(m=>m.versatilidad===v).length;
@@ -574,7 +576,7 @@ function openModal(idx){
   const sec1='<div class="msec">'+
     '<div class="msec-title"><div class="msec-dot"></div>Resumen del Equipo</div>'+
     '<div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">'+versDistItems+'</div>'+
-    '<div style="font-size:.7rem;font-weight:700;color:#374151;margin-bottom:8px">Promedio del equipo por competencia</div>'+
+    '<div style="font-size:.7rem;font-weight:700;color:#374151;margin-bottom:8px">Competencias del equipo</div>'+
     '<div style="display:flex;flex-direction:column;gap:4px">'+avgBarsFull+'</div>'+
     '<div style="margin-top:10px">'+
       '<div style="font-size:.7rem;font-weight:700;color:#059669;margin-bottom:4px">✓ Fortalezas del equipo</div>'+
@@ -614,7 +616,6 @@ function openDirectionModal(dirIdx){
   document.getElementById('m-meta').textContent='';
   document.getElementById('m-stats').innerHTML=[
     {n:dir.jefes.length,l:'Jefes'},{n:allMembers.length,l:'Evaluados'},
-    {n:(stats.dist.ma||0)+(stats.dist.al||0),l:'Alto perf.'},
     ...(stats.avgPot!=null?[{n:stats.avgPot,l:'Pot. prom.'}]:[])
   ].map(s=>'<div class="mst"><div class="n">'+s.n+'</div><div class="l">'+s.l+'</div></div>').join('');
   const radarHTML=Object.keys(stats.avgs).length?teamRadarSVG(stats.avgs,120,radarCol):'';
@@ -685,15 +686,36 @@ async function exportPDF(idx){
     function scRgb(v){if(v>=75)return GREEN;if(v>=55)return ORANGE;return[220,38,38];}
     function addPage(){doc.addPage();y=margin;}
     function checkY(needed){if(y+needed>H-margin)addPage();}
-    function svgToPng(svg,w,h){return new Promise((ok,fail)=>{const b=new Blob([svg],{type:'image/svg+xml;charset=utf-8'}),u=URL.createObjectURL(b),i=new Image();i.onload=function(){const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(i,0,0,w,h);URL.revokeObjectURL(u);ok(c.toDataURL('image/png'));};i.onerror=function(){URL.revokeObjectURL(u);fail('svg load error');};i.src=u;});}
     function compDescBg(v){if(v>=75)return[209,250,229];if(v>=55)return[255,237,213];return[254,226,226];}
     function compDescBorder(v){if(v>=75)return[167,243,208];if(v>=55)return[254,215,170];return[254,202,202];}
     function compDescText(v){if(v>=75)return[6,95,70];if(v>=55)return[154,52,18];return[153,27,27];}
+    function pdfRadar(doc,comps,x,y,w,color){
+      const entries=Object.entries(comps).filter(([k,v])=>k!=='Potencial'&&k!=='Potential'&&v!=null);
+      if(entries.length<3)return;
+      const n=entries.length,cx=x+w/2,cy=y+w/2,r=w/2-6,fs=Math.max(3,w/22);
+      const angles=entries.map((_,i)=>Math.PI*2*i/n-Math.PI/2);
+      const rgb=hexToRgb(color);
+      doc.setDrawColor(200,200,200);doc.setLineWidth(.25);
+      [.25,.5,.75,1].forEach(p=>{for(let i=0;i<n;i++){const a1=angles[i],a2=angles[(i+1)%n];doc.line(cx+r*p*Math.cos(a1),cy+r*p*Math.sin(a1),cx+r*p*Math.cos(a2),cy+r*p*Math.sin(a2));}});
+      doc.setDrawColor(200,200,200);doc.setLineWidth(.2);
+      angles.forEach(a=>{doc.line(cx,cy,cx+r*Math.cos(a),cy+r*Math.sin(a));});
+      const pts=entries.map(([k,v],i)=>[cx+r*(v/100)*Math.cos(angles[i]),cy+r*(v/100)*Math.sin(angles[i])]);
+      doc.setFillColor(...rgb);doc.setDrawColor(...rgb);doc.setLineWidth(.5);
+      for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.triangle(cx,cy,p1[0],p1[1],p2[0],p2[1],'F');}
+      doc.setFillColor(255,255,255);pts.forEach(p=>doc.circle(p[0],p[1],1,'F'));
+      entries.forEach(([k,v],i)=>{
+        const a=angles[i],lx=cx+(r+4)*Math.cos(a),ly=cy+(r+4)*Math.sin(a);
+        const ab=ABBR[k]||k.slice(0,2);
+        doc.setTextColor(80,80,80);doc.setFontSize(fs);doc.setFont('helvetica','normal');
+        const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
+        doc.text(ab,lx,ly,{align});
+      });
+    }
 
     // Header
     doc.setFillColor(...BLUE);doc.rect(0,0,W,32,'F');
     doc.setTextColor(255,255,255);doc.setFontSize(16);doc.setFont('helvetica','bold');
-    doc.text('Informe Hogan · Claro Colombia',margin,13);
+    doc.text('Informe de equipo',margin,13);
     doc.setFontSize(9);doc.setFont('helvetica','normal');
     doc.text(j.name,margin,20);
     doc.setFontSize(8);
@@ -701,7 +723,7 @@ async function exportPDF(idx){
     y=38;
 
     const stats=teamStats(j.team);
-    const statBoxes=[{l:'A cargo',v:j.team.length},{l:'Alto perf.'  ,v:(stats.dist.ma||0)+(stats.dist.al||0)},{l:'Muy Alto',v:stats.dist.ma||0},...(stats.avgPot!=null?[{l:'Pot. prom.',v:stats.avgPot}]:[])];
+    const statBoxes=[{l:'A cargo',v:j.team.length},...(stats.avgPot!=null?[{l:'Pot. prom.',v:stats.avgPot}]:[])];
     const bw=(W-margin*2)/statBoxes.length-3;
     statBoxes.forEach((s,i)=>{
       const bx=margin+i*(bw+3);
@@ -784,16 +806,12 @@ async function exportPDF(idx){
       doc.setFillColor(...mColRgb);doc.roundedRect(margin,y,W-margin*2,9,2,2,'F');
       doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(8.5);
       doc.text((j.team.indexOf(m)+1)+'. '+(m.name.length>40?m.name.slice(0,38)+'…':m.name),margin+3,y+6);
-      doc.setFontSize(7);doc.text(m.clasificacion||'Sin dato',W-margin-3,y+6,{align:'right'});
+      doc.setFontSize(7);doc.text(m.versatilidad&&versLabel(m.versatilidad)||'',W-margin-3,y+6,{align:'right'});
       // Radar chart
       const compS=m.scores||{};
       const compEntries=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential');
-      if(compEntries.length){
-        const radarSvg=radarSVG(compS,200,mColHex);
-        try{
-          const radarPng=await svgToPng(radarSvg,30,30);
-          doc.addImage(radarPng,'PNG',W-margin-38,y-1.5,30,30);
-        }catch(e){}
+      if(compEntries.length>=3){
+        pdfRadar(doc,compS,W-margin-40,y,32,mColHex);
       }
       y+=11;
       doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...GRAY);
