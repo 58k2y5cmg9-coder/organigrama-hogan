@@ -855,7 +855,7 @@ async function exportPDF(idx){
     function pdfRadar(doc,comps,x,y,w,color){
       const entries=Object.entries(comps).filter(([k,v])=>k!=='Potencial'&&k!=='Potential'&&v!=null);
       if(entries.length<3)return;
-      const n=entries.length,cx=x+w/2,cy=y+w/2,r=Math.max(w/2-3,4),fs=Math.max(3,w/20);
+      const n=entries.length,cx=x+w/2,cy=y+w/2,r=Math.max(w/2-3,4),fs=Math.max(5,w/14);
       const angles=entries.map((_,i)=>Math.PI*2*i/n-Math.PI/2);
       const rgb=hexToRgb(color);
       doc.setDrawColor(200,200,200);doc.setLineWidth(.25);
@@ -867,10 +867,10 @@ async function exportPDF(idx){
       for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.triangle(cx,cy,p1[0],p1[1],p2[0],p2[1],'F');}
       doc.setFillColor(...rgb);pts.forEach(p=>doc.circle(p[0],p[1],.5,'F'));
       entries.forEach(([k,v],i)=>{
-      const a=angles[i],lx=cx+(r+7)*Math.cos(a),ly=cy+(r+7)*Math.sin(a);
-      doc.setTextColor(80,80,80);doc.setFontSize(fs);doc.setFont('helvetica','normal');
+      const a=angles[i],lx=cx+(r+10)*Math.cos(a),ly=cy+(r+10)*Math.sin(a);
+      doc.setTextColor(80,80,80);doc.setFontSize(fs);doc.setFont('helvetica','bold');
       const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
-      doc.text(k,lx,ly,{align});
+      doc.text(k.length>14?k.slice(0,13)+'…':k,lx,ly,{align});
       });
     }
 
@@ -1092,7 +1092,7 @@ async function exportMemberPDF(member,jefe){
     function pdfRadar(doc,comps,x,y,w,color){
       const entries=Object.entries(comps).filter(([k,v])=>k!=='Potencial'&&k!=='Potential'&&v!=null);
       if(entries.length<3)return;
-      const n=entries.length,cx=x+w/2,cy=y+w/2,r=Math.max(w/2-3,4),fs=Math.max(3,w/20);
+      const n=entries.length,cx=x+w/2,cy=y+w/2,r=Math.max(w/2-3,4),fs=Math.max(5,w/14);
       const angles=entries.map((_,i)=>Math.PI*2*i/n-Math.PI/2);
       const rgb=hexToRgb(color);
       doc.setDrawColor(200,200,200);doc.setLineWidth(.25);
@@ -1104,10 +1104,10 @@ async function exportMemberPDF(member,jefe){
       for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.triangle(cx,cy,p1[0],p1[1],p2[0],p2[1],'F');}
       doc.setFillColor(...rgb);pts.forEach(p=>doc.circle(p[0],p[1],.5,'F'));
       entries.forEach(([k,v],i)=>{
-      const a=angles[i],lx=cx+(r+7)*Math.cos(a),ly=cy+(r+7)*Math.sin(a);
-      doc.setTextColor(80,80,80);doc.setFontSize(fs);doc.setFont('helvetica','normal');
+      const a=angles[i],lx=cx+(r+10)*Math.cos(a),ly=cy+(r+10)*Math.sin(a);
+      doc.setTextColor(80,80,80);doc.setFontSize(fs);doc.setFont('helvetica','bold');
       const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
-      doc.text(k,lx,ly,{align});
+      doc.text(k.length>14?k.slice(0,13)+'…':k,lx,ly,{align});
       });
     }
     const colHex=Object.keys(member.scores||{}).filter(k=>k!=='Potencial'&&k!=='Potential').length>=3?'#0033A0':'#6B7280';
