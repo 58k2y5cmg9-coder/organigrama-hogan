@@ -569,8 +569,8 @@ function directionCardHTML(dir,idx){
   const perfil=curTab==='all'?'V. Ejecutivo':(curTab==='est'?'V. Ejecutivo':'V. Gerente');
   const sorted=Object.entries(stats.avgs).sort((a,b)=>b[1]-a[1]);
   const avgRows=compDescLevelHTML(stats.avgs,perfil,true);
-  const best3=sorted.filter(([_,v])=>v>=70).map(([k,v])=>'<div class="ins best">✓ '+esc(k)+': '+v+'</div>').join('');
-  const weak3=sorted.filter(([_,v])=>v<49).map(([k,v])=>'<div class="ins weak">⚠ '+esc(k)+' ('+v+')</div>').join('');
+  const best3=sorted.filter(([_,v])=>v>=70).slice(0,3).map(([k,v])=>'<div class="ins best">✓ '+esc(k)+': '+v+'</div>').join('');
+  const weak3=sorted.filter(([_,v])=>v<49).slice(0,3).map(([k,v])=>'<div class="ins weak">⚠ '+esc(k)+' ('+v+')</div>').join('');
   const versDistItems=['Alta Versatilidad','Media Versatilidad','Profundidad'].map(v=>{const cnt=allMembers.filter(m=>m.versatilidad===v).length;if(!cnt)return '';return '<span class="vpill '+versCode(v)+'" style="margin-right:4px">'+v+': '+cnt+'</span>';}).filter(Boolean).join('');
   const radar=Object.keys(stats.avgs).length?teamRadarSVG(stats.avgs,120,radarCol,true):'';
   const jefeList=dir.jefes.map(j=>'<div class="dir-jefe" data-jefe-name="'+esc(j.name)+'" style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border3);cursor:pointer;transition:background .12s" onmouseenter="this.style.background=\'#F8FAFF\'" onmouseleave="this.style.background=\'\'">'+
@@ -666,8 +666,8 @@ function openModal(idx){
   const perfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
   const sorted=Object.entries(stats.avgs).sort((a,b)=>b[1]-a[1]);
   const avgBarsFull=compDescLevelHTML(stats.avgs,perfil,false);
-  const best3=sorted.filter(([k,v])=>v>=70).map(([k,v])=>'<div class="ins-big best">✓ '+esc(k)+': '+v+'</div>').join('');
-  const weak3=sorted.filter(([k,v])=>v<49).map(([k,v])=>'<div class="ins-big weak">⚠ Oportunidad: '+esc(k)+' ('+v+')</div>').join('');
+  const best3=sorted.filter(([k,v])=>v>=70).slice(0,3).map(([k,v])=>'<div class="ins-big best">✓ '+esc(k)+': '+v+'</div>').join('');
+  const weak3=sorted.filter(([k,v])=>v<49).slice(0,3).map(([k,v])=>'<div class="ins-big weak">⚠ Oportunidad: '+esc(k)+' ('+v+')</div>').join('');
   const versDistItems=['Alta Versatilidad','Media Versatilidad','Profundidad'].map(v=>{
     const cnt=j.team.filter(m=>m.versatilidad===v).length;
     if(!cnt)return '';
@@ -776,8 +776,8 @@ function openDirectionModal(dirIdx){
   const perfil=curTab==='all'?'V. Ejecutivo':(curTab==='est'?'V. Ejecutivo':'V. Gerente');
   const sorted=Object.entries(stats.avgs).sort((a,b)=>b[1]-a[1]);
   const avgBarsFull=compDescLevelHTML(stats.avgs,perfil,true);
-  const best3=sorted.filter(([k,v])=>v>=70).map(([k,v])=>'<div class="ins-big best">✓ '+esc(k)+': '+v+'</div>').join('');
-  const weak3=sorted.filter(([k,v])=>v<49).map(([k,v])=>'<div class="ins-big weak">⚠ Oportunidad: '+esc(k)+' ('+v+')</div>').join('');
+  const best3=sorted.filter(([k,v])=>v>=70).slice(0,3).map(([k,v])=>'<div class="ins-big best">✓ '+esc(k)+': '+v+'</div>').join('');
+  const weak3=sorted.filter(([k,v])=>v<49).slice(0,3).map(([k,v])=>'<div class="ins-big weak">⚠ Oportunidad: '+esc(k)+' ('+v+')</div>').join('');
   const jefeItems=dir.jefes.map(j=>{
     const jDomVers=teamDomVers(j.team);
     const jRadarCol=RADAR_COL[jDomVers]||RADAR_COL.prof;
