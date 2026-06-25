@@ -475,10 +475,7 @@ function compDescLevelHTML(scores,perfil,compact){
     const isCompact=compact&&desc.text.length>80;
     const txt=isCompact?desc.text.slice(0,77)+'…':desc.text;
     return '<div class="crow-desc" style="margin-bottom:6px;padding:7px 9px;border-radius:8px;background:'+bg+';border-left:3px solid '+borderMap[desc.level]+'">'+
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'+
-        '<span style="font-size:.72rem;font-weight:700;color:var(--text2)">'+esc(k)+'</span>'+
-        '<span class="vscore" style="font-size:.63rem;font-weight:700;padding:1px 7px;border-radius:10px;background:'+col+'18;color:'+col+'" data-tip="'+esc(k)+': '+v+'">'+v+'</span>'+
-      '</div>'+
+      '<div style="font-size:.72rem;font-weight:700;color:var(--text2);margin-bottom:3px">'+esc(k)+'</div>'+
       '<div style="font-size:.67rem;color:#4B5563;line-height:1.45">'+esc(txt)+'</div>'+
     '</div>';
   }).join('');
