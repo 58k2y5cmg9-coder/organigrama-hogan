@@ -758,7 +758,7 @@ async function exportPDF(idx){
       for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.triangle(cx,cy,p1[0],p1[1],p2[0],p2[1],'F');}
       doc.setFillColor(...rgb);pts.forEach(p=>doc.circle(p[0],p[1],.5,'F'));
       entries.forEach(([k,v],i)=>{
-      const a=angles[i],lx=cx+(r+10)*Math.cos(a),ly=cy+(r+10)*Math.sin(a);
+      const a=angles[i],lx=cx+(r+7)*Math.cos(a),ly=cy+(r+7)*Math.sin(a);
       doc.setTextColor(80,80,80);doc.setFontSize(fs);doc.setFont('helvetica','normal');
       const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
       doc.text(k,lx,ly,{align});
@@ -790,9 +790,9 @@ async function exportPDF(idx){
 
     // Team radar at top
     if(Object.keys(stats.avgs).length>=3){
-      checkY(40);
+      checkY(44);
       doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...DARK);
-      doc.text('RADAR DEL EQUIPO',margin,y);y+=3;
+      doc.text('RADAR DEL EQUIPO',margin,y);y+=4;
       pdfRadar(doc,stats.avgs,(W-50)/2,y,50,RADAR_COL[teamDomVers(j.team)]||RADAR_COL.prof);
       y+=55;
     }
@@ -999,7 +999,7 @@ async function exportMemberPDF(member,jefe){
       for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.triangle(cx,cy,p1[0],p1[1],p2[0],p2[1],'F');}
       doc.setFillColor(...rgb);pts.forEach(p=>doc.circle(p[0],p[1],.5,'F'));
       entries.forEach(([k,v],i)=>{
-      const a=angles[i],lx=cx+(r+10)*Math.cos(a),ly=cy+(r+10)*Math.sin(a);
+      const a=angles[i],lx=cx+(r+7)*Math.cos(a),ly=cy+(r+7)*Math.sin(a);
       doc.setTextColor(80,80,80);doc.setFontSize(fs);doc.setFont('helvetica','normal');
       const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
       doc.text(k,lx,ly,{align});
@@ -1022,8 +1022,9 @@ async function exportMemberPDF(member,jefe){
 
     // Radar centered
     if(compEntries.length>=3){
+      y+=4;
       doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...DARK);
-      doc.text('RADAR',margin,y);y+=3;
+      doc.text('RADAR',margin,y);y+=4;
       pdfRadar(doc,compS,(W-40)/2,y,40,colHex);
       y+=48;
     }
