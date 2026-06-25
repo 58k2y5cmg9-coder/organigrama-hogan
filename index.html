@@ -935,7 +935,7 @@ async function exportPDF(idx){
     checkY(24);
     doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(5,150,105);
     doc.text('FORTALEZAS',margin,y);y+=5;
-    sorted.filter(([k,v])=>v>=70).forEach(([k,v])=>{
+    sorted.filter(([k,v])=>v>=70).slice(0,3).forEach(([k,v])=>{
       const bg=v>=70?[209,250,229]:v>=50?[255,237,213]:[254,226,226];
       const tc=v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28];
       doc.setFillColor(...bg);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
@@ -946,7 +946,7 @@ async function exportPDF(idx){
     y+=3;checkY(24);
     doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(234,88,12);
     doc.text('OPORTUNIDADES',margin,y);y+=5;
-    sorted.filter(([k,v])=>v<49).forEach(([k,v])=>{
+    sorted.filter(([k,v])=>v<49).slice(0,3).forEach(([k,v])=>{
       const bg=v>=70?[209,250,229]:v>=50?[255,237,213]:[254,226,226];
       const tc=v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28];
       doc.setFillColor(...bg);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
@@ -1160,7 +1160,7 @@ async function exportMemberPDF(member,jefe){
       checkY(24);
       doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(5,150,105);
       doc.text('FORTALEZAS',margin,y);y+=5;
-      sortedScores.filter(([k,v])=>v>=70).forEach(([k,v])=>{
+      sortedScores.filter(([k,v])=>v>=70).slice(0,3).forEach(([k,v])=>{
         const bg=v>=70?[209,250,229]:v>=50?[255,237,213]:[254,226,226];
         const tc=v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28];
         doc.setFillColor(...bg);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
@@ -1171,7 +1171,7 @@ async function exportMemberPDF(member,jefe){
       y+=3;checkY(24);
       doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(234,88,12);
       doc.text('OPORTUNIDADES',margin,y);y+=5;
-      sortedScores.filter(([k,v])=>v<49).forEach(([k,v])=>{
+      sortedScores.filter(([k,v])=>v<49).slice(0,3).forEach(([k,v])=>{
         const bg=v>=70?[209,250,229]:v>=50?[255,237,213]:[254,226,226];
         const tc=v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28];
         doc.setFillColor(...bg);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
