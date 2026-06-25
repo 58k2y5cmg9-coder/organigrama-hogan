@@ -472,8 +472,7 @@ function compDescLevelHTML(scores,perfil,compact){
     if(v===null||v===undefined)return '';
     const desc=getCompDesc(perfil,k,v);
     const col=scol(v),bg=bgMap[desc.level]||'#F9FAFB';
-    const isCompact=compact&&desc.text.length>80;
-    const txt=isCompact?desc.text.slice(0,77)+'…':desc.text;
+    const txt=desc.text;
     return '<div class="crow-desc" style="margin-bottom:6px;padding:7px 9px;border-radius:8px;background:'+bg+';border-left:3px solid '+borderMap[desc.level]+'">'+
       '<div style="font-size:.72rem;font-weight:700;color:var(--text2);margin-bottom:3px">'+esc(k)+'</div>'+
       '<div style="font-size:.67rem;color:#4B5563;line-height:1.45">'+esc(txt)+'</div>'+
