@@ -719,25 +719,16 @@ function openPersonModal(member,jefe){
   const potKey=hasS?Object.keys(member.scores).find(k=>k==='Potencial'||k==='Potential'):null;
   const potVal=potKey?member.scores[potKey]:null;
   document.getElementById('m-stats').innerHTML=[
-    ...(member.versatilidad?[{n:versLabel(member.versatilidad),l:'Versatilidad'}]:[]),
-    ...(potVal!=null?[{n:potVal,l:'Potencial'}]:[])
-  ].map(s=>'<div class="mst"><div class="n">'+s.n+'</div><div class="l">'+s.l+'</div></div>').join('');
+    ...(member.versatilidad?[{n:versLabel(member.versatilidad),l:'Versatilidad',c:versColor(member.versatilidad)}]:[]),
+    ...(potVal!=null?[{n:potVal,l:'Potencial',c:scol(potVal)}]:[])
+  ].map(s=>'<div class="mst"><div class="n" style="color:'+s.c+'">'+s.n+'</div><div class="l">'+s.l+'</div></div>').join('');
   document.getElementById('mbtn-pdf').style.display='';
   currentModalIdx=-1;
   document.getElementById('mbtn-pdf').onclick=function(){exportMemberPDF(member,jefe);};
   const radarHTML=Object.keys(compS).length?radarSVG(compS,120,colHex,undefined,true):'';
   document.getElementById('m-radar').innerHTML=radarHTML;
   const perfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
-  const compHTML=hasS&&Object.keys(compS).length?function(){
-    const entries=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential');
-    const sc=(v)=>v>=70?'#059669':v>=50?'#D97706':'#DC2626';
-    const scBg=(v)=>v>=70?'#D1FAE5':v>=50?'#FFEDD5':'#FEE2E2';
-    const rows=entries.map(([k,v])=>'<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border3);font-size:.75rem"><span style="font-weight:600;color:var(--text2)">'+esc(k)+'</span><span style="font-weight:700;color:'+sc(v)+'" data-tip="'+esc(k)+': '+v+'">'+v+'</span></div>').join('');
-    const sorted=entries.sort((a,b)=>b[1]-a[1]);
-    const best=sorted.slice(0,3).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.75rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.75rem;font-weight:700;color:'+sc(v)+'" data-tip="Fortaleza: '+esc(k)+' ('+v+')">'+v+'</span></div>').join('');
-    const weak=sorted.slice(-3).reverse().map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.75rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.75rem;font-weight:700;color:'+sc(v)+'" data-tip="Oportunidad: '+esc(k)+' ('+v+')">'+v+'</span></div>').join('');
-    return rows+'<div style="margin-top:10px;padding-top:8px;border-top:1px solid #E5E7EB"><div style="font-size:.75rem;font-weight:700;color:#059669;margin-bottom:5px">FORTALEZAS</div>'+best+'<div style="font-size:.75rem;font-weight:700;color:#D97706;margin-bottom:5px;margin-top:8px">OPORTUNIDADES</div>'+weak+'</div>';
-  }():'<div class="nodata">Sin datos de evaluación</div>';
+  const compHTML=hasS&&Object.keys(compS).length?compDescLevelHTML(compS,perfil,false):'<div class="nodata">Sin datos de evaluación</div>';
   document.getElementById('m-body').innerHTML='<div class="msec">'+
     '<div class="msec-title"><div class="msec-dot"></div>Competencias</div>'+
     compHTML+
@@ -1110,7 +1101,14 @@ async function exportMemberPDF(member,jefe){
     doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont('helvetica','bold');
     doc.text(member.name,margin,12);
     doc.setFontSize(9);doc.setFont('helvetica','normal');
-    doc.text((member.cargo||'')+' · '+(member.versatilidad||''),margin,19);
+    doc.setFont('helvetica','normal');
+    if(member.versatilidad){
+      const vCol=member.versatilidad==='Alta Versatilidad'?[5,150,105]:member.versatilidad==='Media Versatilidad'?[234,88,12]:[0,51,160];
+      doc.text(member.cargo||'',margin,19);
+      doc.setTextColor(...vCol);doc.text(member.versatilidad,margin+doc.getTextWidth(member.cargo||'')+3,19);doc.setTextColor(255,255,255);
+    } else {
+      doc.text((member.cargo||'')+' · '+(member.versatilidad||''),margin,19);
+    }
     doc.text('Jefe: '+jefe.name,margin,25);
     y=36;
 
@@ -1180,11 +1178,12 @@ async function exportMemberPDF(member,jefe){
     const pv=pk?compS[pk]:null;
     if(pv!=null){
       checkY(10);
-      doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(...BLUE);
+      const potRgb=scRgb(pv);
+      doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(...potRgb);
       doc.text('Potencial: '+pv,margin,y+2);
       const pb=margin+28,pbW=W-margin*2-28-10;
       doc.setFillColor(224,231,255);doc.roundedRect(pb,y-1,pbW,3.5,1,1,'F');
-      doc.setFillColor(...BLUE);doc.roundedRect(pb,y-1,pbW*pv/100,3.5,1,1,'F');
+      doc.setFillColor(...potRgb);doc.roundedRect(pb,y-1,pbW*pv/100,3.5,1,1,'F');
       y+=8;
     }
 
