@@ -911,8 +911,6 @@ async function exportPDF(idx){
       doc.setFillColor(...bg);doc.setDrawColor(...border);doc.roundedRect(cx,y,descCardW,10,1.5,1.5,'FD');
       doc.setFont('helvetica','bold');doc.setFontSize(6.5);doc.setTextColor(...DARK);
       doc.text(k,cx+3,y+3.5);
-      doc.setFont('helvetica','bold');doc.setFontSize(6);doc.setTextColor(...scRgb(v));
-      doc.text(String(v),cx+descCardW-3,y+3.5,{align:'right'});
       const desc=getCompDesc(teamPerfil,k,v);
       if(desc.text){
         doc.setFont('helvetica','normal');doc.setFontSize(5);doc.setTextColor(...col);
@@ -991,8 +989,6 @@ async function exportPDF(idx){
         doc.setFillColor(...bg);doc.setDrawColor(...border);doc.roundedRect(cx,y,cardW,10,1.5,1.5,'FD');
         doc.setFont('helvetica','bold');doc.setFontSize(6);doc.setTextColor(...DARK);
         doc.text(k,cx+cardPad,y+3);
-        doc.setFont('helvetica','bold');doc.setFontSize(5.5);doc.setTextColor(...col);
-        doc.text(String(v),cx+cardW-cardPad-1,y+3,{align:'right'});
         const desc=getCompDesc(indvPerfil,k,v);
         if(desc.text){
           doc.setFont('helvetica','normal');doc.setFontSize(5);doc.setTextColor(...compDescText(v));
@@ -1138,8 +1134,6 @@ async function exportMemberPDF(member,jefe){
       doc.setFillColor(...bg);doc.setDrawColor(...border);doc.roundedRect(cx,y,cardW,10,1.5,1.5,'FD');
       doc.setFont('helvetica','bold');doc.setFontSize(6);doc.setTextColor(...DARK);
       doc.text(k,cx+cardPad,y+3);
-      doc.setFont('helvetica','bold');doc.setFontSize(5.5);doc.setTextColor(...scRgb(v));
-      doc.text(String(v),cx+cardW-cardPad-1,y+3,{align:'right'});
       const desc=getCompDesc(perfil,k,v);
       if(desc.text){
         doc.setFont('helvetica','normal');doc.setFontSize(5);doc.setTextColor(...compDescText(v));
