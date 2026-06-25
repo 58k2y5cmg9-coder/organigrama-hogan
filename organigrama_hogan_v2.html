@@ -177,6 +177,7 @@ select.fsel:focus{border-color:#0033A0}
 .mscroll::-webkit-scrollbar{width:4px}
 .mscroll::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:10px}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -313,25 +314,21 @@ function distBar(dist, total){
   </div>`;
 }
 
-// ─── MINI RADAR SVG ──────────────────────────────────────────────────────────
+// ─── MINI RADAR CHART ──────────────────────────────────────────────────
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+let _rc=0;
 function radarSVG(scores, size=110, color='#0033A0'){
-  const entries = Object.entries(scores).filter(([k,v])=>k!=='Potencial'&&k!=='Potential'&&v!==null&&v!==undefined);
-  if(!entries.length) return `<div style="width:${size}px;height:${size}px;display:flex;align-items:center;justify-content:center;font-size:.65rem;color:#ccc">Sin datos</div>`;
-  const n=entries.length, cx=size/2, cy=size/2, r=size/2-12;
-  const angles=entries.map((_,i)=>Math.PI*2*i/n - Math.PI/2);
-  const pts=entries.map(([k,v],i)=>({x:cx+r*(v/100)*Math.cos(angles[i]),y:cy+r*(v/100)*Math.sin(angles[i]),v}));
-  let svg=`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">`;
-  [.25,.5,.75,1].forEach(p=>{
-    const g=angles.map(a=>`${cx+r*p*Math.cos(a)},${cy+r*p*Math.sin(a)}`).join(' ');
-    svg+=`<polygon points="${g}" fill="none" stroke="#E5E7EB" stroke-width=".8"/>`;
+  const entries = Object.entries(scores||{}).filter(([k,v])=>k!=='Potencial'&&k!=='Potential'&&v!==null&&v!==undefined);
+  if(entries.length<3) return `<div style="width:${size}px;height:${size}px;display:flex;align-items:center;justify-content:center;font-size:.65rem;color:#ccc">Sin datos</div>`;
+  const id='rc'+(++_rc);
+  const data=entries.map(([k,v])=>({l:k,v}));
+  return '<canvas id="'+id+'" width="'+size+'" height="'+size+'" style="width:'+size+'px;height:'+size+'px;display:block" data-rd=\''+JSON.stringify(data)+'\' data-cl="'+color+'" data-sz="'+size+'" data-op="CC"></canvas>';
+}
+function initRadarCharts(){
+  document.querySelectorAll('canvas[data-rd]').forEach(c=>{
+    const data=JSON.parse(c.dataset.rd),cl=c.dataset.cl,sz=parseInt(c.dataset.sz),op=c.dataset.op||'CC';
+    new Chart(c,{type:'radar',data:{labels:data.map(d=>d.l),datasets:[{data:data.map(d=>d.v),backgroundColor:cl+op,borderColor:cl,borderWidth:2,pointBackgroundColor:cl,pointBorderColor:'#ffffff',pointRadius:5,pointHoverRadius:0}]},options:{responsive:false,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{r:{min:0,max:100,ticks:{display:false,stepSize:20},grid:{color:'#D1D5DB',lineWidth:.5},angleLines:{color:'#D1D5DB',lineWidth:.5},pointLabels:{padding:8,display:true,color:'#374151',font:{size:Math.max(7,Math.min(11,sz/10)),weight:'500'},callback:function(label){if(label.length<=15)return label;const p=label.split(' ');const m=Math.ceil(p.length/2);return[p.slice(0,m).join(' '),p.slice(m).join(' ')];}}}}}});
   });
-  angles.forEach(a=>`<line x1="${cx}" y1="${cy}" x2="${cx+r*Math.cos(a)}" y2="${cy+r*Math.sin(a)}" stroke="#E5E7EB" stroke-width=".7"/>`);
-  angles.forEach(a=>{ svg+=`<line x1="${cx}" y1="${cy}" x2="${cx+r*Math.cos(a)}" y2="${cy+r*Math.sin(a)}" stroke="#E5E7EB" stroke-width=".7"/>`; });
-  const poly=pts.map(p=>`${p.x},${p.y}`).join(' ');
-  svg+=`<polygon points="${poly}" fill="${color}22" stroke="${color}" stroke-width="1.4" stroke-linejoin="round"/>`;
-  pts.forEach(p=>{ svg+=`<circle cx="${p.x}" cy="${p.y}" r="2.2" fill="${color}"/>`; });
-  svg+='</svg>';
-  return svg;
 }
 
 // ─── COMPETENCY BARS (employee) ──────────────────────────────────────────────
@@ -524,7 +521,7 @@ function renderGrid(){
   const rc=document.getElementById('rcount');
   if(!filtered.length){grid.innerHTML='';empty.style.display='block';rc.textContent='';return;}
   empty.style.display='none';
-  grid.innerHTML=filtered.map(jefeCardHTML).join('');
+  grid.innerHTML=filtered.map(jefeCardHTML).join('');initRadarCharts();
   const totalMembers=filtered.reduce((a,j)=>a+j.team.length,0);
   rc.textContent=`${filtered.length} jefe${filtered.length!==1?'s':''} · ${totalMembers} evaluados`;
 
