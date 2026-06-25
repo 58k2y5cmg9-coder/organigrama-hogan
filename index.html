@@ -369,7 +369,11 @@ function versCode(v){
   if(v==='Profundidad') return 'prof';
   return 'sd';
 }
-function versLabel(v){ return v||'Sin dato'; }
+function versLabel(v){
+  if(!v)return 'Sin dato';
+  const m={'Alta Versatilidad':'Alta Versatilidad','Alto':'Alta Versatilidad','Media Versatilidad':'Media Versatilidad','Medio':'Media Versatilidad','Moderado':'Media Versatilidad','Profundidad':'Profundidad','Bajo':'Profundidad'};
+  return m[v]||v;
+}
 function ini(n){return n.split(' ').filter(w=>w.length>2).slice(0,2).map(w=>w[0]).join('').toUpperCase()||n.slice(0,2).toUpperCase();}
 function cc(c){return{' Muy Alto':'ma','Muy Alto':'ma','Alto':'al','Moderado':'mo','Medio':'mo','Bajo':'ba','Muy Bajo':'mb'}[c]||'sd';}
 function scol(v){if(v===null||v===undefined)return '#9CA3AF';if(v>=70)return '#059669';if(v>=50)return '#D97706';return '#DC2626';}
@@ -575,8 +579,8 @@ function directionCardHTML(dir,idx){
   const perfil=curTab==='all'?'V. Ejecutivo':(curTab==='est'?'V. Ejecutivo':'V. Gerente');
   const sorted=Object.entries(stats.avgs).sort((a,b)=>b[1]-a[1]);
   const avgRows=compDescLevelHTML(stats.avgs,perfil,true);
-  const best3=sorted.slice(0,3).map(([k,v])=>'<div class="ins best">✓ '+esc(k)+': '+v+'</div>').join('');
-  const weak3=sorted.slice(-3).reverse().map(([k,v])=>'<div class="ins weak">⚠ '+esc(k)+' ('+v+')</div>').join('');
+  const best3=sorted.filter(([_,v])=>v>=70).map(([k,v])=>'<div class="ins best">✓ '+esc(k)+': '+v+'</div>').join('');
+  const weak3=sorted.filter(([_,v])=>v<49).map(([k,v])=>'<div class="ins weak">⚠ '+esc(k)+' ('+v+')</div>').join('');
   const versDistItems=['Alta Versatilidad','Media Versatilidad','Profundidad'].map(v=>{const cnt=allMembers.filter(m=>m.versatilidad===v).length;if(!cnt)return '';return '<span class="vpill '+versCode(v)+'" style="margin-right:4px">'+v+': '+cnt+'</span>';}).filter(Boolean).join('');
   const radar=Object.keys(stats.avgs).length?teamRadarSVG(stats.avgs,120,radarCol,true):'';
   const jefeList=dir.jefes.map(j=>'<div class="dir-jefe" data-jefe-name="'+esc(j.name)+'" style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border3);cursor:pointer;transition:background .12s" onmouseenter="this.style.background=\'#F8FAFF\'" onmouseleave="this.style.background=\'\'">'+
@@ -630,8 +634,8 @@ function empCardHTML(m,perfil,jefeName){
       const scBg=(v)=>v>=70?'#D1FAE5':v>=50?'#FFEDD5':'#FEE2E2';
       const descHTML=compDescLevelHTML(compS,perfil,true);
       const sorted=entries.sort((a,b)=>b[1]-a[1]);
-      const best=sorted.slice(0,3).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 9px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.7rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.7rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
-      const weak=sorted.slice(-3).reverse().map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 9px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.7rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.7rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
+      const best=sorted.filter(([k,v])=>v>=70).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 9px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.7rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.7rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
+      const weak=sorted.filter(([k,v])=>v<49).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 9px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.7rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.7rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
       return '<div class="comp-sec"><div class="comp-title">Competencias</div>'+descHTML+'<div style="margin-top:10px;padding-top:8px;border-top:1px solid #E5E7EB"><div style="font-size:.7rem;font-weight:700;color:#059669;margin-bottom:5px">FORTALEZAS</div>'+best+'<div style="font-size:.7rem;font-weight:700;color:#D97706;margin-bottom:5px;margin-top:8px">OPORTUNIDADES</div>'+weak+'</div></div>';
     }():'<div class="nodata">Sin datos de evaluación</div>')+
     (isJ?'<div class="ecard-jefe-link" data-jefe-name="'+esc(m.name)+'" data-jefe-tab="'+tabHint+'">↗ Ver como jefe — equipo a cargo</div>':'')+
@@ -672,8 +676,8 @@ function openModal(idx){
   const perfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
   const sorted=Object.entries(stats.avgs).sort((a,b)=>b[1]-a[1]);
   const avgBarsFull=compDescLevelHTML(stats.avgs,perfil,false);
-  const best3=sorted.filter(([k,v])=>v>69).map(([k,v])=>'<div class="ins-big best">✓ '+esc(k)+': '+v+'</div>').join('');
-  const weak3=sorted.slice(-3).reverse().map(([k,v])=>'<div class="ins-big weak">⚠ Oportunidad: '+esc(k)+' ('+v+')</div>').join('');
+  const best3=sorted.filter(([k,v])=>v>=70).map(([k,v])=>'<div class="ins-big best">✓ '+esc(k)+': '+v+'</div>').join('');
+  const weak3=sorted.filter(([k,v])=>v<49).map(([k,v])=>'<div class="ins-big weak">⚠ Oportunidad: '+esc(k)+' ('+v+')</div>').join('');
   const versDistItems=['Alta Versatilidad','Media Versatilidad','Profundidad'].map(v=>{
     const cnt=j.team.filter(m=>m.versatilidad===v).length;
     if(!cnt)return '';
@@ -742,8 +746,8 @@ function openPersonModal(member,jefe){
     const entries=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential').sort((a,b)=>b[1]-a[1]);
     const sc=(v)=>v>=70?'#059669':v>=50?'#D97706':'#DC2626';
     const scBg=(v)=>v>=70?'#D1FAE5':v>=50?'#FFEDD5':'#FEE2E2';
-    const best=entries.slice(0,3).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.75rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.75rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
-    const weak=entries.slice(-3).reverse().map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.75rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.75rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
+    const best=entries.filter(([k,v])=>v>=70).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.75rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.75rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
+    const weak=entries.filter(([k,v])=>v<49).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.75rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.75rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
     return descHTML+'<div style="margin-top:12px;padding-top:10px;border-top:1px solid #E5E7EB"><div style="font-size:.75rem;font-weight:700;color:#059669;margin-bottom:5px">FORTALEZAS</div>'+best+'<div style="font-size:.75rem;font-weight:700;color:#D97706;margin-bottom:5px;margin-top:8px">OPORTUNIDADES</div>'+weak+'</div>';
   }():'<div class="nodata">Sin datos de evaluación</div>';
   document.getElementById('m-body').innerHTML='<div class="msec">'+
@@ -782,8 +786,8 @@ function openDirectionModal(dirIdx){
   const perfil=curTab==='all'?'V. Ejecutivo':(curTab==='est'?'V. Ejecutivo':'V. Gerente');
   const sorted=Object.entries(stats.avgs).sort((a,b)=>b[1]-a[1]);
   const avgBarsFull=compDescLevelHTML(stats.avgs,perfil,true);
-  const best3=sorted.slice(0,3).map(([k,v])=>'<div class="ins-big best">✓ '+esc(k)+': '+v+'</div>').join('');
-  const weak3=sorted.slice(-3).reverse().map(([k,v])=>'<div class="ins-big weak">⚠ Oportunidad: '+esc(k)+' ('+v+')</div>').join('');
+  const best3=sorted.filter(([k,v])=>v>=70).map(([k,v])=>'<div class="ins-big best">✓ '+esc(k)+': '+v+'</div>').join('');
+  const weak3=sorted.filter(([k,v])=>v<49).map(([k,v])=>'<div class="ins-big weak">⚠ Oportunidad: '+esc(k)+' ('+v+')</div>').join('');
   const jefeItems=dir.jefes.map(j=>{
     const jDomVers=teamDomVers(j.team);
     const jRadarCol=RADAR_COL[jDomVers]||RADAR_COL.prof;
@@ -941,7 +945,7 @@ async function exportPDF(idx){
     checkY(24);
     doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(5,150,105);
     doc.text('FORTALEZAS',margin,y);y+=5;
-    sorted.slice(0,3).forEach(([k,v])=>{
+    sorted.filter(([k,v])=>v>=70).forEach(([k,v])=>{
       const bg=v>=70?[209,250,229]:v>=50?[255,237,213]:[254,226,226];
       const tc=v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28];
       doc.setFillColor(...bg);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
@@ -952,7 +956,7 @@ async function exportPDF(idx){
     y+=3;checkY(24);
     doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(234,88,12);
     doc.text('OPORTUNIDADES',margin,y);y+=5;
-    sorted.slice(-3).reverse().forEach(([k,v])=>{
+    sorted.filter(([k,v])=>v<49).forEach(([k,v])=>{
       const bg=v>=70?[209,250,229]:v>=50?[255,237,213]:[254,226,226];
       const tc=v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28];
       doc.setFillColor(...bg);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
@@ -1022,7 +1026,7 @@ async function exportPDF(idx){
       checkY(24);
       doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...GREEN);
       doc.text('* FORTALEZAS',margin,y);y+=5;
-      sortedScores.slice(0,3).forEach(([k,v])=>{
+      sortedScores.filter(([k,v])=>v>=70).forEach(([k,v])=>{
         doc.setFillColor(209,250,229);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
         doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(6,95,70);
         doc.text('* '+k, margin+3, y+4.5);
@@ -1032,7 +1036,7 @@ async function exportPDF(idx){
       y+=3;checkY(24);
       doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...ORANGE);
       doc.text('* OPORTUNIDADES',margin,y);y+=5;
-      sortedScores.slice(-3).reverse().forEach(([k,v])=>{
+      sortedScores.filter(([k,v])=>v<49).forEach(([k,v])=>{
         doc.setFillColor(255,247,237);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
         doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(154,52,18);
         doc.text('* '+k, margin+3, y+4.5);
@@ -1166,7 +1170,7 @@ async function exportMemberPDF(member,jefe){
       checkY(24);
       doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(5,150,105);
       doc.text('FORTALEZAS',margin,y);y+=5;
-      sortedScores.slice(0,3).forEach(([k,v])=>{
+      sortedScores.filter(([k,v])=>v>=70).forEach(([k,v])=>{
         const bg=v>=70?[209,250,229]:v>=50?[255,237,213]:[254,226,226];
         const tc=v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28];
         doc.setFillColor(...bg);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
@@ -1177,7 +1181,7 @@ async function exportMemberPDF(member,jefe){
       y+=3;checkY(24);
       doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(234,88,12);
       doc.text('OPORTUNIDADES',margin,y);y+=5;
-      sortedScores.slice(-3).reverse().forEach(([k,v])=>{
+      sortedScores.filter(([k,v])=>v<49).forEach(([k,v])=>{
         const bg=v>=70?[209,250,229]:v>=50?[255,237,213]:[254,226,226];
         const tc=v>=70?[6,95,70]:v>=50?[154,52,18]:[185,28,28];
         doc.setFillColor(...bg);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
