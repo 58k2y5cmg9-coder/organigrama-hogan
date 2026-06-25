@@ -176,6 +176,61 @@ select.fsel{padding:7px 10px;border:1px solid #D1D5DB;border-radius:8px;font-siz
 .pdf-loading.show{display:flex}
 .spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* Toolbar buttons */
+.fbtn{padding:7px 12px;border:1px solid #D1D5DB;border-radius:8px;font-size:.78rem;font-weight:600;background:#F9FAFB;color:#374151;cursor:pointer;transition:all .15s;white-space:nowrap}
+.fbtn:hover{background:#EEF2FF;border-color:#0033A0;color:#0033A0}
+.fbtn.on{background:#0033A0;color:#fff;border-color:#0033A0}
+
+/* Compare mode */
+.cmp-bar{display:none;align-items:center;gap:10px;padding:8px 24px;background:#F8FAFF;border-bottom:1px solid #DBEAFE;font-size:.78rem}
+.cmp-bar.show{display:flex}
+.cmp-badge{background:#0033A0;color:#fff;padding:2px 9px;border-radius:12px;font-size:.7rem;font-weight:700}
+.cmp-clear{font-size:.7rem;color:#6B7280;cursor:pointer;text-decoration:underline}
+.cmp-clear:hover{color:#DC2626}
+.cmp-clear.hide{display:none}
+.jcard.cmp-sel{outline:3px solid #0033A0;outline-offset:2px;transform:translateY(-2px)}
+.jcard .cmp-chk{display:none;position:absolute;top:8px;right:8px;z-index:5;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid #93C5FD;align-items:center;justify-content:center;font-size:.7rem;color:#fff;font-weight:700;cursor:pointer;transition:all .15s}
+.cmp-active .cmp-chk{display:flex}
+.cmp-sel .cmp-chk{background:#0033A0;border-color:#0033A0}
+
+/* Comparison modal */
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.comp-side{display:flex;flex-direction:column;align-items:center;gap:6px}
+.comp-side .clabel{font-size:.8rem;font-weight:700;color:#374151;text-align:center;line-height:1.3}
+.comp-side .csub{font-size:.65rem;color:#9CA3AF}
+.comp-table{width:100%;border-collapse:collapse;font-size:.74rem}
+.comp-table th{background:#F9FAFB;padding:6px 8px;font-weight:700;color:#374151;border-bottom:2px solid #E5E7EB;text-align:center;font-size:.68rem;text-transform:uppercase;letter-spacing:.04em}
+.comp-table th:first-child{text-align:left}
+.comp-table td{padding:5px 8px;border-bottom:1px solid #F3F4F6;text-align:center}
+.comp-table td:first-child{text-align:left;font-weight:600;color:#111827}
+.comp-diff{font-weight:700}
+.comp-diff.pos{color:#059669}
+.comp-diff.neg{color:#DC2626}
+.comp-diff.zero{color:#9CA3AF}
+
+/* Heatmap */
+.heatmap-wrap{overflow-x:auto;background:#fff;border:1px solid #E2E6EF;border-radius:16px;padding:12px;grid-column:1/-1;animation:fadeSlideUp .3s ease}
+.heatmap-table{border-collapse:collapse;font-size:.72rem;width:100%;min-width:500px}
+.heatmap-table th{position:sticky;top:0;background:#F9FAFB;padding:5px 6px;font-weight:700;color:#374151;border-bottom:2px solid #E5E7EB;text-align:center;white-space:nowrap;font-size:.62rem;text-transform:uppercase;letter-spacing:.04em}
+.heatmap-table td{padding:4px;text-align:center;border:1px solid #F3F4F6;font-weight:600;font-size:.68rem}
+.heatmap-name{text-align:left!important;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;padding:4px 8px!important;font-size:.7rem}
+.heatmap-cell{min-width:28px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3);border-radius:2px;cursor:pointer;transition:transform .12s}
+.heatmap-cell:hover{transform:scale(1.2);z-index:2}
+
+/* Tooltip via data-tip */
+[data-tip]{position:relative;cursor:pointer}
+[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100%+5px);left:50%;transform:translateX(-50%);background:#1F2937;color:#fff;padding:3px 8px;border-radius:5px;font-size:.62rem;font-weight:500;white-space:nowrap;z-index:999;box-shadow:0 3px 10px rgba(0,0,0,.3);pointer-events:none;line-height:1.4}
+[data-tip]:hover::before{content:'';position:absolute;bottom:calc(100%+1px);left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:#1F2937;z-index:999;pointer-events:none}
+
+/* Card animation */
+.jcard,.ecard{animation:fadeSlideUp .3s ease both}
+.jcard:nth-child(2),.ecard:nth-child(2){animation-delay:.04s}
+.jcard:nth-child(3),.ecard:nth-child(3){animation-delay:.08s}
+.jcard:nth-child(4),.ecard:nth-child(4){animation-delay:.12s}
+.jcard:nth-child(5),.ecard:nth-child(5){animation-delay:.16s}
+.jcard:nth-child(n+6),.ecard:nth-child(n+6){animation-delay:.2s}
 </style>
 </head>
 <body>
@@ -214,6 +269,15 @@ select.fsel{padding:7px 10px;border:1px solid #D1D5DB;border-radius:8px;font-siz
     <option>Muy Alto</option><option>Alto</option><option>Moderado</option><option>Bajo</option><option>Muy Bajo</option>
   </select>
   <div class="rcount" id="rcount"></div>
+  <button class="fbtn" id="cmp-btn" onclick="toggleCompare()">⇄ Comparar</button>
+  <button class="fbtn" id="hm-btn" onclick="toggleHeatmap()">⊞ Mapa de Calor</button>
+</div>
+
+<div class="cmp-bar" id="cmp-bar">
+  <span style="font-weight:600;color:#0033A0">⇄ Comparación</span>
+  <span style="font-size:.68rem;color:#6B7280">Selecciona dos jefes para comparar sus equipos</span>
+  <span class="cmp-badge" id="cmp-count">0/2</span>
+  <span class="cmp-clear hide" id="cmp-clear" onclick="clearCompare()">✕ Limpiar</span>
 </div>
 
 <div class="wrap">
@@ -386,7 +450,7 @@ function compDescLevelHTML(scores,perfil,compact){
     return '<div class="crow-desc" style="margin-bottom:6px;padding:7px 9px;border-radius:8px;background:'+bg+';border-left:3px solid '+borderMap[desc.level]+'">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'+
         '<span style="font-size:.72rem;font-weight:700;color:#374151">'+esc(k)+'</span>'+
-        '<span class="vscore" style="font-size:.63rem;font-weight:700;padding:1px 7px;border-radius:10px;background:'+col+'18;color:'+col+'">'+v+'</span>'+
+        '<span class="vscore" style="font-size:.63rem;font-weight:700;padding:1px 7px;border-radius:10px;background:'+col+'18;color:'+col+'" data-tip="'+esc(k)+': '+v+'">'+v+'</span>'+
       '</div>'+
       '<div style="font-size:.67rem;color:#4B5563;line-height:1.45">'+esc(txt)+'</div>'+
     '</div>';
@@ -405,7 +469,8 @@ function compBarsHTML(scores){
 }
 
 /* ── JEFE CARD HTML ──────────────────────────────────────────────────── */
-function jefeCardHTML(j,idx){
+function jefeCardHTML(j,idx,cmpMode){
+  cmpMode=cmpMode||false;
   const stats=teamStats(j.team);
   const preview=j.team.slice(0,4);
   const more=j.team.length-preview.length;
@@ -435,9 +500,11 @@ function jefeCardHTML(j,idx){
   }).join('');
 
   const teamRadar=Object.keys(stats.avgs).length?teamRadarSVG(stats.avgs,80,radarCol,true):'';
+  const chk=cmpMode?'<div class="cmp-chk" data-cmp-idx="'+idx+'">✓</div>':'';
 
-  return '<div class="jcard" data-idx="'+idx+'">'+
+  return '<div class="jcard'+(cmpSel.includes(j)?' cmp-sel':'')+'" data-idx="'+idx+'">'+
     '<div class="jch" style="background:'+HDR_COLORS[domVers]+'">'+
+      chk+
       '<div class="jch-inner">'+
         '<div class="jav">'+ini(j.name)+'</div>'+
         '<div style="flex:1;min-width:0;margin-left:10px">'+
@@ -536,10 +603,10 @@ function empCardHTML(m,perfil,jefeName){
       const entries=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential');
       const sc=(v)=>v>=70?'#059669':v>=50?'#D97706':'#DC2626';
       const scBg=(v)=>v>=70?'#D1FAE5':v>=50?'#FFEDD5':'#FEE2E2';
-      const rows=entries.map(([k,v])=>'<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F3F4F6;font-size:.7rem"><span style="font-weight:600;color:#374151">'+esc(k)+'</span><span style="font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
+      const rows=entries.map(([k,v])=>'<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F3F4F6;font-size:.7rem"><span style="font-weight:600;color:#374151">'+esc(k)+'</span><span style="font-weight:700;color:'+sc(v)+'" data-tip="'+esc(k)+': '+v+'">'+v+'</span></div>').join('');
       const sorted=entries.sort((a,b)=>b[1]-a[1]);
-      const best=sorted.slice(0,3).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 9px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.7rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.7rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
-      const weak=sorted.slice(-3).reverse().map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 9px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.7rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.7rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
+      const best=sorted.slice(0,3).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 9px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.7rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.7rem;font-weight:700;color:'+sc(v)+'" data-tip="Fortaleza: '+esc(k)+' ('+v+')">'+v+'</span></div>').join('');
+      const weak=sorted.slice(-3).reverse().map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 9px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.7rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.7rem;font-weight:700;color:'+sc(v)+'" data-tip="Oportunidad: '+esc(k)+' ('+v+')">'+v+'</span></div>').join('');
       return '<div class="comp-sec"><div class="comp-title">Competencias</div>'+rows+'<div style="margin-top:10px;padding-top:8px;border-top:1px solid #E5E7EB"><div style="font-size:.7rem;font-weight:700;color:#059669;margin-bottom:5px">FORTALEZAS</div>'+best+'<div style="font-size:.7rem;font-weight:700;color:#D97706;margin-bottom:5px;margin-top:8px">OPORTUNIDADES</div>'+weak+'</div></div>';
     }():'<div class="nodata">Sin datos de evaluación</div>')+
     (isJ?'<div class="ecard-jefe-link" data-jefe-name="'+esc(m.name)+'" data-jefe-tab="'+tabHint+'">↗ Ver como jefe — equipo a cargo</div>':'')+
@@ -638,10 +705,10 @@ function openPersonModal(member,jefe){
     const entries=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential');
     const sc=(v)=>v>=70?'#059669':v>=50?'#D97706':'#DC2626';
     const scBg=(v)=>v>=70?'#D1FAE5':v>=50?'#FFEDD5':'#FEE2E2';
-    const rows=entries.map(([k,v])=>'<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #F3F4F6;font-size:.75rem"><span style="font-weight:600;color:#374151">'+esc(k)+'</span><span style="font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
+    const rows=entries.map(([k,v])=>'<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #F3F4F6;font-size:.75rem"><span style="font-weight:600;color:#374151">'+esc(k)+'</span><span style="font-weight:700;color:'+sc(v)+'" data-tip="'+esc(k)+': '+v+'">'+v+'</span></div>').join('');
     const sorted=entries.sort((a,b)=>b[1]-a[1]);
-    const best=sorted.slice(0,3).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.75rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.75rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
-    const weak=sorted.slice(-3).reverse().map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.75rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.75rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
+    const best=sorted.slice(0,3).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.75rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.75rem;font-weight:700;color:'+sc(v)+'" data-tip="Fortaleza: '+esc(k)+' ('+v+')">'+v+'</span></div>').join('');
+    const weak=sorted.slice(-3).reverse().map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.75rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.75rem;font-weight:700;color:'+sc(v)+'" data-tip="Oportunidad: '+esc(k)+' ('+v+')">'+v+'</span></div>').join('');
     return rows+'<div style="margin-top:10px;padding-top:8px;border-top:1px solid #E5E7EB"><div style="font-size:.75rem;font-weight:700;color:#059669;margin-bottom:5px">FORTALEZAS</div>'+best+'<div style="font-size:.75rem;font-weight:700;color:#D97706;margin-bottom:5px;margin-top:8px">OPORTUNIDADES</div>'+weak+'</div>';
   }():'<div class="nodata">Sin datos de evaluación</div>';
   document.getElementById('m-body').innerHTML='<div class="msec">'+
@@ -1108,6 +1175,144 @@ async function exportMemberPDF(member,jefe){
   loading.classList.remove('show');
 }
 
+/* ── COMPARE MODE ─────────────────────────────────────────────────────── */
+let cmpMode=false, cmpSel=[];
+function toggleCompare(){
+  cmpMode=!cmpMode;
+  document.getElementById('cmp-btn').classList.toggle('on',cmpMode);
+  document.getElementById('cmp-bar').classList.toggle('show',cmpMode);
+  if(!cmpMode){cmpSel=[];clearCompare();}
+  renderGrid();
+}
+function clearCompare(){
+  cmpSel=[];
+  document.getElementById('cmp-count').textContent='0/2';
+  document.getElementById('cmp-clear').classList.add('hide');
+  document.querySelectorAll('.jcard.cmp-sel').forEach(c=>c.classList.remove('cmp-sel'));
+}
+function selectCompare(jefe){
+  if(!cmpMode)return;
+  const idx=cmpSel.indexOf(jefe);
+  if(idx>=0){cmpSel.splice(idx,1);}
+  else if(cmpSel.length<2){cmpSel.push(jefe);}
+  if(cmpSel.length===2){
+    document.getElementById('cmp-count').textContent='2/2';
+    document.getElementById('cmp-clear').classList.remove('hide');
+    renderComparison(cmpSel[0],cmpSel[1]);
+  } else {
+    document.getElementById('cmp-count').textContent=cmpSel.length+'/2';
+    document.getElementById('cmp-clear').classList.toggle('hide',cmpSel.length===0);
+  }
+  // Update visual selection
+  document.querySelectorAll('.jcard').forEach(c=>{
+    const idx=parseInt(c.dataset.idx,10);
+    const j=filtered[idx];
+    c.classList.toggle('cmp-sel',j&&cmpSel.includes(j));
+  });
+}
+function renderComparison(j1,j2){
+  const s1=teamStats(j1.team),s2=teamStats(j2.team);
+  const perfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
+  const allComps=[...new Set([...Object.keys(s1.avgs),...Object.keys(s2.avgs)])].sort();
+  const d1=teamDomVers(j1.team),d2=teamDomVers(j2.team);
+  const c1=RADAR_COL[d1]||RADAR_COL.prof,c2=RADAR_COL[d2]||RADAR_COL.prof;
+
+  const r1=Object.keys(s1.avgs).length?teamRadarSVG(s1.avgs,130,c1,true):'';
+  const r2=Object.keys(s2.avgs).length?teamRadarSVG(s2.avgs,130,c2,true):'';
+  const hdr1='<div class="comp-side"><div class="clabel">'+esc(j1.name)+'</div><div class="csub">'+j1.team.length+' a cargo</div>'+r1+'</div>';
+  const hdr2='<div class="comp-side"><div class="clabel">'+esc(j2.name)+'</div><div class="csub">'+j2.team.length+' a cargo</div>'+r2+'</div>';
+
+  const rows=allComps.map(k=>{
+    const v1=s1.avgs[k],v2=s2.avgs[k];
+    const d=v1!=null&&v2!=null?v1-v2:null;
+    const cls=d>0?'pos':(d<0?'neg':'zero');
+    return '<tr>'+
+      '<td data-tip="'+esc(getCompDesc(perfil,k,v1||0).text.slice(0,80))+'">'+esc(k)+'</td>'+
+      '<td style="color:'+(v1!=null?scol(v1):'#9CA3AF')+';font-weight:700">'+(v1!=null?v1:'—')+'</td>'+
+      '<td style="color:'+(v2!=null?scol(v2):'#9CA3AF')+';font-weight:700">'+(v2!=null?v2:'—')+'</td>'+
+      '<td class="comp-diff '+cls+'">'+(d!=null?(d>0?'+'+d:d):'—')+'</td>'+
+    '</tr>';
+  }).join('');
+
+  const mhdr=document.getElementById('m-hdr');
+  mhdr.style.background='linear-gradient(135deg,#1E3A5F 0%,#0033A0 100%)';
+  document.getElementById('m-av').textContent='⇄';
+  document.getElementById('m-av').style.background='#0033A0';
+  document.getElementById('m-name').textContent='Comparación de equipos';
+  document.getElementById('m-cargo').textContent=j1.name+' vs '+j2.name;
+  document.getElementById('m-meta').textContent='';
+  document.getElementById('m-stats').innerHTML='';
+  document.getElementById('mbtn-pdf').style.display='none';
+  document.getElementById('m-radar').innerHTML='';
+
+  document.getElementById('m-body').innerHTML=
+    '<div class="msec">'+
+      '<div class="msec-title"><div class="msec-dot"></div>Radar de competencias — promedio del equipo</div>'+
+      '<div class="comp-grid">'+hdr1+hdr2+'</div>'+
+    '</div>'+
+    '<div class="msec">'+
+      '<div class="msec-title"><div class="msec-dot"></div>Comparación por competencia</div>'+
+      '<table class="comp-table"><thead><tr>'+
+        '<th>Competencia</th>'+
+        '<th>'+esc(j1.name)+'</th>'+
+        '<th>'+esc(j2.name)+'</th>'+
+        '<th>Diferencia</th>'+
+      '</tr></thead><tbody>'+rows+'</tbody></table>'+
+    '</div>';
+
+  document.getElementById('moverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+/* ── HEATMAP ──────────────────────────────────────────────────────────── */
+let hmActive=false;
+function toggleHeatmap(){
+  hmActive=!hmActive;
+  document.getElementById('hm-btn').classList.toggle('on',hmActive);
+  if(hmActive)cmpMode=false;
+  renderGrid();
+}
+function renderHeatmap(){
+  const members=[];
+  filtered.forEach(j=>{
+    j.team.forEach(m=>{
+      if(m.scores&&Object.keys(m.scores).length)members.push({m,j});
+    });
+  });
+  if(!members.length)return '<div class="nodata">Sin datos</div>';
+
+  const compSet=new Set();
+  members.forEach(({m})=>{
+    Object.keys(m.scores).forEach(k=>{
+      if(k!=='Potencial'&&k!=='Potential')compSet.add(k);
+    });
+  });
+  const comps=[...compSet];
+
+  let html='<div class="heatmap-wrap"><table class="heatmap-table"><thead><tr><th>Nombre</th>';
+  comps.forEach(k=>{
+    const ab=ABBR[k]||k.slice(0,4);
+    html+='<th data-tip="'+esc(k)+'">'+esc(ab)+'</th>';
+  });
+  html+='</tr></thead><tbody>';
+
+  members.forEach(({m,j})=>{
+    html+='<tr><td class="heatmap-name" data-tip="Jefe: '+esc(j.name)+'">'+esc(m.name)+'</td>';
+    comps.forEach(k=>{
+      const v=m.scores[k];
+      if(v!=null){
+        html+='<td class="heatmap-cell" style="background:'+scol(v)+'" data-tip="'+esc(m.name)+' · '+esc(k)+': '+v+'">'+v+'</td>';
+      } else {
+        html+='<td style="background:#F9FAFB;color:#D1D5DB">—</td>';
+      }
+    });
+    html+='</tr>';
+  });
+
+  html+='</tbody></table></div>';
+  return html;
+}
+
 /* ── EVENT DELEGATION ────────────────────────────────────────────────── */
 document.addEventListener('click',function(e){
   if(e.target.id==='mbtn-close'||e.target.id==='moverlay'){closeModal();return;}
@@ -1124,8 +1329,15 @@ document.addEventListener('click',function(e){
   if(dirModalJefe){closeModal();const name=dirModalJefe.dataset.jefeName;document.getElementById('q').value=name;doFilter();setTimeout(()=>{const idx=filtered.findIndex(j=>j.name===name);if(idx>=0)openModal(idx);},100);return;}
   const dirCard=e.target.closest('.dir-card');
   if(dirCard){openDirectionModal(parseInt(dirCard.dataset.dirIdx,10));return;}
+  if(cmpMode){
+    const cmpChk=e.target.closest('.cmp-chk');
+    if(cmpChk){selectCompare(filtered[parseInt(cmpChk.dataset.cmpIdx,10)]);return;}
+  }
   const card=e.target.closest('.jcard');
-  if(card&&card.dataset.idx!==undefined){openModal(parseInt(card.dataset.idx,10));return;}
+  if(card&&card.dataset.idx!==undefined){
+    if(cmpMode){selectCompare(filtered[parseInt(card.dataset.idx,10)]);return;}
+    openModal(parseInt(card.dataset.idx,10));return;
+  }
   const empPdfBtn=e.target.closest('.emp-pdf-btn');
   if(empPdfBtn){
     e.stopPropagation();
@@ -1198,8 +1410,18 @@ function renderGrid(){
   const grid=document.getElementById('maingrid');
   const empty=document.getElementById('empty');
   const q=document.getElementById('q').value.trim();
+
+  if(hmActive){
+    empty.style.display='none';
+    grid.innerHTML=renderHeatmap();
+    document.getElementById('rcount').textContent='Mapa de Calor — '+(q?'resultados filtrados':'todos los evaluados');
+    return;
+  }
+
   if(!filtered.length&&!matchedMembers.length){grid.innerHTML='';empty.style.display='block';document.getElementById('rcount').textContent='';return;}
   empty.style.display='none';
+
+  const cmpCls=cmpMode?' cmp-active':'';
   if(q){
     const perfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
     const memberCards=matchedMembers.map(m=>{
@@ -1208,7 +1430,7 @@ function renderGrid(){
     }).join('');
     grid.innerHTML='<div class="emp-grid" style="grid-template-columns:repeat(auto-fill,minmax(275px,1fr));padding:0;grid-column:1/-1">'+memberCards+'</div>'+
       (filtered.length?'<div style="grid-column:1/-1;height:2px;background:#E5E7EB;margin:6px 0"></div>':'')+
-      filtered.map((j,i)=>jefeCardHTML(j,i)).join('');
+      filtered.map((j,i)=>jefeCardHTML(j,i,cmpMode)).join('');
     const totalEval=filtered.reduce((a,j)=>a+j.team.length,0);
     document.getElementById('rcount').textContent=filtered.length+' jefe'+(filtered.length!==1?'s':'')+' · '+totalEval+' evaluados'+(matchedMembers.length?' · '+matchedMembers.length+' coincidencias directas':'');
   } else {
@@ -1218,6 +1440,7 @@ function renderGrid(){
     const totalMembers=dirs.reduce((a,d)=>a+d.jefes.reduce((s,j)=>s+j.team.length,0),0);
     document.getElementById('rcount').textContent=dirs.length+' direcci'+(dirs.length!==1?'ones':'ón')+' · '+filtered.length+' jefe'+(filtered.length!==1?'s':'')+' · '+totalMembers+' evaluados';
   }
+  grid.className='grid'+cmpCls;
 }
 
 function updateHeaderStats(){
@@ -1236,6 +1459,9 @@ function switchTab(tab,btn){
   document.getElementById('fvers').value='';
   document.getElementById('fclasif').value='';
   filtered=[...curData];
+  // Reset compare/heatmap states
+  if(cmpMode){cmpMode=false;document.getElementById('cmp-btn').classList.remove('on');document.getElementById('cmp-bar').classList.remove('show');cmpSel=[];}
+  if(hmActive){hmActive=false;document.getElementById('hm-btn').classList.remove('on');}
   populateDirFilter();updateHeaderStats();renderGrid();
 }
 
