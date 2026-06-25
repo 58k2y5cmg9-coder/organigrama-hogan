@@ -624,8 +624,8 @@ function empCardHTML(m,perfil,jefeName){
       const scBg=(v)=>v>=70?'#D1FAE5':v>=50?'#FFEDD5':'#FEE2E2';
       const descHTML=compDescLevelHTML(compS,perfil,true);
       const sorted=entries.sort((a,b)=>b[1]-a[1]);
-      const best=sorted.filter(([k,v])=>v>=70).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 9px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.7rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.7rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
-      const weak=sorted.filter(([k,v])=>v<49).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 9px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.7rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.7rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
+      const best=sorted.filter(([k,v])=>v>=70).slice(0,3).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 9px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.7rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.7rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
+      const weak=sorted.filter(([k,v])=>v<49).slice(0,3).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 9px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.7rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.7rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
       return '<div class="comp-sec"><div class="comp-title">Competencias</div>'+descHTML+'<div style="margin-top:10px;padding-top:8px;border-top:1px solid #E5E7EB"><div style="font-size:.7rem;font-weight:700;color:#059669;margin-bottom:5px">FORTALEZAS</div>'+best+'<div style="font-size:.7rem;font-weight:700;color:#D97706;margin-bottom:5px;margin-top:8px">OPORTUNIDADES</div>'+weak+'</div></div>';
     }():'<div class="nodata">Sin datos de evaluación</div>')+
     (isJ?'<div class="ecard-jefe-link" data-jefe-name="'+esc(m.name)+'" data-jefe-tab="'+tabHint+'">↗ Ver como jefe — equipo a cargo</div>':'')+
@@ -736,8 +736,8 @@ function openPersonModal(member,jefe){
     const entries=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential').sort((a,b)=>b[1]-a[1]);
     const sc=(v)=>v>=70?'#059669':v>=50?'#D97706':'#DC2626';
     const scBg=(v)=>v>=70?'#D1FAE5':v>=50?'#FFEDD5':'#FEE2E2';
-    const best=entries.filter(([k,v])=>v>=70).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.75rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.75rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
-    const weak=entries.filter(([k,v])=>v<49).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.75rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.75rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
+    const best=entries.filter(([k,v])=>v>=70).slice(0,3).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.75rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.75rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
+    const weak=entries.filter(([k,v])=>v<49).slice(0,3).map(([k,v])=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 10px;margin-bottom:4px;border-radius:6px;background:'+scBg(v)+'"><span style="font-size:.75rem;font-weight:600;color:'+sc(v)+'">* '+esc(k)+'</span><span style="font-size:.75rem;font-weight:700;color:'+sc(v)+'">'+v+'</span></div>').join('');
     return descHTML+'<div style="margin-top:12px;padding-top:10px;border-top:1px solid #E5E7EB"><div style="font-size:.75rem;font-weight:700;color:#059669;margin-bottom:5px">FORTALEZAS</div>'+best+'<div style="font-size:.75rem;font-weight:700;color:#D97706;margin-bottom:5px;margin-top:8px">OPORTUNIDADES</div>'+weak+'</div>';
   }():'<div class="nodata">Sin datos de evaluación</div>';
   document.getElementById('m-body').innerHTML='<div class="msec">'+
@@ -1016,7 +1016,7 @@ async function exportPDF(idx){
       checkY(24);
       doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...GREEN);
       doc.text('* FORTALEZAS',margin,y);y+=5;
-      sortedScores.filter(([k,v])=>v>=70).forEach(([k,v])=>{
+      sortedScores.filter(([k,v])=>v>=70).slice(0,3).forEach(([k,v])=>{
         doc.setFillColor(209,250,229);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
         doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(6,95,70);
         doc.text('* '+k, margin+3, y+4.5);
@@ -1026,7 +1026,7 @@ async function exportPDF(idx){
       y+=3;checkY(24);
       doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(...ORANGE);
       doc.text('* OPORTUNIDADES',margin,y);y+=5;
-      sortedScores.filter(([k,v])=>v<49).forEach(([k,v])=>{
+      sortedScores.filter(([k,v])=>v<49).slice(0,3).forEach(([k,v])=>{
         doc.setFillColor(255,247,237);doc.roundedRect(margin,y,W-margin*2,7,1.5,1.5,'F');
         doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(154,52,18);
         doc.text('* '+k, margin+3, y+4.5);
