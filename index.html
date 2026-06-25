@@ -642,10 +642,13 @@ function empCardHTML(m,perfil,jefeName){
 /* ── OPEN MODAL ──────────────────────────────────────────────────────── */
 let currentModalIdx=-1;
 let prevModalIdx=-1;
+let prevDirIdx=-1;
+let currentDirIdx=-1;
 function openModal(idx){
   currentModalIdx=idx;
   prevModalIdx=-1;
-  document.getElementById('mbtn-back').style.display='none';
+  if(prevDirIdx>=0){document.getElementById('mbtn-back').style.display='grid';}
+  else{document.getElementById('mbtn-back').style.display='none';}
   const j=filtered[idx];
   if(!j)return;
   const domVers=teamDomVers(j.team);
@@ -702,6 +705,8 @@ function closeModal(){
   document.getElementById('m-body').innerHTML='';
   document.getElementById('mbtn-back').style.display='none';
   prevModalIdx=-1;
+  prevDirIdx=-1;
+  currentDirIdx=-1;
 }
 
 function openPersonModal(member,jefe){
@@ -751,6 +756,9 @@ function openPersonModal(member,jefe){
 }
 
 function openDirectionModal(dirIdx){
+  currentDirIdx=dirIdx;
+  prevDirIdx=-1;
+  document.getElementById('mbtn-back').style.display='none';
   document.getElementById('mbtn-pdf').style.display='none';
   const dirs=groupByDirection(filtered);
   const dir=dirs[dirIdx];
@@ -1348,7 +1356,7 @@ function renderHeatmap(){
 
 /* ── EVENT DELEGATION ────────────────────────────────────────────────── */
 document.addEventListener('click',function(e){
-  if(e.target.id==='mbtn-back'){if(prevModalIdx>=0){const idx=prevModalIdx;prevModalIdx=-1;openModal(idx);}else{closeModal();}return;}
+  if(e.target.id==='mbtn-back'){if(prevModalIdx>=0){const idx=prevModalIdx;prevModalIdx=-1;openModal(idx);}else if(prevDirIdx>=0){const idx=prevDirIdx;prevDirIdx=-1;openDirectionModal(idx);}else{closeModal();}return;}
   if(e.target.id==='mbtn-close'||e.target.id==='moverlay'){closeModal();return;}
   if(e.target.id==='mbtn-pdf'||e.target.closest('#mbtn-pdf')){if(currentModalIdx>=0)exportPDF(currentModalIdx);return;}
   const pdfBtn=e.target.closest('.pdf-btn');
@@ -1360,7 +1368,9 @@ document.addEventListener('click',function(e){
   const dirJefe=e.target.closest('.dir-jefe');
   if(dirJefe){e.stopPropagation();const name=dirJefe.dataset.jefeName;document.getElementById('q').value=name;doFilter();setTimeout(()=>{const idx=filtered.findIndex(j=>j.name===name);if(idx>=0)openModal(idx);},100);return;}
   const dirModalJefe=e.target.closest('.dir-modal-jefe');
-  if(dirModalJefe){closeModal();const name=dirModalJefe.dataset.jefeName;document.getElementById('q').value=name;doFilter();setTimeout(()=>{const idx=filtered.findIndex(j=>j.name===name);if(idx>=0)openModal(idx);},100);return;}
+  if(dirModalJefe){
+    if(currentDirIdx>=0)prevDirIdx=currentDirIdx;
+    closeModal();const name=dirModalJefe.dataset.jefeName;document.getElementById('q').value=name;doFilter();setTimeout(()=>{const idx=filtered.findIndex(j=>j.name===name);if(idx>=0)openModal(idx);},100);return;}
   const dirCard=e.target.closest('.dir-card');
   if(dirCard){openDirectionModal(parseInt(dirCard.dataset.dirIdx,10));return;}
   if(cmpMode){
