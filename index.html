@@ -612,7 +612,7 @@ function empCardHTML(m,perfil,jefeName){
   const isJ=m.is_jefe;
   const tabHint=m.is_jefe_est?'est':m.is_jefe_op?'op':'';
 
-  return '<div class="ecard'+(isJ?' is-jefe':'')+'">'+
+  return '<div class="ecard'+(isJ?' is-jefe':'')+'" data-member-name="'+esc(m.name)+'" data-jefe-name="'+(jefeName?esc(jefeName):'')+'">'+
     '<div class="ech">'+
       '<div class="eav" style="background:'+col+'">'+ini(m.name)+'</div>'+
       '<div style="flex:1;min-width:0">'+
@@ -689,7 +689,7 @@ function openModal(idx){
     '</div>'+
   '</div>';
   const sec2='<div class="msec"><div class="msec-title"><div class="msec-dot"></div>Resultados Individuales ('+j.team.length+' personas)</div></div>'+
-    '<div class="emp-grid">'+j.team.map(function(mi){return empCardHTML(mi,perfil);}).join('')+'</div>';
+    '<div class="emp-grid">'+j.team.map(function(mi){return empCardHTML(mi,perfil,j.name);}).join('')+'</div>';
   document.getElementById('m-body').innerHTML=sec1+sec2;
   document.getElementById('moverlay').classList.add('open');
   document.body.style.overflow='hidden';
@@ -1377,6 +1377,20 @@ document.addEventListener('click',function(e){
       j.team.forEach(m=>{if(m.name===mName)member=m;});
     });
     if(member&&jefe)exportMemberPDF(member,jefe);
+    return;
+  }
+  const empCard=e.target.closest('.ecard');
+  if(empCard){
+    e.stopPropagation();
+    const mn=empCard.dataset.memberName;
+    const jn=empCard.dataset.jefeName;
+    if(!mn||!jn)return;
+    let member=null,jefe=null;
+    curData.forEach(j=>{
+      if(j.name===jn)jefe=j;
+      j.team.forEach(m=>{if(m.name===mn)member=m;});
+    });
+    if(member&&jefe)openPersonModal(member,jefe);
     return;
   }
   const ecardWrap=e.target.closest('.ecard-wrap');
