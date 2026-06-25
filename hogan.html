@@ -446,7 +446,7 @@ function teamRadarSVG(avgs,size,color,dark){return radarSVG(avgs,size,color,'33'
 function initRadarCharts(){
   document.querySelectorAll('canvas[data-rd]').forEach(c=>{
     const data=JSON.parse(c.dataset.rd),cl=c.dataset.cl,sz=parseInt(c.dataset.sz),op=c.dataset.op||'CC';
-    new Chart(c,{type:'radar',data:{labels:data.map(d=>d.l),datasets:[{data:data.map(d=>d.v),backgroundColor:cl+op,borderColor:cl,borderWidth:2,pointBackgroundColor:cl,pointBorderColor:'#ffffff',pointRadius:5,pointHoverRadius:0}]},options:{responsive:false,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{r:{min:0,max:100,ticks:{display:false,stepSize:20},grid:{color:'#D1D5DB',lineWidth:.5},angleLines:{color:'#D1D5DB',lineWidth:.5},pointLabels:{padding:8,display:true,color:op==='55'?'#E5E7EB':'#374151',font:{size:Math.max(7,Math.min(11,sz/10)),weight:'500'},callback:function(label){if(label.length<=15)return label;const p=label.split(' ');const m=Math.ceil(p.length/2);return[p.slice(0,m).join(' '),p.slice(m).join(' ')];}}}}}});
+    new Chart(c,{type:'radar',data:{labels:data.map(d=>d.l),datasets:[{data:data.map(d=>d.v),backgroundColor:cl+op,borderColor:cl,borderWidth:2,pointBackgroundColor:cl,pointBorderColor:'#ffffff',pointRadius:5,pointHoverRadius:0}]},options:{responsive:false,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{r:{min:0,max:100,ticks:{display:false,stepSize:20},grid:{color:'#D1D5DB',lineWidth:.5},angleLines:{color:'#D1D5DB',lineWidth:.5},        pointLabels:{padding:12,display:true,color:op==='55'?'#E5E7EB':'#374151',font:{size:Math.max(7,Math.min(11,sz/10)),weight:'500'},callback:function(label){if(label.length<=15)return label;const p=label.split(' ');const m=Math.ceil(p.length/2);return[p.slice(0,m).join(' '),p.slice(m).join(' ')];}}}}}});
   });
 }
 
@@ -856,7 +856,7 @@ async function exportPDF(idx){
       for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.line(p1[0],p1[1],p2[0],p2[1]);}
       pts.forEach(p=>{doc.setFillColor(...rgb);doc.setDrawColor(255,255,255);doc.setLineWidth(.26);doc.circle(p[0],p[1],1.3,'FD');});
       entries.forEach(([k,v],i)=>{
-      const a=angles[i],px=cx+r*Math.cos(a),py=cy+r*Math.sin(a),off=2.5,lx=px+off*Math.cos(a),ly=py+off*Math.sin(a);
+      const a=angles[i],px=cx+r*Math.cos(a),py=cy+r*Math.sin(a),off=4,lx=px+off*Math.cos(a),ly=py+off*Math.sin(a);
       doc.setTextColor(55,65,81);doc.setFont('helvetica','bold');doc.setFontSize(fs);
       const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
       if(k.length>15){const m=Math.floor(k.length/2);let s=k.lastIndexOf(' ',m);if(s<1)s=k.indexOf(' ',m);if(s>0){doc.text(k.slice(0,s),lx,ly-fs/4,{align});doc.text(k.slice(s+1),lx,ly+fs/4,{align});}else{doc.text(k,lx,ly,{align});}}else{doc.text(k,lx,ly,{align});}
@@ -1093,7 +1093,7 @@ async function exportMemberPDF(member,jefe){
       for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.line(p1[0],p1[1],p2[0],p2[1]);}
       pts.forEach(p=>{doc.setFillColor(...rgb);doc.setDrawColor(255,255,255);doc.setLineWidth(.26);doc.circle(p[0],p[1],1.3,'FD');});
       entries.forEach(([k,v],i)=>{
-      const a=angles[i],px=cx+r*Math.cos(a),py=cy+r*Math.sin(a),off=2.5,lx=px+off*Math.cos(a),ly=py+off*Math.sin(a);
+      const a=angles[i],px=cx+r*Math.cos(a),py=cy+r*Math.sin(a),off=4,lx=px+off*Math.cos(a),ly=py+off*Math.sin(a);
       doc.setTextColor(55,65,81);doc.setFont('helvetica','bold');doc.setFontSize(fs);
       const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
       if(k.length>15){const m=Math.floor(k.length/2);let s=k.lastIndexOf(' ',m);if(s<1)s=k.indexOf(' ',m);if(s>0){doc.text(k.slice(0,s),lx,ly-fs/4,{align});doc.text(k.slice(s+1),lx,ly+fs/4,{align});}else{doc.text(k,lx,ly,{align});}}else{doc.text(k,lx,ly,{align});}
