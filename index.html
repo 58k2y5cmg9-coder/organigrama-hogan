@@ -123,7 +123,8 @@ select.fsel{padding:7px 10px;border:1px solid #D1D5DB;border-radius:8px;font-siz
 .mname{color:#fff;font-size:1.15rem;font-weight:800;letter-spacing:-.02em;line-height:1.2}
 .mcargo{color:rgba(255,255,255,.65);font-size:.79rem;margin-top:2px}
 .mmeta{color:rgba(255,255,255,.45);font-size:.69rem;margin-top:3px}
-.mclose{position:absolute;top:14px;left:14px;width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.15);border:none;cursor:pointer;color:#fff;font-size:1.1rem;display:grid;place-items:center;z-index:10}
+.mclose{position:absolute;top:14px;left:48px;width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.15);border:none;cursor:pointer;color:#fff;font-size:1.1rem;display:grid;place-items:center;z-index:10}
+.mback-btn{position:absolute;top:14px;left:14px;width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.15);border:none;cursor:pointer;color:#fff;font-size:1.1rem;display:none;place-items:center;z-index:10;line-height:1}
 .mclose:hover{background:rgba(255,255,255,.25)}
 .mstats{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
 .mst{background:rgba(255,255,255,.13);padding:7px 13px;border-radius:9px}
@@ -307,6 +308,7 @@ select.fsel{padding:7px 10px;border:1px solid #D1D5DB;border-radius:8px;font-siz
 <div class="moverlay" id="moverlay">
   <div class="modal" id="modal-content">
     <div class="mhdr" id="m-hdr">
+      <button class="mback-btn" id="mbtn-back">←</button>
       <button class="mclose" id="mbtn-close">✕</button>
       <button class="mpdf-btn" id="mbtn-pdf">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -639,8 +641,11 @@ function empCardHTML(m,perfil,jefeName){
 
 /* ── OPEN MODAL ──────────────────────────────────────────────────────── */
 let currentModalIdx=-1;
+let prevModalIdx=-1;
 function openModal(idx){
   currentModalIdx=idx;
+  prevModalIdx=-1;
+  document.getElementById('mbtn-back').style.display='none';
   const j=filtered[idx];
   if(!j)return;
   const domVers=teamDomVers(j.team);
@@ -695,9 +700,13 @@ function closeModal(){
   document.getElementById('moverlay').classList.remove('open');
   document.body.style.overflow='';
   document.getElementById('m-body').innerHTML='';
+  document.getElementById('mbtn-back').style.display='none';
+  prevModalIdx=-1;
 }
 
 function openPersonModal(member,jefe){
+  if(currentModalIdx>=0)prevModalIdx=currentModalIdx;
+  document.getElementById('mbtn-back').style.display='grid';
   const colHex=Object.keys(member.scores||{}).filter(k=>k!=='Potencial'&&k!=='Potential').length>=3?'#0033A0':'#6B7280';
   const mhdr=document.getElementById('m-hdr');
   mhdr.style.background=member.versatilidad?(
@@ -1339,6 +1348,7 @@ function renderHeatmap(){
 
 /* ── EVENT DELEGATION ────────────────────────────────────────────────── */
 document.addEventListener('click',function(e){
+  if(e.target.id==='mbtn-back'){if(prevModalIdx>=0){const idx=prevModalIdx;prevModalIdx=-1;openModal(idx);}else{closeModal();}return;}
   if(e.target.id==='mbtn-close'||e.target.id==='moverlay'){closeModal();return;}
   if(e.target.id==='mbtn-pdf'||e.target.closest('#mbtn-pdf')){if(currentModalIdx>=0)exportPDF(currentModalIdx);return;}
   const pdfBtn=e.target.closest('.pdf-btn');
