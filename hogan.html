@@ -1368,10 +1368,15 @@ document.addEventListener('click',function(e){
   if(dirJefe){e.stopPropagation();const name=dirJefe.dataset.jefeName;document.getElementById('q').value=name;doFilter();setTimeout(()=>{const idx=filtered.findIndex(j=>j.name===name);if(idx>=0)openModal(idx);},100);return;}
   const dirModalJefe=e.target.closest('.dir-modal-jefe');
   if(dirModalJefe){
-    const savedDirIdx=currentDirIdx>=0?currentDirIdx:-1;
+    const savedDirIdx=currentDirIdx;
+    const jefeName=dirModalJefe.dataset.jefeName;
     closeModal();
-    if(savedDirIdx>=0)prevDirIdx=savedDirIdx;
-    const name=dirModalJefe.dataset.jefeName;document.getElementById('q').value=name;doFilter();setTimeout(()=>{const idx=filtered.findIndex(j=>j.name===name);if(idx>=0)openModal(idx);},100);return;}
+    const jIdx=filtered.findIndex(j=>j.name===jefeName);
+    if(jIdx>=0){
+      if(savedDirIdx>=0)prevDirIdx=savedDirIdx;
+      openModal(jIdx);
+    }
+    return;}
   const dirCard=e.target.closest('.dir-card');
   if(dirCard){openDirectionModal(parseInt(dirCard.dataset.dirIdx,10));return;}
   if(cmpMode){
