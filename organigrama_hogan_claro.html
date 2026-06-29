@@ -11,6 +11,19 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
 
+/* ── LOGIN ─────────────────────────────────────────────────────── */
+.login-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0B1121 0%,#1E3A5F 50%,#0B1121 100%);display:flex;align-items:center;justify-content:center;z-index:9999}
+.login-card{background:#fff;border-radius:16px;padding:40px 36px;width:380px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.login-card h2{font-size:1.15rem;font-weight:700;color:#111827;margin-bottom:4px;text-align:center}
+.login-card p{font-size:.78rem;color:#6B7280;text-align:center;margin-bottom:24px}
+.login-card label{display:block;font-size:.75rem;font-weight:600;color:#374151;margin-bottom:5px}
+.login-card input{width:100%;padding:10px 12px;border:1.5px solid #D1D5DB;border-radius:8px;font-size:.85rem;margin-bottom:16px;outline:none;transition:border .15s}
+.login-card input:focus{border-color:#0033A0}
+.login-card .login-btn{width:100%;padding:11px;border:none;border-radius:8px;background:linear-gradient(135deg,#0033A0,#1E3A5F);color:#fff;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .15s}
+.login-card .login-btn:hover{opacity:.9}
+.login-card .login-err{color:#DC2626;font-size:.75rem;text-align:center;margin-top:10px;display:none}
+.login-overlay.hidden{display:none}
+
 /* ── THEME ────────────────────────────────────────────────────── */
 :root{--alta:#059669;--alta-bg:#D1FAE5;--media:#EA580C;--media-bg:#FFEDD5;--prof:#0033A0;--prof-bg:#DBEAFE;
   --bg:#EEF1F8;--bg2:#E2E6EF;--card-bg:#fff;--text:#111827;--text2:#374151;--text3:#6B7280;--text4:#9CA3AF;
@@ -251,6 +264,18 @@ select.fsel{padding:7px 10px;border:1px solid #D1D5DB;border-radius:8px;font-siz
 </style>
 </head>
 <body>
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <h2>Acceso Restringido</h2>
+    <p>Ingrese con su correo corporativo autorizado</p>
+    <label for="loginEmail">Correo electrónico</label>
+    <input type="email" id="loginEmail" placeholder="usuario@claro.com.co" autocomplete="off">
+    <label for="loginPass">Contraseña</label>
+    <input type="password" id="loginPass" placeholder="••••" autocomplete="off">
+    <button class="login-btn" onclick="doLogin()">Ingresar</button>
+    <div class="login-err" id="loginErr">Correo o contraseña incorrectos</div>
+  </div>
+</div>
 
 <header class="hdr">
   <div class="hdr-logo">C</div>
@@ -353,7 +378,17 @@ function toggleTheme(){
 }
 document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('theme-btn').textContent=document.body.classList.contains('dark')?'☀':'☾';
+  if(sessionStorage.getItem('auth'))document.getElementById('loginOverlay').classList.add('hidden');
+  document.getElementById('loginPass').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+  document.getElementById('loginEmail').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
 });
+function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass=document.getElementById('loginPass').value;
+  const ok=(email==='laura.amadop@claro.com.co'||email==='nicolas.santos@claro.com.co')&&pass==='1234';
+  if(ok){sessionStorage.setItem('auth','1');document.getElementById('loginOverlay').classList.add('hidden');}
+  else{document.getElementById('loginErr').style.display='block';setTimeout(function(){document.getElementById('loginErr').style.display='none';},3000);}
+}
 
 /* ── COLORS ─────────────────────────────────────────────────────────── */
 function versColor(v){
