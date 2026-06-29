@@ -910,7 +910,7 @@ async function exportPDF(idx){
 
     // Team radar at top
     if(Object.keys(stats.avgs).length>=3){
-      checkY(115);
+      checkY(108);
       doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...DARK);
       doc.text('RADAR DEL EQUIPO',margin,y);y+=4;
       y=pdfRadar(doc,stats.avgs,(W-100)/2,y,100,RADAR_COL[teamDomVers(j.team)]||RADAR_COL.prof);
@@ -981,11 +981,11 @@ async function exportPDF(idx){
     y+=6;
 
     // Individual results
-    addPage();
-    doc.setFillColor(...BLUE);doc.rect(0,0,W,10,'F');
+    y+=4;
+    doc.setFillColor(...BLUE);doc.rect(0,y-2,W,10,'F');
     doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(9);
-    doc.text('RESULTADOS INDIVIDUALES ('+j.team.length+' personas)',margin,7);
-    y=16;
+    doc.text('RESULTADOS INDIVIDUALES ('+j.team.length+' personas)',margin,y+6);
+    y+=12;
 
     const indvPerfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
     for(const m of j.team){
@@ -1007,7 +1007,7 @@ async function exportPDF(idx){
       // Individual radar before cards
       const compEntries2=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential');
       if(compEntries2.length>=3){
-        checkY(85);
+        checkY(78);
         doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(...DARK);
         doc.text('RADAR — '+esc(m.name),margin,y);y+=3;
         y=pdfRadar(doc,compS,(W-70)/2,y,70,mColHex);
@@ -1160,7 +1160,7 @@ async function exportMemberPDF(member,jefe){
 
     // Radar centered
     if(compEntries.length>=3){
-      checkY(95);
+      checkY(88);
       y+=4;
       doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...DARK);
       doc.text('RADAR',margin,y);y+=4;
