@@ -868,20 +868,12 @@ async function exportPDF(idx){
       for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.line(p1[0],p1[1],p2[0],p2[1]);}
       pts.forEach(p=>{doc.setFillColor(...rgb);doc.setDrawColor(255,255,255);doc.setLineWidth(.26);doc.circle(p[0],p[1],1.3,'FD');});
       entries.forEach(([k,v],i)=>{
-        const a=angles[i],px=cx+r*Math.cos(a),py=cy+r*Math.sin(a),off=10,lx=px+off*Math.cos(a),ly=py+off*Math.sin(a);
-        const abbr=ABBR[k]||k;
+        const a=angles[i],px=cx+r*Math.cos(a),py=cy+r*Math.sin(a),off=12,lx=px+off*Math.cos(a),ly=py+off*Math.sin(a);
         doc.setTextColor(55,65,81);doc.setFont('helvetica','bold');doc.setFontSize(fs);
         const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
-        doc.text(abbr,lx,ly,{align});
+        if(k.length>14){const p=k.split(' ');const m=Math.ceil(p.length/2);doc.text(p.slice(0,m).join(' '),lx,ly-fs/4,{align});doc.text(p.slice(m).join(' '),lx,ly+fs/4,{align});}else{doc.text(k,lx,ly,{align});}
       });
-      const legendFs=3.5,legendY=y+w+3,colW=(W-margin*2)/2,rows=Math.ceil(entries.length/2);
-      doc.setFont('helvetica','normal');doc.setFontSize(legendFs);doc.setTextColor(80,80,80);
-      for(let ri=0;ri<rows;ri++){
-        const l=entries[ri],r2=entries[ri+rows];
-        doc.text(ABBR[l[0]]+': '+l[0],margin,legendY+ri*legendFs*1.3);
-        if(r2)doc.text(ABBR[r2[0]]+': '+r2[0],margin+colW,legendY+ri*legendFs*1.3);
-      }
-      return legendY+rows*legendFs*1.3+2;
+      return y+w+12;
     }
 
     // Header
@@ -918,11 +910,10 @@ async function exportPDF(idx){
 
     // Team radar at top
     if(Object.keys(stats.avgs).length>=3){
-      checkY(44);
+      checkY(115);
       doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...DARK);
       doc.text('RADAR DEL EQUIPO',margin,y);y+=4;
-      pdfRadar(doc,stats.avgs,(W-50)/2,y,50,RADAR_COL[teamDomVers(j.team)]||RADAR_COL.prof);
-      y+=58;
+      y=pdfRadar(doc,stats.avgs,(W-100)/2,y,100,RADAR_COL[teamDomVers(j.team)]||RADAR_COL.prof);
     }
 
     // Dist bar
@@ -1016,11 +1007,10 @@ async function exportPDF(idx){
       // Individual radar before cards
       const compEntries2=Object.entries(compS).filter(([k])=>k!=='Potencial'&&k!=='Potential');
       if(compEntries2.length>=3){
-        checkY(38);
+        checkY(85);
         doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(...DARK);
         doc.text('RADAR — '+esc(m.name),margin,y);y+=3;
-        pdfRadar(doc,compS,(W-30)/2,y,30,mColHex);
-        y+=38;
+        y=pdfRadar(doc,compS,(W-70)/2,y,70,mColHex);
       }
       y+=3;
       // Competency description cards
@@ -1134,20 +1124,12 @@ async function exportMemberPDF(member,jefe){
       for(let i=0;i<n;i++){const p1=pts[i],p2=pts[(i+1)%n];doc.line(p1[0],p1[1],p2[0],p2[1]);}
       pts.forEach(p=>{doc.setFillColor(...rgb);doc.setDrawColor(255,255,255);doc.setLineWidth(.26);doc.circle(p[0],p[1],1.3,'FD');});
       entries.forEach(([k,v],i)=>{
-        const a=angles[i],px=cx+r*Math.cos(a),py=cy+r*Math.sin(a),off=10,lx=px+off*Math.cos(a),ly=py+off*Math.sin(a);
-        const abbr=ABBR[k]||k;
+        const a=angles[i],px=cx+r*Math.cos(a),py=cy+r*Math.sin(a),off=12,lx=px+off*Math.cos(a),ly=py+off*Math.sin(a);
         doc.setTextColor(55,65,81);doc.setFont('helvetica','bold');doc.setFontSize(fs);
         const align=a>=-.1&&a<=.1?'center':(a>0&&a<Math.PI?'left':'right');
-        doc.text(abbr,lx,ly,{align});
+        if(k.length>14){const p=k.split(' ');const m=Math.ceil(p.length/2);doc.text(p.slice(0,m).join(' '),lx,ly-fs/4,{align});doc.text(p.slice(m).join(' '),lx,ly+fs/4,{align});}else{doc.text(k,lx,ly,{align});}
       });
-      const legendFs=3.5,legendY=y+w+3,colW=(W-margin*2)/2,rows=Math.ceil(entries.length/2);
-      doc.setFont('helvetica','normal');doc.setFontSize(legendFs);doc.setTextColor(80,80,80);
-      for(let ri=0;ri<rows;ri++){
-        const l=entries[ri],r2=entries[ri+rows];
-        doc.text(ABBR[l[0]]+': '+l[0],margin,legendY+ri*legendFs*1.3);
-        if(r2)doc.text(ABBR[r2[0]]+': '+r2[0],margin+colW,legendY+ri*legendFs*1.3);
-      }
-      return legendY+rows*legendFs*1.3+2;
+      return y+w+12;
     }
     const colHex=Object.keys(member.scores||{}).filter(k=>k!=='Potencial'&&k!=='Potential').length>=3?'#0033A0':'#6B7280';
     const colRgb=hexToRgb(colHex);
@@ -1178,11 +1160,11 @@ async function exportMemberPDF(member,jefe){
 
     // Radar centered
     if(compEntries.length>=3){
+      checkY(95);
       y+=4;
       doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...DARK);
       doc.text('RADAR',margin,y);y+=4;
-      pdfRadar(doc,compS,(W-40)/2,y,40,colHex);
-      y+=50;
+      y=pdfRadar(doc,compS,(W-80)/2,y,80,colHex);
     }
 
     // Competency cards
