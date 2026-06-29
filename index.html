@@ -1028,6 +1028,8 @@ async function exportPDF(idx){
           doc.text(showLines,cx+cardPad,y+5.5);
         }
         if(ci%2===1)y+=11;
+      });
+    if(compEntries.length%2===1)y+=11;
     y+=5;
 
     // Strengths & Opportunities
