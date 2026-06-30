@@ -224,6 +224,16 @@ select.fsel{padding:7px 10px;border:1px solid #D1D5DB;border-radius:8px;font-siz
 .cmp-active .cmp-chk{display:flex}
 .cmp-sel .cmp-chk{background:#0033A0;border-color:#0033A0}
 
+/* Member compare mode */
+.mcmp-bar{display:none;align-items:center;gap:10px;padding:8px 16px;background:var(--hover);border-bottom:1px solid var(--border);font-size:.78rem;color:var(--text);border-radius:0 0 16px 16px;margin:-4px 0 8px}
+.mcmp-bar.show{display:flex}
+.mcmp-bar .cmp-badge{background:#7C3AED}
+.ecard .mcmp-chk{display:none;position:absolute;top:8px;right:8px;z-index:5;width:22px;height:22px;border-radius:50%;background:var(--card-bg);border:2px solid #C4B5FD;align-items:center;justify-content:center;font-size:.7rem;color:#fff;font-weight:700;cursor:pointer;transition:all .15s}
+.mcmp-active .ecard{cursor:pointer;position:relative}
+.mcmp-active .mcmp-chk{display:flex}
+.ecard.mcmp-sel{outline:3px solid #7C3AED;outline-offset:2px}
+.ecard.mcmp-sel .mcmp-chk{background:#7C3AED;border-color:#7C3AED}
+
 /* Comparison modal */
 .comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 .comp-side{display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -732,8 +742,11 @@ function openModal(idx){
       '<div class="insights-row">'+weak3+'</div>'+
     '</div>'+
   '</div>';
-  const sec2='<div class="msec"><div class="msec-title"><div class="msec-dot"></div>Resultados Individuales ('+j.team.length+' personas)</div></div>'+
-    '<div class="emp-grid">'+j.team.map(function(mi){return empCardHTML(mi,perfil,j.name);}).join('')+'</div>';
+  const sec2='<div class="msec"><div class="msec-title" style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;align-items:center;gap:6px"><div class="msec-dot"></div>Resultados Individuales ('+j.team.length+' personas)</div>'+
+    (j.team.length>=2?'<button id="mcmp-btn" class="fbtn" style="font-size:.68rem;padding:4px 10px;border-radius:8px" onclick="toggleMemberCompare()">⇄ Comparar Integrantes</button>':'')+
+    '</div>'+
+    '<div id="mcmp-bar" class="mcmp-bar"><span class="cmp-badge" id="mcmp-count">0/2</span><span style="color:var(--text2)">Selecciona dos integrantes para comparar</span><span class="cmp-clear hide" id="mcmp-clear" onclick="clearMemberCompare()">✕ Limpiar</span></div></div>'+
+    '<div id="mcmp-grid" class="emp-grid mcmp-grid">'+j.team.map(function(mi){return empCardHTML(mi,perfil,j.name);}).join('')+'</div>';
   document.getElementById('m-body').innerHTML=sec1+sec2;
   document.getElementById('moverlay').classList.add('open');
   document.body.style.overflow='hidden';initRadarCharts();
@@ -746,6 +759,7 @@ function closeModal(){
   document.getElementById('mbtn-back').style.display='none';
   prevModalIdx=-1;
   currentDirIdx=-1;
+  mcmpMode=false;mcmpSel=[];
 }
 
 function openPersonModal(member,jefe){
@@ -1373,6 +1387,106 @@ function renderComparison(j1,j2){
   document.body.style.overflow='hidden';initRadarCharts();
 }
 
+/* ── MEMBER COMPARE MODE ────────────────────────────────────────────────── */
+let mcmpMode=false, mcmpSel=[], mcmpJefe=null;
+function toggleMemberCompare(){
+  mcmpMode=!mcmpMode;
+  const btn=document.getElementById('mcmp-btn');
+  const bar=document.getElementById('mcmp-bar');
+  const grid=document.getElementById('mcmp-grid');
+  if(!btn||!bar||!grid)return;
+  btn.classList.toggle('on',mcmpMode);
+  bar.classList.toggle('show',mcmpMode);
+  grid.classList.toggle('mcmp-active',mcmpMode);
+  if(!mcmpMode){mcmpSel=[];clearMemberCompare();}
+  document.querySelectorAll('.ecard').forEach(c=>{
+    c.classList.remove('mcmp-sel');
+    let chk=c.querySelector('.mcmp-chk');
+    if(!chk){chk=document.createElement('div');chk.className='mcmp-chk';chk.textContent='✓';c.appendChild(chk);}
+  });
+}
+function clearMemberCompare(){
+  mcmpSel=[];
+  document.getElementById('mcmp-count').textContent='0/2';
+  document.getElementById('mcmp-clear').classList.add('hide');
+  document.querySelectorAll('.ecard.mcmp-sel').forEach(c=>c.classList.remove('mcmp-sel'));
+}
+function selectMemberCompare(member,jefe){
+  if(!mcmpMode)return;
+  const idx=mcmpSel.findIndex(s=>s.member===member);
+  if(idx>=0){mcmpSel.splice(idx,1);}
+  else if(mcmpSel.length<2){mcmpSel.push({member,jefe});}
+  if(mcmpSel.length===2){
+    document.getElementById('mcmp-count').textContent='2/2';
+    document.getElementById('mcmp-clear').classList.remove('hide');
+    renderMemberComparison(mcmpSel[0],mcmpSel[1]);
+  } else {
+    document.getElementById('mcmp-count').textContent=mcmpSel.length+'/2';
+    document.getElementById('mcmp-clear').classList.toggle('hide',mcmpSel.length===0);
+  }
+  document.querySelectorAll('.ecard').forEach(c=>{
+    const mName=c.dataset.memberName;
+    c.classList.toggle('mcmp-sel',mcmpSel.some(s=>s.member.name===mName));
+  });
+}
+function renderMemberComparison(a,b){
+  const m1=a.member, m2=b.member, j1=a.jefe, j2=b.jefe;
+  const perfil=curTab==='est'?'V. Ejecutivo':'V. Gerente';
+  const hasS1=m1.scores&&Object.keys(m1.scores).length>0;
+  const hasS2=m2.scores&&Object.keys(m2.scores).length>0;
+  const s1=hasS1?Object.fromEntries(Object.entries(m1.scores).filter(([k])=>k!=='Potencial'&&k!=='Potential')):{};
+  const s2=hasS2?Object.fromEntries(Object.entries(m2.scores).filter(([k])=>k!=='Potencial'&&k!=='Potential')):{};
+  const allComps=[...new Set([...Object.keys(s1),...Object.keys(s2)])].sort();
+
+  const col1=hasS1&&Object.keys(s1).length>=3?'#0033A0':'#6B7280';
+  const col2=hasS2&&Object.keys(s2).length>=3?'#0033A0':'#6B7280';
+  const r1=Object.keys(s1).length?radarSVG(s1,130,col1,undefined,true):'';
+  const r2=Object.keys(s2).length?radarSVG(s2,130,col2,undefined,true):'';
+  const hdr1='<div class="comp-side"><div class="clabel">'+esc(m1.name)+'</div><div class="csub">Jefe: '+esc(j1.name)+'</div>'+r1+'</div>';
+  const hdr2='<div class="comp-side"><div class="clabel">'+esc(m2.name)+'</div><div class="csub">Jefe: '+esc(j2.name)+'</div>'+r2+'</div>';
+
+  const rows=allComps.map(k=>{
+    const v1=s1[k],v2=s2[k];
+    const d=v1!=null&&v2!=null?v1-v2:null;
+    const cls=d>0?'pos':(d<0?'neg':'zero');
+    return '<tr>'+
+      '<td data-tip="'+esc(getCompDesc(perfil,k,v1||0).text.slice(0,80))+'">'+esc(k)+'</td>'+
+      '<td style="color:'+(v1!=null?scol(v1):'#9CA3AF')+';font-weight:700">'+(v1!=null?v1:'—')+'</td>'+
+      '<td style="color:'+(v2!=null?scol(v2):'#9CA3AF')+';font-weight:700">'+(v2!=null?v2:'—')+'</td>'+
+      '<td class="comp-diff '+cls+'">'+(d!=null?(d>0?'+'+d:d):'—')+'</td>'+
+    '</tr>';
+  }).join('');
+
+  const mhdr=document.getElementById('m-hdr');
+  mhdr.style.background='linear-gradient(135deg,#4C1D95 0%,#7C3AED 100%)';
+  document.getElementById('m-av').textContent='⇄';
+  document.getElementById('m-av').style.background='#7C3AED';
+  document.getElementById('m-name').textContent='Comparación de Integrantes';
+  document.getElementById('m-cargo').textContent=m1.name+' vs '+m2.name;
+  document.getElementById('m-meta').textContent='';
+  document.getElementById('m-stats').innerHTML='';
+  document.getElementById('mbtn-pdf').style.display='none';
+  document.getElementById('m-radar').innerHTML='';
+
+  document.getElementById('m-body').innerHTML=
+    '<div class="msec">'+
+      '<div class="msec-title"><div class="msec-dot"></div>Radar de competencias — individuales</div>'+
+      '<div class="comp-grid">'+hdr1+hdr2+'</div>'+
+    '</div>'+
+    '<div class="msec">'+
+      '<div class="msec-title"><div class="msec-dot"></div>Comparación por competencia</div>'+
+      '<table class="comp-table"><thead><tr>'+
+        '<th>Competencia</th>'+
+        '<th>'+esc(m1.name)+'</th>'+
+        '<th>'+esc(m2.name)+'</th>'+
+        '<th>Diferencia</th>'+
+      '</tr></thead><tbody>'+rows+'</tbody></table>'+
+    '</div>';
+
+  document.getElementById('moverlay').classList.add('open');
+  document.body.style.overflow='hidden';initRadarCharts();
+}
+
 /* ── HEATMAP ──────────────────────────────────────────────────────────── */
 let hmActive=false;
 function toggleHeatmap(){
@@ -1470,6 +1584,20 @@ document.addEventListener('click',function(e){
     });
     if(member&&jefe)exportMemberPDF(member,jefe);
     return;
+  }
+  if(mcmpMode){
+    const mcmpChk=e.target.closest('.mcmp-chk');
+    const mcmpCard=mcmpChk?mcmpChk.closest('.ecard'):e.target.closest('.ecard');
+    if(mcmpCard&&mcmpCard.dataset.memberName&&mcmpCard.dataset.jefeName){
+      e.stopPropagation();
+      let member=null,jefe=null;
+      curData.forEach(j=>{
+        if(j.name===mcmpCard.dataset.jefeName)jefe=j;
+        j.team.forEach(m=>{if(m.name===mcmpCard.dataset.memberName)member=m;});
+      });
+      if(member&&jefe)selectMemberCompare(member,jefe);
+      return;
+    }
   }
   const empCard=e.target.closest('.ecard');
   if(empCard){
