@@ -522,14 +522,12 @@ function compDescLevelHTML(scores,perfil,compact){
     const desc=getCompDesc(perfil,k,v);
     const col=scol(v),bg=bgMap[desc.level]||'#F9FAFB';
     const txt=desc.text;
-    return '<div class="crow-desc" style="margin-bottom:6px;padding:7px 9px;border-radius:8px;background:var(--card-bg);border-left:3px solid '+borderMap[desc.level]+'">'+
-      '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'+
-        '<div style="flex:1;min-width:0">'+
-          '<div style="font-size:.72rem;font-weight:700;color:var(--text2);margin-bottom:2px">'+esc(k)+'</div>'+
-          '<div style="font-size:.63rem;color:#4B5563;line-height:1.4">'+esc(txt)+'</div>'+
-        '</div>'+
-        '<div style="flex-shrink:0;font-size:.75rem;font-weight:700;color:'+col+'">'+v+'</div>'+
+    return '<div class="crow-desc" style="margin-bottom:6px;padding:7px 9px;border-radius:8px;background:'+bg+';border-left:3px solid '+borderMap[desc.level]+'">'+
+      '<div style="font-size:.72rem;font-weight:700;color:var(--text2);margin-bottom:2px;display:flex;justify-content:space-between;align-items:center">'+
+        '<span>'+esc(k)+'</span>'+
+        '<span style="font-size:.68rem;font-weight:600;color:'+col+';background:'+bg+';padding:1px 6px;border-radius:4px;border:1px solid '+borderMap[desc.level]+'">'+v+'</span>'+
       '</div>'+
+      '<div style="font-size:.67rem;color:#4B5563;line-height:1.45">'+esc(txt)+'</div>'+
     '</div>';
   }).join('');
 }
