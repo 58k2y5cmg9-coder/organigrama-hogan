@@ -523,11 +523,13 @@ function compDescLevelHTML(scores,perfil,compact){
     const col=scol(v),bg=bgMap[desc.level]||'#F9FAFB';
     const txt=desc.text;
     return '<div class="crow-desc" style="margin-bottom:6px;padding:7px 9px;border-radius:8px;background:'+bg+';border-left:3px solid '+borderMap[desc.level]+'">'+
-      '<div style="font-size:.72rem;font-weight:700;color:var(--text2);margin-bottom:2px;display:flex;justify-content:space-between;align-items:center">'+
-        '<span>'+esc(k)+'</span>'+
-        '<span style="font-size:.68rem;font-weight:600;color:'+col+';background:'+bg+';padding:1px 6px;border-radius:4px;border:1px solid '+borderMap[desc.level]+'">'+v+'</span>'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'+
+        '<div style="flex:1;min-width:0">'+
+          '<div style="font-size:.72rem;font-weight:700;color:var(--text2);margin-bottom:2px">'+esc(k)+'</div>'+
+          '<div style="font-size:.63rem;color:#4B5563;line-height:1.4">'+esc(txt)+'</div>'+
+        '</div>'+
+        '<div style="flex-shrink:0;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:'+col+';color:#fff;font-size:.6rem;font-weight:700">'+v+'</div>'+
       '</div>'+
-      '<div style="font-size:.67rem;color:#4B5563;line-height:1.45">'+esc(txt)+'</div>'+
     '</div>';
   }).join('');
 }
@@ -927,7 +929,7 @@ async function exportPDF(idx){
     // Header
     doc.setFillColor(...BLUE);doc.rect(0,0,W,32,'F');
     doc.setTextColor(255,255,255);doc.setFontSize(16);doc.setFont('helvetica','bold');
-    doc.text('Valoración de Potencial',margin,13);
+    doc.text('Equipo de Trabajo',margin,13);
     doc.setFontSize(9);doc.setFont('helvetica','normal');
     doc.text(j.name,margin,20);
     doc.setFontSize(8);
@@ -1133,7 +1135,7 @@ async function exportPDF(idx){
       doc.setPage(p);
       doc.setFillColor(249,250,251);doc.rect(0,H-8,W,8,'F');
       doc.setTextColor(...GRAY);doc.setFontSize(6);doc.setFont('helvetica','normal');
-      doc.text('Claro Colombia · Valoración de Potencial · '+new Date().toLocaleDateString('es-CO'),margin,H-3);
+      doc.text('Claro Colombia · Equipo de Trabajo · '+new Date().toLocaleDateString('es-CO'),margin,H-3);
       doc.text('Pág. '+p+' / '+totalPages,W-margin,H-3,{align:'right'});
     }
     doc.save('Hogan_'+j.name.replace(/\s+/g,'_').slice(0,30)+'.pdf');
@@ -1289,7 +1291,7 @@ async function exportMemberPDF(member,jefe){
       doc.setPage(p);
       doc.setFillColor(249,250,251);doc.rect(0,H-8,W,8,'F');
       doc.setTextColor(...GRAY);doc.setFontSize(6);doc.setFont('helvetica','normal');
-      doc.text('Claro Colombia · Valoración de Potencial · '+new Date().toLocaleDateString('es-CO'),margin,H-3);
+      doc.text('Claro Colombia · Equipo de Trabajo · '+new Date().toLocaleDateString('es-CO'),margin,H-3);
       doc.text('Pág. '+p+' / '+totalPages,W-margin,H-3,{align:'right'});
     }
     doc.save('Hogan_'+member.name.replace(/\s+/g,'_').slice(0,30)+'.pdf');
