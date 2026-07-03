@@ -691,7 +691,8 @@ function uniqueFiltered(field, filters){
 function rebuildSelect(id, values){
   const el = document.getElementById(id);
   const prev = el.value;
-  el.innerHTML = '<option value="">'+(id==='fCiudad'?'Todas':id==='fJefe'?'Todos':'Todas')+'</option>';
+  while(el.options.length > 1) el.remove(1);
+  el.options[0].text = (id==='fJefe'?'Todos':'Todas');
   values.forEach(v=>{
     const o = document.createElement('option');
     o.value = v; o.textContent = v;
