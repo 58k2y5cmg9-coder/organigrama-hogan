@@ -9,31 +9,31 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg: #0f0a0b;
-  --bg-1: #1a1214;
-  --panel: #1e1517;
-  --panel-2: #261c1e;
+  --bg: #12080a;
+  --bg-1: #1a0e10;
+  --panel: #1e1215;
+  --panel-2: #26181b;
   --border: rgba(255,255,255,.08);
   --border-soft: rgba(255,255,255,.05);
   --text: #F4F1EA;
   --text-dim: #98A2B3;
   --text-faint: #59626f;
-  --crimson: #8B2252;
-  --crimson-soft: rgba(139,34,82,.14);
+  --crimson: #E8283F;
+  --crimson-soft: rgba(232,40,63,.14);
   --gold: #D8AD64;
 
   /* fila desempeño bajo — neutro, gris frío */
-  --c1: #4a3038; --c1-soft: rgba(74,48,56,.18);
-  --c2: #5a3a44; --c2-soft: rgba(90,58,68,.18);
-  --c3: #6b4550; --c3-soft: rgba(107,69,80,.18);
+  --c1: #47505c; --c1-soft: rgba(71,80,92,.18);
+  --c2: #58626f; --c2-soft: rgba(88,98,111,.18);
+  --c3: #69737f; --c3-soft: rgba(105,115,127,.18);
   /* fila desempeño consistente — ámbar, calentando */
-  --c4: #8c4a3a; --c4-soft: rgba(140,74,58,.18);
-  --c5: #a86848; --c5-soft: rgba(168,104,72,.18);
-  --c6: #7a6a4a; --c6-soft: rgba(122,106,74,.18);
-  /* fila alto desempeño — vinos profundos */
-  --c7: #6b2a3e; --c7-soft: rgba(107,42,62,.20);
-  --c8: #8B2252; --c8-soft: rgba(139,34,82,.20);
-  --c9: #a02848; --c9-soft: rgba(160,40,72,.22);
+  --c4: #9c6a2e; --c4-soft: rgba(156,106,46,.18);
+  --c5: #c99a46; --c5-soft: rgba(201,154,70,.18);
+  --c6: #7fa65e; --c6-soft: rgba(127,166,94,.18);
+  /* fila alto desempeño — teal a esmeralda, en su punto */
+  --c7: #1d6e8c; --c7-soft: rgba(29,110,140,.20);
+  --c8: #2f9271; --c8-soft: rgba(47,146,113,.20);
+  --c9: #1e7a4e; --c9-soft: rgba(30,122,78,.22);
 
   --radius: 14px;
   --ease: cubic-bezier(.22,1,.36,1);
@@ -323,15 +323,15 @@ p.subtitle{
 .cell::before{
   content:""; position:absolute; inset:0; opacity:.9;
 }
-.cell:nth-child(1){ background: linear-gradient(150deg, var(--c7), #3d1525); }
-.cell:nth-child(2){ background: linear-gradient(150deg, var(--c8), #4a1830); }
-.cell:nth-child(3){ background: linear-gradient(150deg, var(--c9), #501a38); }
-.cell:nth-child(4){ background: linear-gradient(150deg, var(--c4), #4a2018); }
-.cell:nth-child(5){ background: linear-gradient(150deg, var(--c5), #5a3020); }
-.cell:nth-child(6){ background: linear-gradient(150deg, var(--c6), #3a3520); }
-.cell:nth-child(7){ background: linear-gradient(150deg, var(--c1), #2a1820); }
-.cell:nth-child(8){ background: linear-gradient(150deg, var(--c2), #301e25); }
-.cell:nth-child(9){ background: linear-gradient(150deg, var(--c3), #38252c); }
+.cell:nth-child(1){ background: linear-gradient(150deg, var(--c7), #123c4d); }
+.cell:nth-child(2){ background: linear-gradient(150deg, var(--c8), #114430); }
+.cell:nth-child(3){ background: linear-gradient(150deg, var(--c9), #0e3f28); }
+.cell:nth-child(4){ background: linear-gradient(150deg, var(--c4), #4d3316); }
+.cell:nth-child(5){ background: linear-gradient(150deg, var(--c5), #6b5321); }
+.cell:nth-child(6){ background: linear-gradient(150deg, var(--c6), #3f5730); }
+.cell:nth-child(7){ background: linear-gradient(150deg, var(--c1), #262b32); }
+.cell:nth-child(8){ background: linear-gradient(150deg, var(--c2), #2c323b); }
+.cell:nth-child(9){ background: linear-gradient(150deg, var(--c3), #323944); }
 
 .cell:hover{ transform: translateY(-4px) scale(1.015); box-shadow: 0 20px 40px rgba(0,0,0,.45); filter:brightness(1.08); }
 .cell.dimmed{ filter: saturate(.25) brightness(.55); }
