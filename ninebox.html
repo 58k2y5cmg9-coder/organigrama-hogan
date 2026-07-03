@@ -803,9 +803,10 @@ function applyFilters(list){
   return list.filter(d=>{
     if(state.search){
       const q = norm(state.search);
-      const matchName = norm(d.nombre).includes(q);
       const matchJefe = norm(d.jefe).includes(q);
-      if(!matchName && !matchJefe) return false;
+      if(matchJefe) return true;
+      const matchName = norm(d.nombre).includes(q);
+      if(!matchName) return false;
     }
     if(state.direccion && d.direccion !== state.direccion) return false;
     if(state.gerencia && norm(d.gerencia) !== norm(state.gerencia)) return false;
@@ -1124,25 +1125,39 @@ function renderSuggestions(){
   const q = norm(fSearch.value);
   activeSuggestIdx = -1;
   if(!q){ suggestBox.classList.remove('show'); return; }
-  const personMatches = RAW.filter(d=> norm(d.nombre).includes(q)).slice(0,5);
-  const jefeMatches = RAW.filter(d=> norm(d.jefe).includes(q) && !personMatches.includes(d)).slice(0,5);
-  const matches = [...personMatches, ...jefeMatches].slice(0,8);
-  if(!matches.length){ suggestBox.classList.remove('show'); return; }
-  suggestBox.innerHTML = matches.map(p=>{
-    const isJefe = norm(p.jefe).includes(q) && !norm(p.nombre).includes(q);
-    const label = isJefe ? `<span>${p.nombre}</span><small>Jefe: ${p.jefe}</small>` : `<span>${p.nombre}</span><small>Caja ${p.caja}</small>`;
-    return `<div class="suggest-item" data-name="${encodeURIComponent(p.nombre)}">${label}</div>`;
-  }).join('');
+  const jefeTeams = {};
+  RAW.filter(d=> norm(d.jefe).includes(q)).forEach(d=>{
+    if(!jefeTeams[d.jefe]) jefeTeams[d.jefe] = [];
+    jefeTeams[d.jefe].push(d);
+  });
+  const items = [];
+  for(const [jefe, team] of Object.entries(jefeTeams)){
+    items.push(`<div class="suggest-item" data-jefe="${encodeURIComponent(jefe)}">
+      <span>${jefe}</span><small>${team.length} persona${team.length>1?'s':''}</small>
+    </div>`);
+  }
+  const personMatches = RAW.filter(d=> norm(d.nombre).includes(q) && !norm(d.jefe).includes(q)).slice(0,5);
+  personMatches.forEach(p=>{
+    items.push(`<div class="suggest-item" data-name="${encodeURIComponent(p.nombre)}">
+      <span>${p.nombre}</span><small>Caja ${p.caja}</small>
+    </div>`);
+  });
+  if(!items.length){ suggestBox.classList.remove('show'); return; }
+  suggestBox.innerHTML = items.slice(0,8).join('');
   suggestBox.classList.add('show');
   suggestBox.querySelectorAll('.suggest-item').forEach(item=>{
     item.addEventListener('click', ()=>{
-      const name = decodeURIComponent(item.dataset.name);
-      fSearch.value = name;
-      state.search = name;
+      if(item.dataset.jefe){
+        const jefe = decodeURIComponent(item.dataset.jefe);
+        fSearch.value = jefe;
+        state.search = jefe;
+      } else {
+        const name = decodeURIComponent(item.dataset.name);
+        fSearch.value = name;
+        state.search = name;
+      }
       suggestBox.classList.remove('show');
       renderAll();
-      const person = RAW.find(d=>d.nombre===name);
-      if(person) openModal(person);
     });
   });
 }
