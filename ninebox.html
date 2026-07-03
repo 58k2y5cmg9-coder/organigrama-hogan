@@ -734,6 +734,21 @@ document.getElementById('btnReset').addEventListener('click', ()=>{
   renderAll();
 });
 
+function applyFilters(list){
+  return list.filter(d=>{
+    if(state.search && !norm(d.nombre).includes(norm(state.search))) return false;
+    if(state.direccion && d.direccion !== state.direccion) return false;
+    if(state.gerencia && norm(d.gerencia) !== norm(state.gerencia)) return false;
+    if(state.jefe && d.jefe !== state.jefe) return false;
+    if(state.region && d.region !== state.region) return false;
+    if(state.ciudad && d.ciudad !== state.ciudad) return false;
+    if(state.desempeno && d.desempeno !== state.desempeno) return false;
+    if(state.potencial && String(d.potencial) !== state.potencial) return false;
+    if(state.caja && d.caja !== state.caja) return false;
+    return true;
+  });
+}
+
 function currentFiltered(){ return applyFilters(RAW); }
 function filteredExcludingCaja(){
   const saved = state.caja; state.caja = null;
