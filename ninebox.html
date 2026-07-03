@@ -665,7 +665,7 @@ const state = {
   search:'', direccion:'', gerencia:'', jefe:'', region:'', ciudad:'', desempeno:'', potencial:'',
   caja: null,
   distMode:'direccion',
-  sortKey:'caja', sortDir:1,
+  sortKey:'sucesor', sortDir:1,
   page:1, pageSize:12,
 };
 
@@ -746,6 +746,7 @@ function updateAllCascading(){
 document.getElementById('fDireccion').addEventListener('change', e=>{
   state.direccion = e.target.value;
   state.gerencia=''; state.jefe=''; state.page=1;
+  state.search=''; document.getElementById('fSearch').value='';
   updateAllCascading();
   renderAll();
 });
@@ -753,6 +754,7 @@ document.getElementById('fDireccion').addEventListener('change', e=>{
 document.getElementById('fGerencia').addEventListener('change', e=>{
   state.gerencia = e.target.value;
   state.jefe=''; state.page=1;
+  state.search=''; document.getElementById('fSearch').value='';
   updateJefeFilter();
   renderAll();
 });
@@ -760,12 +762,14 @@ document.getElementById('fGerencia').addEventListener('change', e=>{
 document.getElementById('fJefe').addEventListener('change', e=>{
   state.jefe = e.target.value;
   state.page = 1;
+  state.search=''; document.getElementById('fSearch').value='';
   renderAll();
 });
 
 document.getElementById('fRegion').addEventListener('change', e=>{
   state.region = e.target.value;
   state.ciudad=''; state.page=1;
+  state.search=''; document.getElementById('fSearch').value='';
   updateCiudadFilter();
   renderAll();
 });
@@ -773,18 +777,21 @@ document.getElementById('fRegion').addEventListener('change', e=>{
 document.getElementById('fCiudad').addEventListener('change', e=>{
   state.ciudad = e.target.value;
   state.page = 1;
+  state.search=''; document.getElementById('fSearch').value='';
   renderAll();
 });
 
 document.getElementById('fDesempeno').addEventListener('change', e=>{
   state.desempeno = e.target.value;
   state.page = 1;
+  state.search=''; document.getElementById('fSearch').value='';
   renderAll();
 });
 
 document.getElementById('fPotencial').addEventListener('change', e=>{
   state.potencial = e.target.value;
   state.page = 1;
+  state.search=''; document.getElementById('fSearch').value='';
   renderAll();
 });
 
@@ -1034,6 +1041,12 @@ function renderTable(){
       const oa=BOX_SORT[a.caja]??9, ob=BOX_SORT[b.caja]??9;
       return (oa-ob)*state.sortDir;
     }
+    if(key==='sucesor'){
+      const sa=a.sucesor&&a.sucesor.toLowerCase()==='si'?0:1;
+      const sb=b.sucesor&&b.sucesor.toLowerCase()==='si'?0:1;
+      if(sa!==sb) return (sa-sb)*state.sortDir;
+      return a.nombre.localeCompare(b.nombre,'es');
+    }
     let va=a[key], vb=b[key];
     if(typeof va==='number' && typeof vb==='number') return (va-vb)*state.sortDir;
     return String(va).localeCompare(String(vb),'es')*state.sortDir;
@@ -1129,6 +1142,11 @@ let activeSuggestIdx = -1;
 fSearch.addEventListener('input', ()=>{
   state.search = fSearch.value;
   state.page = 1;
+  if(state.search){
+    state.direccion=''; state.gerencia=''; state.jefe='';
+    state.region=''; state.ciudad=''; state.desempeno=''; state.potencial='';
+    ['fDireccion','fGerencia','fJefe','fRegion','fCiudad','fDesempeno','fPotencial'].forEach(id=> document.getElementById(id).value='');
+  }
   renderSuggestions();
   renderAll();
 });
@@ -1381,6 +1399,9 @@ function exportPDF(){
 
   const BOX_SORT_ORDER={9:0,8:1,7:2,6:3,5:4,4:5,3:6,2:7,1:8};
   const sorted=[...data].sort((a,b)=>{
+    const sa=a.sucesor&&a.sucesor.toLowerCase()==='si'?0:1;
+    const sb=b.sucesor&&b.sucesor.toLowerCase()==='si'?0:1;
+    if(sa!==sb) return sa-sb;
     const oa=BOX_SORT_ORDER[a.caja]??9, ob=BOX_SORT_ORDER[b.caja]??9;
     if(oa!==ob) return oa-ob;
     return a.nombre.localeCompare(b.nombre,'es');
