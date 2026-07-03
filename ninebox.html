@@ -294,7 +294,7 @@ p.subtitle{
 .section-head p{ margin:0; color:var(--text-faint); font-size:13px; max-width:480px; }
 
 .matrix-wrap{ display:grid; grid-template-columns: 168px 1fr; gap:14px; }
-.matrix-yaxis{ display:grid; grid-template-rows: 40px repeat(4, 1fr); gap:8px; }
+.matrix-yaxis{ display:grid; grid-template-rows: 40px repeat(3, 1fr); gap:8px; }
 .matrix-yaxis .yspacer{}
 .matrix-yaxis .ylabel{
   display:flex; align-items:center; justify-content:center; text-align:center;
@@ -308,7 +308,7 @@ p.subtitle{
   font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:13.5px;
   color: var(--text-dim); text-align:center;
 }
-.matrix-cells{ display:grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 168px); gap:8px; }
+.matrix-cells{ display:grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 168px); gap:8px; }
 
 .cell{
   position:relative;
@@ -568,7 +568,6 @@ footer{
         <div class="ylabel">Alto<br>desempeño</div>
         <div class="ylabel">Desempeño<br>consistente</div>
         <div class="ylabel">Bajo<br>desempeño</div>
-        <div class="ylabel" style="color:#6b7280;font-size:12px">Sin<br>ubicación</div>
       </div>
       <div class="matrix-main">
         <div class="matrix-xaxis">
@@ -659,9 +658,8 @@ const BOX_META = {
   3:{ name:'A gestionar',                 short:'A gestionar',            color:'var(--c3)', row:2, col:2 },
   2:{ name:'En revisión',                 short:'En revisión',            color:'var(--c2)', row:2, col:1 },
   1:{ name:'En riesgo',                   short:'En riesgo',              color:'var(--c1)', row:2, col:0 },
-  0:{ name:'Sin ubicación',               short:'Sin ubicación',          color:'#6b7280',  row:3, col:0 },
 };
-const RENDER_ORDER = [7,8,9,4,5,6,1,2,3,0];
+const RENDER_ORDER = [7,8,9,4,5,6,1,2,3];
 
 const state = {
   search:'', direccion:'', gerencia:'', jefe:'', region:'', ciudad:'', desempeno:'', potencial:'',
@@ -1012,6 +1010,7 @@ function renderDist(){
 const COLUMNS = [
   {key:'nombre', label:'Nombre'},
   {key:'cargo', label:'Cargo'},
+  {key:'gerencia', label:'Gerencia'},
   {key:'caja', label:'Ubicación'},
   {key:'sucesor', label:'Posible sucesor'},
   {key:'tiempo', label:'Tiempo'},
@@ -1037,7 +1036,7 @@ function renderTableHead(){
 function renderTable(){
   let data = currentFiltered();
   const key = state.sortKey;
-  const BOX_SORT={9:0,8:1,7:2,6:3,5:4,4:5,3:6,2:7,1:8,0:9};
+  const BOX_SORT={9:0,8:1,7:2,6:3,5:4,4:5,3:6,2:7,1:8};
   data = [...data].sort((a,b)=>{
     // 1. Sucesor first
     const sa=a.sucesor&&a.sucesor.toLowerCase()==='si'?0:1;
@@ -1070,6 +1069,7 @@ function renderTable(){
       return `<tr data-name="${encodeURIComponent(p.nombre)}">
         <td class="name">${p.nombre}</td>
         <td>${p.cargo || '—'}</td>
+        <td>${p.gerencia || '—'}</td>
         <td><span class="chip" style="background:${meta.color}">${p.caja} · ${meta.short}</span></td>
         <td>${sucesorBadge}</td>
         <td>${p.tiempo && p.tiempo !== 'N/A' ? p.tiempo : '—'}</td>
@@ -1238,7 +1238,7 @@ function exportPDF(){
   doc.text('Mapa de Talento 2026',margin,26);
 
   doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(200,210,230);
-  doc.text('Gestión Humana · Claro Colombia',margin,34);
+  doc.text('Equipo de Trabajo del Jefe · Claro Colombia',margin,34);
 
   // Stats in header
   doc.setFontSize(7);doc.setTextColor(180,195,220);
@@ -1311,20 +1311,18 @@ function exportPDF(){
   const BOX_COLORS={
     7:[29,110,140],8:[47,146,113],9:[30,122,78],
     4:[156,106,46],5:[201,154,70],6:[127,166,94],
-    1:[71,80,92],2:[88,98,111],3:[105,115,127],
-    0:[107,114,128]
+    1:[71,80,92],2:[88,98,111],3:[105,115,127]
   };
   const BOX_BG={
     7:[219,234,254],8:[209,250,229],9:[209,250,229],
     4:[255,237,213],5:[255,237,213],6:[209,250,229],
-    1:[243,244,246],2:[243,244,246],3:[243,244,246],
-    0:[243,244,246]
+    1:[243,244,246],2:[243,244,246],3:[243,244,246]
   };
-  const gridOrder=[7,8,9,4,5,6,1,2,3,0];
+  const gridOrder=[7,8,9,4,5,6,1,2,3];
 
   // Y-axis labels
   doc.setFontSize(5);doc.setFont('helvetica','bold');doc.setTextColor(...GRAY);
-  const yLabels=['Alto desempeño','Desempeño consistente','Bajo desempeño','Sin ubicación'];
+  const yLabels=['Alto desempeño','Desempeño consistente','Bajo desempeño'];
   yLabels.forEach((lbl,i)=>{
     const cy=y+i*(gridH+gap)+gridH/2;
     doc.text(lbl,margin-3,cy,{align:'center',rotate:90});
@@ -1398,7 +1396,7 @@ function exportPDF(){
   checkY(30);
   y=sectionTitle('03','Detalle de participantes',y);
 
-  const BOX_SORT_ORDER={9:0,8:1,7:2,6:3,5:4,4:5,3:6,2:7,1:8,0:9};
+  const BOX_SORT_ORDER={9:0,8:1,7:2,6:3,5:4,4:5,3:6,2:7,1:8};
   const sorted=[...data].sort((a,b)=>{
     // 1. Sucesor first
     const sa=a.sucesor&&a.sucesor.toLowerCase()==='si'?0:1;
@@ -1410,20 +1408,22 @@ function exportPDF(){
     // 3. Then by name
     return a.nombre.localeCompare(b.nombre,'es');
   });
-  const nameW=W-margin*2-110;
+  const nameW=W-margin*2-140;
   const cargoW=35;
-  const boxW=28;
-  const sucW=22;
-  const timeW=15;
+  const gerenciaW=30;
+  const boxW=25;
+  const sucW=18;
+  const timeW=12;
 
   // Table header
   doc.setFillColor(...BLUE);doc.roundedRect(margin,y-3,W-margin*2,7,1.5,1.5,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(6);doc.setFont('helvetica','bold');
+  doc.setTextColor(255,255,255);doc.setFontSize(5.5);doc.setFont('helvetica','bold');
   doc.text('Nombre',margin+4,y+1);
   doc.text('Cargo',margin+nameW+4,y+1);
-  doc.text('Ubicación',margin+nameW+cargoW+4,y+1);
-  doc.text('Sucesor',margin+nameW+cargoW+boxW+4,y+1);
-  doc.text('Tiempo',margin+nameW+cargoW+boxW+sucW+4,y+1);
+  doc.text('Gerencia',margin+nameW+cargoW+4,y+1);
+  doc.text('Ubicación',margin+nameW+cargoW+gerenciaW+4,y+1);
+  doc.text('Sucesor',margin+nameW+cargoW+gerenciaW+boxW+4,y+1);
+  doc.text('Tiempo',margin+nameW+cargoW+gerenciaW+boxW+sucW+4,y+1);
   y+=7;
 
   // Table rows
@@ -1434,35 +1434,39 @@ function exportPDF(){
     doc.setFillColor(...rowBg);
     doc.roundedRect(margin,y-3,W-margin*2,6,1,1,'F');
 
-    doc.setFont('helvetica','normal');doc.setFontSize(5.5);doc.setTextColor(...DARK);
-    doc.text(p.nombre.length>30?p.nombre.slice(0,28)+'…':p.nombre,margin+4,y+0.5);
+    doc.setFont('helvetica','normal');doc.setFontSize(5);doc.setTextColor(...DARK);
+    doc.text(p.nombre,margin+4,y+0.5);
 
-    // Cargo
+    // Cargo (full name)
     const cargoName=p.cargo||'—';
-    doc.text(cargoName.length>25?cargoName.slice(0,23)+'…':cargoName,margin+nameW+4,y+0.5);
+    doc.text(cargoName,margin+nameW+4,y+0.5);
+
+    // Gerencia
+    const gerenciaName=p.gerencia||'—';
+    doc.text(gerenciaName.length>22?gerenciaName.slice(0,20)+'…':gerenciaName,margin+nameW+cargoW+4,y+0.5);
 
     // Chip
     const chipC=p.caja>=7?GREEN:p.caja>=4?ORANGE:RED;
     const chipBg=p.caja>=7?GREEN_BG:p.caja>=4?ORANGE_BG:RED_BG;
     const chipText=p.caja+' · '+meta.short;
-    const chipW=doc.getStringUnitWidth(chipText)*5*0.352778+5;
+    const chipW=doc.getStringUnitWidth(chipText)*4.5*0.352778+4;
     doc.setFillColor(...chipBg);doc.setDrawColor(...chipC);doc.setLineWidth(0.2);
-    doc.roundedRect(margin+nameW+cargoW,y-2,chipW,5,2,2,'FD');
-    doc.setFontSize(4.5);doc.setFont('helvetica','bold');doc.setTextColor(...chipC);
-    doc.text(chipText,margin+nameW+cargoW+2.5,y+1.2);
+    doc.roundedRect(margin+nameW+cargoW+gerenciaW,y-2,chipW,5,2,2,'FD');
+    doc.setFontSize(4);doc.setFont('helvetica','bold');doc.setTextColor(...chipC);
+    doc.text(chipText,margin+nameW+cargoW+gerenciaW+2,y+1.2);
 
     // Sucesor
-    doc.setFontSize(5);doc.setFont('helvetica','normal');
+    doc.setFontSize(4.5);doc.setFont('helvetica','normal');
     if(p.sucesor && p.sucesor.toLowerCase()==='si'){
-      doc.setTextColor(...GREEN);doc.text('Sí',margin+nameW+cargoW+boxW+4,y+0.5);
+      doc.setTextColor(...GREEN);doc.text('Sí',margin+nameW+cargoW+gerenciaW+boxW+4,y+0.5);
     } else {
-      doc.setTextColor(160,160,160);doc.text('—',margin+nameW+cargoW+boxW+4,y+0.5);
+      doc.setTextColor(160,160,160);doc.text('—',margin+nameW+cargoW+gerenciaW+boxW+4,y+0.5);
     }
 
     // Tiempo
     doc.setTextColor(...DARK);
     const tiempoTxt = p.tiempo && p.tiempo !== 'N/A' ? p.tiempo : '—';
-    doc.text(tiempoTxt,margin+nameW+cargoW+boxW+sucW+4,y+0.5);
+    doc.text(tiempoTxt,margin+nameW+cargoW+gerenciaW+boxW+sucW+4,y+0.5);
 
     y+=6;
   });
