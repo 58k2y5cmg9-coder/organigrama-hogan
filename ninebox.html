@@ -140,7 +140,7 @@ p.subtitle{
 /* ---------- EXEC SUMMARY ---------- */
 .exec-summary{
   margin-top: 28px;
-  opacity:0; animation: rise .7s var(--ease) .28s forwards;
+  opacity:0; animation: rise .7s var(--ease) .36s forwards;
 }
 .exec-head{
   margin-bottom:16px;
@@ -496,16 +496,6 @@ footer{
     <div class="stats-row" id="statsRow"></div>
   </header>
 
-  <section class="exec-summary panel" id="execSummary">
-    <div class="exec-head">
-      <h3>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-        Resumen Ejecutivo
-      </h3>
-    </div>
-    <div class="exec-grid" id="execGrid"></div>
-  </section>
-
   <section class="filters panel">
     <div class="filters-head">
       <h3>
@@ -550,6 +540,16 @@ footer{
       </div>
       <button class="btn-reset" id="btnReset">Limpiar filtros</button>
     </div>
+  </section>
+
+  <section class="exec-summary panel" id="execSummary">
+    <div class="exec-head">
+      <h3>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        Resumen Ejecutivo
+      </h3>
+    </div>
+    <div class="exec-grid" id="execGrid"></div>
   </section>
 
   <section class="grid-section">
@@ -852,41 +852,39 @@ function renderExecSummary(){
   const total = data.length;
   if(!total){ document.getElementById('execGrid').innerHTML=''; return; }
 
-  const stars = data.filter(d=>[8,9].includes(d.caja)).length;
-  const starsPct = Math.round(stars/total*100);
-  const solidos = data.filter(d=>[5,7,8].includes(d.caja)).length;
-  const solidosPct = Math.round(solidos/total*100);
-  const riesgo = data.filter(d=>[1,2].includes(d.caja)).length;
-  const riesgoPct = Math.round(riesgo/total*100);
+  // Cajas: col0=Profundidad(7,4,1), col1=Versatilidad media(8,5,2), col2=Alta versatilidad(9,6,3)
+  const profundidad = data.filter(d=>[7,4,1].includes(d.caja)).length;
+  const versMedia = data.filter(d=>[8,5,2].includes(d.caja)).length;
+  const altaVers = data.filter(d=>[9,6,3].includes(d.caja)).length;
 
-  const talentoKeys = [9,8,7,6];
-  const talento = {};
-  talentoKeys.forEach(k=>{ talento[k]=data.filter(d=>d.caja===k).length; });
+  const pctProf = Math.round(profundidad/total*100);
+  const pctVersM = Math.round(versMedia/total*100);
+  const pctAltaV = Math.round(altaVers/total*100);
 
   const items = [
     {
-      label:'Talento Clave',
-      value: stars,
-      sub: starsPct+'% del total — personas con alto desempeño y alto potencial (Cajas 8 y 9)',
-      bar: starsPct,
-      color: 'var(--c9)',
-      highlight: true
+      label:'Profundidad',
+      value: pctProf+'%',
+      sub: profundidad+' personas — especialistas con conocimiento profundo',
+      bar: pctProf,
+      color: 'var(--c7)',
+      highlight: false
     },
     {
-      label:'Núcleo Sólido',
-      value: solidos,
-      sub: solidosPct+'% del total — personas con desempeño consistente y potencial alto o medio (Cajas 5, 7 y 8)',
-      bar: solidosPct,
+      label:'Versatilidad media',
+      value: pctVersM+'%',
+      sub: versMedia+' personas — equilibrio entre especialización y versatilidad',
+      bar: pctVersM,
       color: 'var(--c5)',
       highlight: false
     },
     {
-      label:'En Atención',
-      value: riesgo,
-      sub: riesgoPct+'% del total — requieren acompañamiento (Cajas 1 y 2)',
-      bar: riesgoPct,
-      color: 'var(--c1)',
-      highlight: riesgoPct > 15
+      label:'Alta versatilidad',
+      value: pctAltaV+'%',
+      sub: altaVers+' personas — alta capacidad de adaptación y cruzar funciones',
+      bar: pctAltaV,
+      color: 'var(--c9)',
+      highlight: false
     }
   ];
 
@@ -993,14 +991,6 @@ function renderDist(){
 
 const COLUMNS = [
   {key:'nombre', label:'Nombre'},
-  {key:'cargo', label:'Cargo'},
-  {key:'direccion', label:'Dirección'},
-  {key:'gerencia', label:'Gerencia'},
-  {key:'ciudad', label:'Ciudad'},
-  {key:'jefe', label:'Jefe'},
-  {key:'desempeno', label:'Desempeño'},
-  {key:'potencial', label:'Potencial'},
-  {key:'caja', label:'Caja'},
 ];
 
 function renderTableHead(){
