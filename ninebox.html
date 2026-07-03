@@ -665,7 +665,7 @@ const state = {
   search:'', direccion:'', gerencia:'', jefe:'', region:'', ciudad:'', desempeno:'', potencial:'',
   caja: null,
   distMode:'direccion',
-  sortKey:'nombre', sortDir:1,
+  sortKey:'caja', sortDir:1,
   page:1, pageSize:12,
 };
 
@@ -1026,7 +1026,12 @@ function renderTableHead(){
 function renderTable(){
   let data = currentFiltered();
   const key = state.sortKey;
+  const BOX_SORT={9:0,8:1,7:2,6:3,5:4,4:5,3:6,2:7,1:8};
   data = [...data].sort((a,b)=>{
+    if(key==='caja'){
+      const oa=BOX_SORT[a.caja]??9, ob=BOX_SORT[b.caja]??9;
+      return (oa-ob)*state.sortDir;
+    }
     let va=a[key], vb=b[key];
     if(typeof va==='number' && typeof vb==='number') return (va-vb)*state.sortDir;
     return String(va).localeCompare(String(vb),'es')*state.sortDir;
@@ -1344,20 +1349,19 @@ function exportPDF(){
     doc.setFontSize(5.5);doc.setFont('helvetica','normal');doc.setTextColor(...GRAY);
     doc.text('persona'+(people.length===1?'':'s'),bx+4,by+23);
 
-    // Avatars
+    // Names list
     if(people.length>0){
-      people.slice(0,5).forEach((p,pi)=>{
-        const ax=bx+gridW-5-pi*7;
-        doc.setFillColor(...c);doc.setGState(new doc.GState({opacity:0.15}));
-        doc.circle(ax,by+18,3,'F');
-        doc.setGState(new doc.GState({opacity:1}));
-        const ini=p.nombre.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('');
-        doc.setFontSize(4);doc.setFont('helvetica','bold');doc.setTextColor(...c);
-        doc.text(ini,ax,by+19.2,{align:'center'});
+      const sortedPeople=[...people].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+      sortedPeople.slice(0,7).forEach((p,pi)=>{
+        const ny=by+14+pi*3.2;
+        if(ny<by+gridH-2){
+          doc.setFontSize(4.5);doc.setFont('helvetica','normal');doc.setTextColor(...DARK);
+          doc.text(p.nombre.length>32?p.nombre.slice(0,30)+'…':p.nombre,bx+4,ny);
+        }
       });
-      if(people.length>5){
-        doc.setFontSize(4.5);doc.setFont('helvetica','bold');doc.setTextColor(...GRAY);
-        doc.text('+'+(people.length-5),bx+gridW-5-5*7,by+19.2);
+      if(people.length>7){
+        doc.setFontSize(4.5);doc.setFont('helvetica','italic');doc.setTextColor(...GRAY);
+        doc.text('+'+(people.length-7)+' más',bx+4,by+14+7*3.2);
       }
     }
   });
@@ -1368,7 +1372,12 @@ function exportPDF(){
   checkY(30);
   y=sectionTitle('03','Detalle de participantes',y);
 
-  const sorted=[...data].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+  const BOX_SORT_ORDER={9:0,8:1,7:2,6:3,5:4,4:5,3:6,2:7,1:8};
+  const sorted=[...data].sort((a,b)=>{
+    const oa=BOX_SORT_ORDER[a.caja]??9, ob=BOX_SORT_ORDER[b.caja]??9;
+    if(oa!==ob) return oa-ob;
+    return a.nombre.localeCompare(b.nombre,'es');
+  });
   const nameW=W-margin*2-35;
   const boxW=35;
 
