@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{
   --bg: #12080a;
@@ -591,7 +592,13 @@ footer{
   <section class="table-section">
     <div class="section-head">
       <h2><span class="idx">03</span> Detalle de participantes</h2>
-      <p>Haz clic en una fila para ver la ficha completa.</p>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn-reset" id="btnPdf" style="background:var(--crimson);border-color:var(--crimson);color:#fff;display:flex;align-items:center;gap:6px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar PDF
+        </button>
+        <p style="margin:0;color:var(--text-faint);font-size:13px">Haz clic en una fila para ver la ficha completa.</p>
+      </div>
     </div>
     <div class="table-wrap">
       <div style="overflow-x:auto;">
@@ -991,6 +998,7 @@ function renderDist(){
 
 const COLUMNS = [
   {key:'nombre', label:'Nombre'},
+  {key:'caja', label:'Ubicación'},
 ];
 
 function renderTableHead(){
@@ -1035,13 +1043,6 @@ function renderTable(){
       const meta = BOX_META[p.caja];
       return `<tr data-name="${encodeURIComponent(p.nombre)}">
         <td class="name">${p.nombre}</td>
-        <td>${p.cargo}</td>
-        <td>${p.direccion}</td>
-        <td>${p.gerencia}</td>
-        <td>${p.ciudad}</td>
-        <td>${p.jefe}</td>
-        <td>${p.desempeno}</td>
-        <td>${p.potencial}</td>
         <td><span class="chip" style="background:${meta.color}">${p.caja} · ${meta.short}</span></td>
       </tr>`;
     }).join('');
@@ -1141,6 +1142,141 @@ function renderSuggestions(){
 document.addEventListener('click', e=>{
   if(!document.getElementById('searchField').contains(e.target)) suggestBox.classList.remove('show');
 });
+
+/* ── PDF DOWNLOAD ─────────────────────────────────────────────────────── */
+document.getElementById('btnPdf').addEventListener('click', exportPDF);
+
+function exportPDF(){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('p','mm','letter');
+  const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight();
+  const margin=18;
+  const data=currentFiltered();
+  const BLUE=[0,51,160], DARK=[17,24,39], GREEN=[5,150,105], ORANGE=[234,88,12], RED=[220,38,38];
+
+  let y=14;
+
+  // Header
+  doc.setFillColor(...BLUE);doc.rect(0,0,W,30,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(15);doc.setFont('helvetica','bold');
+  doc.text('Nine Box — Mapa de Talento 2026',margin,12);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  doc.text('Gestión Humana · Claro Colombia',margin,18);
+  doc.setFontSize(8);
+  doc.text('Generado: '+new Date().toLocaleDateString('es-CO')+' · '+data.length+' participantes',margin,24);
+  y=38;
+
+  // Stats summary
+  const total=data.length;
+  const prof=data.filter(d=>[7,4,1].includes(d.caja)).length;
+  const versM=data.filter(d=>[8,5,2].includes(d.caja)).length;
+  const altV=data.filter(d=>[9,6,3].includes(d.caja)).length;
+
+  doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
+  doc.text('Resumen por Versatilidad',margin,y);y+=6;
+
+  const summaryItems=[
+    {label:'Profundidad',count:prof,pct:Math.round(prof/total*100)},
+    {label:'Versatilidad media',count:versM,pct:Math.round(versM/total*100)},
+    {label:'Alta versatilidad',count:altV,pct:Math.round(altV/total*100)}
+  ];
+  const barW=(W-margin*2-10)/3;
+  summaryItems.forEach((it,i)=>{
+    const bx=margin+i*(barW+5);
+    doc.setFillColor(248,249,250);doc.roundedRect(bx,y,barW,18,2,2,'F');
+    doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(107,114,128);
+    doc.text(it.label,bx+4,y+5);
+    doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
+    doc.text(it.pct+'%',bx+4,y+13);
+    doc.setFontSize(6.5);doc.setFont('helvetica','normal');doc.setTextColor(107,114,128);
+    doc.text(it.count+' personas',bx+4,y+16.5);
+  });
+  y+=24;
+
+  // Nine Box grid
+  doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
+  doc.text('Matriz Nine Box',margin,y);y+=6;
+
+  const gridW=(W-margin*2-8)/3;
+  const gridH=24;
+  const BOX_COLORS={
+    7:[29,110,140],8:[47,146,113],9:[30,122,78],
+    4:[156,106,46],5:[201,154,70],6:[127,166,94],
+    1:[71,80,92],2:[88,98,111],3:[105,115,127]
+  };
+  const gridOrder=[7,8,9,4,5,6,1,2,3];
+
+  // X-axis labels
+  doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
+  ['Profundidad','Versatilidad media','Alta versatilidad'].forEach((lbl,i)=>{
+    doc.text(lbl,margin+i*(gridW+2.67)+gridW/2,y-1,{align:'center'});
+  });
+  y+=2;
+
+  gridOrder.forEach((n,idx)=>{
+    const col=idx%3, row=Math.floor(idx/3);
+    const bx=margin+col*(gridW+2.67);
+    const by=y+row*(gridH+2.67);
+    const meta=BOX_META[n];
+    const people=data.filter(d=>d.caja===n);
+    const c=BOX_COLORS[n]||[100,100,100];
+
+    doc.setFillColor(...c);doc.roundedRect(bx,by,gridW,gridH,2,2,'F');
+    doc.setTextColor(255,255,255);doc.setFontSize(6);doc.setFont('helvetica','bold');
+    doc.text(meta.short,bx+3,by+5);
+    doc.setFontSize(11);doc.setFont('helvetica','bold');
+    doc.text(String(people.length),bx+3,by+13);
+    doc.setFontSize(5.5);doc.setFont('helvetica','normal');
+    doc.text('persona'+(people.length===1?'':'s'),bx+3,by+16.5);
+
+    if(people.length>0){
+      const names=people.slice(0,4).map(p=>p.nombre.split(' ').slice(0,2).map(w=>w[0]).join('')).join(' ');
+      doc.setFontSize(5);doc.setFont('helvetica','normal');doc.setTextColor(255,255,255,0.7);
+      doc.text(names+(people.length>4?' +'+(people.length-4):''),bx+gridW-3,by+5,{align:'right'});
+    }
+  });
+  y+=gridH*3+2.67*2+8;
+
+  // Y-axis label
+  doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
+
+  // Participant list
+  checkY(12);
+  doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
+  doc.text('Detalle de participantes',margin,y);y+=6;
+
+  function checkY(needed){
+    if(y+needed>H-20){doc.addPage();y=14;}
+  }
+
+  const sorted=[...data].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
+  const colW=(W-margin*2)/2;
+
+  doc.setFontSize(7);doc.setFont('helvetica','bold');
+  doc.setTextColor(255,255,255);doc.setFillColor(...BLUE);
+  doc.rect(margin,y-3,W-margin*2,6,'F');
+  doc.text('Nombre',margin+2,y);
+  doc.text('Ubicación',margin+colW+2,y);
+  y+=6;
+
+  sorted.forEach(p=>{
+    checkY(5);
+    const meta=BOX_META[p.caja];
+    doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(...DARK);
+    doc.text(p.nombre,margin+2,y);
+    doc.setFont('helvetica','bold');doc.setFontSize(6);
+    const c=p.caja>=7?GREEN:p.caja>=4?ORANGE:RED;
+    doc.setTextColor(...c);
+    doc.text(p.caja+' · '+meta.short,margin+colW+2,y);
+    y+=4.5;
+  });
+
+  // Footer
+  doc.setFontSize(6);doc.setTextColor(150,150,150);
+  doc.text('Nine Box · Gestión de Talento · Claro Colombia',margin,H-6);
+
+  doc.save('NineBox_'+new Date().toISOString().slice(0,10)+'.pdf');
+}
 
 function renderAll(){
   renderExecSummary();
