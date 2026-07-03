@@ -1039,19 +1039,15 @@ function renderTable(){
   const key = state.sortKey;
   const BOX_SORT={9:0,8:1,7:2,6:3,5:4,4:5,3:6,2:7,1:8,0:9};
   data = [...data].sort((a,b)=>{
-    if(key==='caja'){
-      const oa=BOX_SORT[a.caja]??9, ob=BOX_SORT[b.caja]??9;
-      return (oa-ob)*state.sortDir;
-    }
-    if(key==='sucesor'){
-      const sa=a.sucesor&&a.sucesor.toLowerCase()==='si'?0:1;
-      const sb=b.sucesor&&b.sucesor.toLowerCase()==='si'?0:1;
-      if(sa!==sb) return (sa-sb)*state.sortDir;
-      return a.nombre.localeCompare(b.nombre,'es');
-    }
-    let va=a[key], vb=b[key];
-    if(typeof va==='number' && typeof vb==='number') return (va-vb)*state.sortDir;
-    return String(va).localeCompare(String(vb),'es')*state.sortDir;
+    // 1. Sucesor first
+    const sa=a.sucesor&&a.sucesor.toLowerCase()==='si'?0:1;
+    const sb=b.sucesor&&b.sucesor.toLowerCase()==='si'?0:1;
+    if(sa!==sb) return (sa-sb)*state.sortDir;
+    // 2. Then by caja (Alto potencial first)
+    const oa=BOX_SORT[a.caja]??9, ob=BOX_SORT[b.caja]??9;
+    if(oa!==ob) return (oa-ob)*state.sortDir;
+    // 3. Then by name
+    return a.nombre.localeCompare(b.nombre,'es')*state.sortDir;
   });
 
   document.getElementById('resultCount').innerHTML = `<strong>${data.length}</strong> de ${RAW.length} participantes`;
@@ -1404,11 +1400,14 @@ function exportPDF(){
 
   const BOX_SORT_ORDER={9:0,8:1,7:2,6:3,5:4,4:5,3:6,2:7,1:8,0:9};
   const sorted=[...data].sort((a,b)=>{
+    // 1. Sucesor first
     const sa=a.sucesor&&a.sucesor.toLowerCase()==='si'?0:1;
     const sb=b.sucesor&&b.sucesor.toLowerCase()==='si'?0:1;
     if(sa!==sb) return sa-sb;
+    // 2. Then by caja (Alto potencial first)
     const oa=BOX_SORT_ORDER[a.caja]??9, ob=BOX_SORT_ORDER[b.caja]??9;
     if(oa!==ob) return oa-ob;
+    // 3. Then by name
     return a.nombre.localeCompare(b.nombre,'es');
   });
   const nameW=W-margin*2-110;
