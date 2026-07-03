@@ -1150,130 +1150,248 @@ function exportPDF(){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('p','mm','letter');
   const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight();
-  const margin=18;
+  const margin=20;
   const data=currentFiltered();
-  const BLUE=[0,51,160], DARK=[17,24,39], GREEN=[5,150,105], ORANGE=[234,88,12], RED=[220,38,38];
 
-  let y=14;
+  const BLUE=[0,51,160], BLUE2=[30,58,95], DARK=[17,24,39], GRAY=[107,114,128];
+  const GREEN=[5,150,105], GREEN_BG=[209,250,229];
+  const ORANGE=[234,88,12], ORANGE_BG=[255,237,213];
+  const RED=[220,38,38], RED_BG=[254,226,226];
+  const CREAM=[255,252,245], LIGHT_BG=[248,249,250];
 
-  // Header
-  doc.setFillColor(...BLUE);doc.rect(0,0,W,30,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(15);doc.setFont('helvetica','bold');
-  doc.text('Nine Box — Mapa de Talento 2026',margin,12);
-  doc.setFontSize(9);doc.setFont('helvetica','normal');
-  doc.text('Gestión Humana · Claro Colombia',margin,18);
-  doc.setFontSize(8);
-  doc.text('Generado: '+new Date().toLocaleDateString('es-CO')+' · '+data.length+' participantes',margin,24);
-  y=38;
+  let y=0;
 
-  // Stats summary
+  function checkY(needed){
+    if(y+needed>H-25){
+      // Footer before new page
+      doc.setFillColor(248,249,250);doc.rect(0,H-18,W,18,'F');
+      doc.setDrawColor(226,230,239);doc.line(margin,H-18,W-margin,H-18);
+      doc.setFontSize(6);doc.setTextColor(...GRAY);
+      doc.text('Nine Box · Gestión de Talento · Claro Colombia',margin,H-10);
+      doc.text('Página '+doc.internal.getNumberOfPages(),W-margin,H-10,{align:'right'});
+      doc.addPage();y=16;
+    }
+  }
+
+  // ─── COVER HEADER ────────────────────────────────────────────────
+  // Gradient background simulation
+  doc.setFillColor(...BLUE);doc.rect(0,0,W,52,'F');
+  doc.setFillColor(...BLUE2);doc.rect(0,38,W,14,'F');
+
+  // Accent line
+  doc.setFillColor(216,173,100);doc.rect(0,52,W,1.5,'F');
+
+  doc.setTextColor(255,255,255);doc.setFontSize(22);doc.setFont('helvetica','bold');
+  doc.text('Nine Box',margin,18);
+  doc.setFontSize(14);doc.setFont('helvetica','normal');
+  doc.text('Mapa de Talento 2026',margin,26);
+
+  doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(200,210,230);
+  doc.text('Gestión Humana · Claro Colombia',margin,34);
+
+  // Stats in header
+  doc.setFontSize(7);doc.setTextColor(180,195,220);
+  doc.text(data.length+' participantes evaluados',margin,44);
+  doc.text(new Date().toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'}),margin+60,44);
+
+  y=62;
+
+  // ─── SECTION: RESUMEN POR VERSATILIDAD ──────────────────────────
+  function sectionTitle(num, title, yPos){
+    doc.setFillColor(...BLUE);doc.roundedRect(margin,yPos-4,8,6,1,1,'F');
+    doc.setTextColor(255,255,255);doc.setFontSize(6);doc.setFont('helvetica','bold');
+    doc.text(num,margin+1,yPos);
+    doc.setFontSize(11);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
+    doc.text(title,margin+12,yPos+0.5);
+    // Decorative line
+    doc.setDrawColor(226,230,239);doc.setLineWidth(0.3);
+    doc.line(margin+12,yPos+4,W-margin,yPos+4);
+    return yPos+10;
+  }
+
+  y=sectionTitle('01','Resumen por Versatilidad',y);
+
   const total=data.length;
   const prof=data.filter(d=>[7,4,1].includes(d.caja)).length;
   const versM=data.filter(d=>[8,5,2].includes(d.caja)).length;
   const altV=data.filter(d=>[9,6,3].includes(d.caja)).length;
 
-  doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
-  doc.text('Resumen por Versatilidad',margin,y);y+=6;
-
   const summaryItems=[
-    {label:'Profundidad',count:prof,pct:Math.round(prof/total*100)},
-    {label:'Versatilidad media',count:versM,pct:Math.round(versM/total*100)},
-    {label:'Alta versatilidad',count:altV,pct:Math.round(altV/total*100)}
+    {label:'Profundidad',count:prof,pct:Math.round(prof/total*100),color:[29,110,140],bg:[219,234,254]},
+    {label:'Versatilidad media',count:versM,pct:Math.round(versM/total*100),color:[156,106,46],bg:[255,237,213]},
+    {label:'Alta versatilidad',count:altV,pct:Math.round(altV/total*100),color:[30,122,78],bg:[209,250,229]}
   ];
-  const barW=(W-margin*2-10)/3;
-  summaryItems.forEach((it,i)=>{
-    const bx=margin+i*(barW+5);
-    doc.setFillColor(248,249,250);doc.roundedRect(bx,y,barW,18,2,2,'F');
-    doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(107,114,128);
-    doc.text(it.label,bx+4,y+5);
-    doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
-    doc.text(it.pct+'%',bx+4,y+13);
-    doc.setFontSize(6.5);doc.setFont('helvetica','normal');doc.setTextColor(107,114,128);
-    doc.text(it.count+' personas',bx+4,y+16.5);
-  });
-  y+=24;
 
-  // Nine Box grid
-  doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
-  doc.text('Matriz Nine Box',margin,y);y+=6;
+  const cardW=(W-margin*2-10)/3;
+  const cardH=28;
+
+  summaryItems.forEach((it,i)=>{
+    const cx=margin+i*(cardW+5);
+
+    // Card background
+    doc.setFillColor(255,255,255);doc.setDrawColor(226,230,239);doc.setLineWidth(0.3);
+    doc.roundedRect(cx,y,cardW,cardH,3,3,'FD');
+
+    // Color accent bar
+    doc.setFillColor(...it.color);doc.roundedRect(cx,y,cardW,3,3,3,'F');
+    doc.setFillColor(...it.color);doc.rect(cx,y+1.5,cardW,1.5,'F');
+
+    // Content
+    doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(...GRAY);
+    doc.text(it.label,cx+5,y+9);
+
+    doc.setFontSize(20);doc.setFont('helvetica','bold');doc.setTextColor(...it.color);
+    doc.text(it.pct+'%',cx+5,y+20);
+
+    doc.setFontSize(6.5);doc.setFont('helvetica','normal');doc.setTextColor(...GRAY);
+    doc.text(it.count+' personas',cx+5,y+24);
+  });
+
+  y+=cardH+12;
+
+  // ─── SECTION: MATRIZ NINE BOX ──────────────────────────────────
+  checkY(80);
+  y=sectionTitle('02','Matriz Nine Box',y);
 
   const gridW=(W-margin*2-8)/3;
-  const gridH=24;
+  const gridH=28;
+  const gap=2.67;
+
   const BOX_COLORS={
     7:[29,110,140],8:[47,146,113],9:[30,122,78],
     4:[156,106,46],5:[201,154,70],6:[127,166,94],
     1:[71,80,92],2:[88,98,111],3:[105,115,127]
   };
+  const BOX_BG={
+    7:[219,234,254],8:[209,250,229],9:[209,250,229],
+    4:[255,237,213],5:[255,237,213],6:[209,250,229],
+    1:[243,244,246],2:[243,244,246],3:[243,244,246]
+  };
   const gridOrder=[7,8,9,4,5,6,1,2,3];
 
+  // Y-axis labels
+  doc.setFontSize(6);doc.setFont('helvetica','bold');doc.setTextColor(...GRAY);
+  const yLabels=['Alto desempeño','Desempeño consistente','Bajo desempeño'];
+  yLabels.forEach((lbl,i)=>{
+    doc.text(lbl,margin-1,y+i*(gridH+gap)+gridH/2+1,{align:'right',rotate:90});
+  });
+
   // X-axis labels
-  doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
-  ['Profundidad','Versatilidad media','Alta versatilidad'].forEach((lbl,i)=>{
-    doc.text(lbl,margin+i*(gridW+2.67)+gridW/2,y-1,{align:'center'});
+  const xLabels=['Profundidad','Versatilidad media','Alta versatilidad'];
+  doc.setFontSize(6);doc.setFont('helvetica','bold');doc.setTextColor(...GRAY);
+  xLabels.forEach((lbl,i)=>{
+    doc.text(lbl,margin+5+i*(gridW+gap)+gridW/2,y-1,{align:'center'});
   });
   y+=2;
 
   gridOrder.forEach((n,idx)=>{
     const col=idx%3, row=Math.floor(idx/3);
-    const bx=margin+col*(gridW+2.67);
-    const by=y+row*(gridH+2.67);
+    const bx=margin+5+col*(gridW+gap);
+    const by=y+row*(gridH+gap);
     const meta=BOX_META[n];
     const people=data.filter(d=>d.caja===n);
     const c=BOX_COLORS[n]||[100,100,100];
+    const bg=BOX_BG[n]||[240,240,240];
 
-    doc.setFillColor(...c);doc.roundedRect(bx,by,gridW,gridH,2,2,'F');
+    // Card shadow
+    doc.setFillColor(0,0,0);doc.setGState(new doc.GState({opacity:0.04}));
+    doc.roundedRect(bx+0.5,by+0.5,gridW,gridH,3,3,'F');
+    doc.setGState(new doc.GState({opacity:1}));
+
+    // Card background
+    doc.setFillColor(...bg);doc.setDrawColor(...c);doc.setLineWidth(0.4);
+    doc.roundedRect(bx,by,gridW,gridH,3,3,'FD');
+
+    // Color header
+    doc.setFillColor(...c);doc.roundedRect(bx,by,gridW,8,3,3,'F');
+    doc.setFillColor(...c);doc.rect(bx,by+5,gridW,3,'F');
+
+    // Box number badge
+    doc.setFillColor(255,255,255);doc.roundedRect(bx+gridW-10,by+1.5,7,5,1.5,1.5,'F');
+    doc.setFontSize(5.5);doc.setFont('helvetica','bold');doc.setTextColor(...c);
+    doc.text(String(n),bx+gridW-6.5,by+5.2,{align:'center'});
+
+    // Box name
     doc.setTextColor(255,255,255);doc.setFontSize(6);doc.setFont('helvetica','bold');
-    doc.text(meta.short,bx+3,by+5);
-    doc.setFontSize(11);doc.setFont('helvetica','bold');
-    doc.text(String(people.length),bx+3,by+13);
-    doc.setFontSize(5.5);doc.setFont('helvetica','normal');
-    doc.text('persona'+(people.length===1?'':'s'),bx+3,by+16.5);
+    doc.text(meta.short.length>22?meta.short.slice(0,20)+'…':meta.short,bx+3,by+5.5);
 
+    // Count
+    doc.setFontSize(16);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
+    doc.text(String(people.length),bx+4,by+19);
+
+    doc.setFontSize(5.5);doc.setFont('helvetica','normal');doc.setTextColor(...GRAY);
+    doc.text('persona'+(people.length===1?'':'s'),bx+4,by+23);
+
+    // Avatars
     if(people.length>0){
-      const names=people.slice(0,4).map(p=>p.nombre.split(' ').slice(0,2).map(w=>w[0]).join('')).join(' ');
-      doc.setFontSize(5);doc.setFont('helvetica','normal');doc.setTextColor(255,255,255,0.7);
-      doc.text(names+(people.length>4?' +'+(people.length-4):''),bx+gridW-3,by+5,{align:'right'});
+      people.slice(0,5).forEach((p,pi)=>{
+        const ax=bx+gridW-5-pi*7;
+        doc.setFillColor(...c);doc.setGState(new doc.GState({opacity:0.15}));
+        doc.circle(ax,by+18,3,'F');
+        doc.setGState(new doc.GState({opacity:1}));
+        const ini=p.nombre.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('');
+        doc.setFontSize(4);doc.setFont('helvetica','bold');doc.setTextColor(...c);
+        doc.text(ini,ax,by+19.2,{align:'center'});
+      });
+      if(people.length>5){
+        doc.setFontSize(4.5);doc.setFont('helvetica','bold');doc.setTextColor(...GRAY);
+        doc.text('+'+(people.length-5),bx+gridW-5-5*7,by+19.2);
+      }
     }
   });
-  y+=gridH*3+2.67*2+8;
 
-  // Y-axis label
-  doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
+  y+=gridH*3+gap*2+14;
 
-  // Participant list
-  checkY(12);
-  doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
-  doc.text('Detalle de participantes',margin,y);y+=6;
-
-  function checkY(needed){
-    if(y+needed>H-20){doc.addPage();y=14;}
-  }
+  // ─── SECTION: DETALLE ──────────────────────────────────────────
+  checkY(30);
+  y=sectionTitle('03','Detalle de participantes',y);
 
   const sorted=[...data].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
-  const colW=(W-margin*2)/2;
+  const nameW=W-margin*2-35;
+  const boxW=35;
 
-  doc.setFontSize(7);doc.setFont('helvetica','bold');
-  doc.setTextColor(255,255,255);doc.setFillColor(...BLUE);
-  doc.rect(margin,y-3,W-margin*2,6,'F');
-  doc.text('Nombre',margin+2,y);
-  doc.text('Ubicación',margin+colW+2,y);
-  y+=6;
+  // Table header
+  doc.setFillColor(...BLUE);doc.roundedRect(margin,y-3,W-margin*2,7,1.5,1.5,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(6.5);doc.setFont('helvetica','bold');
+  doc.text('Nombre',margin+4,y+1);
+  doc.text('Ubicación',margin+nameW+4,y+1);
+  y+=7;
 
-  sorted.forEach(p=>{
-    checkY(5);
+  // Table rows
+  sorted.forEach((p,pi)=>{
+    checkY(6);
     const meta=BOX_META[p.caja];
+    const rowBg=pi%2===0?[255,255,255]:[248,249,250];
+    doc.setFillColor(...rowBg);
+    doc.roundedRect(margin,y-3,W-margin*2,6,1,1,'F');
+
     doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(...DARK);
-    doc.text(p.nombre,margin+2,y);
-    doc.setFont('helvetica','bold');doc.setFontSize(6);
-    const c=p.caja>=7?GREEN:p.caja>=4?ORANGE:RED;
-    doc.setTextColor(...c);
-    doc.text(p.caja+' · '+meta.short,margin+colW+2,y);
-    y+=4.5;
+    doc.text(p.nombre,margin+4,y+0.5);
+
+    // Chip
+    const chipC=p.caja>=7?GREEN:p.caja>=4?ORANGE:RED;
+    const chipBg=p.caja>=7?GREEN_BG:p.caja>=4?ORANGE_BG:RED_BG;
+    const chipText=p.caja+' · '+meta.short;
+    const chipW=doc.getStringUnitWidth(chipText)*6.5*0.352778+6;
+    doc.setFillColor(...chipBg);doc.setDrawColor(...chipC);doc.setLineWidth(0.2);
+    doc.roundedRect(margin+nameW,y-2,chipW,5,2,2,'FD');
+    doc.setFontSize(5.5);doc.setFont('helvetica','bold');doc.setTextColor(...chipC);
+    doc.text(chipText,margin+nameW+3,y+1.2);
+
+    y+=6;
   });
 
-  // Footer
-  doc.setFontSize(6);doc.setTextColor(150,150,150);
-  doc.text('Nine Box · Gestión de Talento · Claro Colombia',margin,H-6);
+  // ─── FOOTER ────────────────────────────────────────────────────
+  const totalPages=doc.internal.getNumberOfPages();
+  for(let i=1;i<=totalPages;i++){
+    doc.setPage(i);
+    doc.setFillColor(248,249,250);doc.rect(0,H-16,W,16,'F');
+    doc.setDrawColor(226,230,239);doc.setLineWidth(0.3);doc.line(margin,H-16,W-margin,H-16);
+    doc.setFontSize(6);doc.setTextColor(...GRAY);
+    doc.text('Nine Box · Gestión de Talento · Claro Colombia',margin,H-8);
+    doc.text('Página '+i+' de '+totalPages,W-margin,H-8,{align:'right'});
+    doc.text(new Date().toLocaleDateString('es-CO'),W/2,H-8,{align:'center'});
+  }
 
   doc.save('NineBox_'+new Date().toISOString().slice(0,10)+'.pdf');
 }
