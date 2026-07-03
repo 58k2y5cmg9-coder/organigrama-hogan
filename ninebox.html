@@ -164,7 +164,7 @@ p.subtitle{
 
 .filters-grid{
   display:grid;
-  grid-template-columns: 1.6fr 1.4fr 1.4fr 1fr 1fr 1fr 1fr auto;
+  grid-template-columns: 1.5fr 1.2fr 1.2fr 1.2fr 1fr 1fr 1fr 1fr auto;
   gap:10px;
 }
 .field{ display:flex; flex-direction:column; gap:6px; position:relative; }
@@ -431,7 +431,7 @@ footer{
 }
 
 @media (max-width: 980px){
-  .filters-grid{ grid-template-columns: 1fr 1fr; }
+  .filters-grid{ grid-template-columns: 1fr 1fr 1fr; }
   .matrix-wrap{ grid-template-columns: 90px 1fr; }
   .matrix-cells{ grid-template-rows: repeat(3, 120px); }
   .stats-row{ grid-template-columns: repeat(2,1fr); }
@@ -473,8 +473,11 @@ footer{
       </div>
       <div class="field">
         <label>Gerencia</label>
-        <input type="text" id="fGerencia" list="gerenciaList" placeholder="Todas" autocomplete="off">
-        <datalist id="gerenciaList"></datalist>
+        <select id="fGerencia"><option value="">Todas</option></select>
+      </div>
+      <div class="field">
+        <label>Jefe directo</label>
+        <select id="fJefe"><option value="">Todos</option></select>
       </div>
       <div class="field">
         <label>Región</label>
@@ -595,7 +598,7 @@ const BOX_META = {
 const RENDER_ORDER = [7,8,9,4,5,6,1,2,3];
 
 const state = {
-  search:'', direccion:'', gerencia:'', region:'', ciudad:'', desempeno:'', potencial:'',
+  search:'', direccion:'', gerencia:'', jefe:'', region:'', ciudad:'', desempeno:'', potencial:'',
   caja: null,
   distMode:'direccion',
   sortKey:'nombre', sortDir:1,
@@ -619,28 +622,117 @@ function fillSelect(id, values){
 
 fillSelect('fDireccion', unique('direccion'));
 fillSelect('fRegion', unique('region'));
-fillSelect('fCiudad', unique('ciudad'));
 fillSelect('fDesempeno', unique('desempeno'));
 fillSelect('fPotencial', unique('potencial'));
 
-const gerenciaList = document.getElementById('gerenciaList');
-unique('gerencia').forEach(v=>{
-  const o = document.createElement('option'); o.value = v; gerenciaList.appendChild(o);
+/* ── CASCADING FILTERS ─────────────────────────────────────────────── */
+function uniqueFiltered(field, filters){
+  return [...new Set(RAW.filter(d=>{
+    for(const [k,v] of Object.entries(filters)){
+      if(v && d[k] !== v) return false;
+    }
+    return d[field];
+  }).map(d=>d[field]))].sort((a,b)=>a.localeCompare(b,'es'));
+}
+
+function rebuildSelect(id, values){
+  const el = document.getElementById(id);
+  const prev = el.value;
+  el.innerHTML = '<option value="">'+(id==='fCiudad'?'Todas':id==='fJefe'?'Todos':'Todas')+'</option>';
+  values.forEach(v=>{
+    const o = document.createElement('option');
+    o.value = v; o.textContent = v;
+    el.appendChild(o);
+  });
+  if(values.includes(prev)) el.value = prev;
+}
+
+function updateGerenciaFilter(){
+  const dir = state.direccion;
+  const gerencias = uniqueFiltered('gerencia', dir ? {direccion:dir} : {});
+  rebuildSelect('fGerencia', gerencias);
+  if(state.gerencia && !gerencias.includes(state.gerencia)){ state.gerencia=''; document.getElementById('fGerencia').value=''; }
+}
+
+function updateJefeFilter(){
+  const dir = state.direccion;
+  const ger = state.gerencia;
+  const filters = {};
+  if(dir) filters.direccion = dir;
+  if(ger) filters.gerencia = ger;
+  const jefes = uniqueFiltered('jefe', filters);
+  rebuildSelect('fJefe', jefes);
+  if(state.jefe && !jefes.includes(state.jefe)){ state.jefe=''; document.getElementById('fJefe').value=''; }
+}
+
+function updateCiudadFilter(){
+  const reg = state.region;
+  const ciudades = uniqueFiltered('ciudad', reg ? {region:reg} : {});
+  rebuildSelect('fCiudad', ciudades);
+  if(state.ciudad && !ciudades.includes(state.ciudad)){ state.ciudad=''; document.getElementById('fCiudad').value=''; }
+}
+
+function updateAllCascading(){
+  updateGerenciaFilter();
+  updateJefeFilter();
+  updateCiudadFilter();
+}
+
+document.getElementById('fDireccion').addEventListener('change', e=>{
+  state.direccion = e.target.value;
+  state.gerencia=''; state.jefe=''; state.page=1;
+  updateAllCascading();
+  renderAll();
 });
 
-function applyFilters(list){
-  return list.filter(d=>{
-    if(state.search && !norm(d.nombre).includes(norm(state.search))) return false;
-    if(state.direccion && d.direccion !== state.direccion) return false;
-    if(state.gerencia && norm(d.gerencia) !== norm(state.gerencia)) return false;
-    if(state.region && d.region !== state.region) return false;
-    if(state.ciudad && d.ciudad !== state.ciudad) return false;
-    if(state.desempeno && d.desempeno !== state.desempeno) return false;
-    if(state.potencial && String(d.potencial) !== state.potencial) return false;
-    if(state.caja && d.caja !== state.caja) return false;
-    return true;
-  });
-}
+document.getElementById('fGerencia').addEventListener('change', e=>{
+  state.gerencia = e.target.value;
+  state.jefe=''; state.page=1;
+  updateJefeFilter();
+  renderAll();
+});
+
+document.getElementById('fJefe').addEventListener('change', e=>{
+  state.jefe = e.target.value;
+  state.page = 1;
+  renderAll();
+});
+
+document.getElementById('fRegion').addEventListener('change', e=>{
+  state.region = e.target.value;
+  state.ciudad=''; state.page=1;
+  updateCiudadFilter();
+  renderAll();
+});
+
+document.getElementById('fCiudad').addEventListener('change', e=>{
+  state.ciudad = e.target.value;
+  state.page = 1;
+  renderAll();
+});
+
+document.getElementById('fDesempeno').addEventListener('change', e=>{
+  state.desempeno = e.target.value;
+  state.page = 1;
+  renderAll();
+});
+
+document.getElementById('fPotencial').addEventListener('change', e=>{
+  state.potencial = e.target.value;
+  state.page = 1;
+  renderAll();
+});
+
+updateAllCascading();
+
+document.getElementById('btnReset').addEventListener('click', ()=>{
+  state.search=''; state.direccion=''; state.gerencia=''; state.jefe=''; state.region=''; state.ciudad='';
+  state.desempeno=''; state.potencial=''; state.caja=null; state.page=1;
+  document.getElementById('fSearch').value='';
+  ['fDireccion','fGerencia','fJefe','fRegion','fCiudad','fDesempeno','fPotencial'].forEach(id=> document.getElementById(id).value='');
+  updateAllCascading();
+  renderAll();
+});
 
 function currentFiltered(){ return applyFilters(RAW); }
 function filteredExcludingCaja(){
@@ -930,34 +1022,6 @@ function renderSuggestions(){
 }
 document.addEventListener('click', e=>{
   if(!document.getElementById('searchField').contains(e.target)) suggestBox.classList.remove('show');
-});
-
-function bindSelect(id, key){
-  document.getElementById(id).addEventListener('change', e=>{
-    state[key] = e.target.value;
-    state.page = 1;
-    renderAll();
-  });
-}
-bindSelect('fDireccion','direccion');
-bindSelect('fRegion','region');
-bindSelect('fCiudad','ciudad');
-bindSelect('fDesempeno','desempeno');
-bindSelect('fPotencial','potencial');
-
-document.getElementById('fGerencia').addEventListener('input', e=>{
-  state.gerencia = e.target.value;
-  state.page = 1;
-  renderAll();
-});
-
-document.getElementById('btnReset').addEventListener('click', ()=>{
-  state.search=''; state.direccion=''; state.gerencia=''; state.region=''; state.ciudad='';
-  state.desempeno=''; state.potencial=''; state.caja=null; state.page=1;
-  fSearch.value='';
-  ['fDireccion','fRegion','fCiudad','fDesempeno','fPotencial'].forEach(id=> document.getElementById(id).value='');
-  document.getElementById('fGerencia').value='';
-  renderAll();
 });
 
 function renderAll(){
