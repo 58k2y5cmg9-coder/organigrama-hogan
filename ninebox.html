@@ -809,25 +809,12 @@ document.getElementById('btnReset').addEventListener('click', ()=>{
 });
 
 function applyFilters(list){
-  // First check if search matches any boss name
-  let searchIsJefe = false;
-  if(state.search){
-    const q = norm(state.search);
-    searchIsJefe = list.some(d => norm(d.jefe).includes(q) && norm(d.nombre) !== q);
-  }
-  
   return list.filter(d=>{
     if(state.search){
       const q = norm(state.search);
-      if(searchIsJefe){
-        // Search matches a boss name - ONLY show reports, not the boss
-        const matchJefe = norm(d.jefe).includes(q);
-        if(!matchJefe) return false;
-      } else {
-        // Search matches person name only
-        const matchName = norm(d.nombre).includes(q);
-        if(!matchName) return false;
-      }
+      const matchJefe = norm(d.jefe||'').includes(q);
+      const matchName = norm(d.nombre).includes(q);
+      if(!matchJefe && !matchName) return false;
     }
     if(state.direccion && d.direccion !== state.direccion) return false;
     if(state.gerencia && norm(d.gerencia) !== norm(state.gerencia)) return false;
