@@ -1010,7 +1010,6 @@ function renderDist(){
 const COLUMNS = [
   {key:'nombre', label:'Nombre'},
   {key:'cargo', label:'Cargo'},
-  {key:'gerencia', label:'Gerencia'},
   {key:'caja', label:'Ubicación'},
   {key:'sucesor', label:'Posible sucesor'},
   {key:'tiempo', label:'Tiempo'},
@@ -1069,7 +1068,6 @@ function renderTable(){
       return `<tr data-name="${encodeURIComponent(p.nombre)}">
         <td class="name">${p.nombre}</td>
         <td>${p.cargo || '—'}</td>
-        <td>${p.gerencia || '—'}</td>
         <td><span class="chip" style="background:${meta.color}">${p.caja} · ${meta.short}</span></td>
         <td>${sucesorBadge}</td>
         <td>${p.tiempo && p.tiempo !== 'N/A' ? p.tiempo : '—'}</td>
@@ -1408,9 +1406,8 @@ function exportPDF(){
     // 3. Then by name
     return a.nombre.localeCompare(b.nombre,'es');
   });
-  const nameW=W-margin*2-140;
+  const nameW=W-margin*2-110;
   const cargoW=35;
-  const gerenciaW=30;
   const boxW=25;
   const sucW=18;
   const timeW=12;
@@ -1420,10 +1417,9 @@ function exportPDF(){
   doc.setTextColor(255,255,255);doc.setFontSize(5.5);doc.setFont('helvetica','bold');
   doc.text('Nombre',margin+4,y+1);
   doc.text('Cargo',margin+nameW+4,y+1);
-  doc.text('Gerencia',margin+nameW+cargoW+4,y+1);
-  doc.text('Ubicación',margin+nameW+cargoW+gerenciaW+4,y+1);
-  doc.text('Sucesor',margin+nameW+cargoW+gerenciaW+boxW+4,y+1);
-  doc.text('Tiempo',margin+nameW+cargoW+gerenciaW+boxW+sucW+4,y+1);
+  doc.text('Ubicación',margin+nameW+cargoW+4,y+1);
+  doc.text('Sucesor',margin+nameW+cargoW+boxW+4,y+1);
+  doc.text('Tiempo',margin+nameW+cargoW+boxW+sucW+4,y+1);
   y+=7;
 
   // Table rows
@@ -1441,32 +1437,28 @@ function exportPDF(){
     const cargoName=p.cargo||'—';
     doc.text(cargoName,margin+nameW+4,y+0.5);
 
-    // Gerencia
-    const gerenciaName=p.gerencia||'—';
-    doc.text(gerenciaName.length>22?gerenciaName.slice(0,20)+'…':gerenciaName,margin+nameW+cargoW+4,y+0.5);
-
     // Chip
     const chipC=p.caja>=7?GREEN:p.caja>=4?ORANGE:RED;
     const chipBg=p.caja>=7?GREEN_BG:p.caja>=4?ORANGE_BG:RED_BG;
     const chipText=p.caja+' · '+meta.short;
     const chipW=doc.getStringUnitWidth(chipText)*4.5*0.352778+4;
     doc.setFillColor(...chipBg);doc.setDrawColor(...chipC);doc.setLineWidth(0.2);
-    doc.roundedRect(margin+nameW+cargoW+gerenciaW,y-2,chipW,5,2,2,'FD');
+    doc.roundedRect(margin+nameW+cargoW,y-2,chipW,5,2,2,'FD');
     doc.setFontSize(4);doc.setFont('helvetica','bold');doc.setTextColor(...chipC);
-    doc.text(chipText,margin+nameW+cargoW+gerenciaW+2,y+1.2);
+    doc.text(chipText,margin+nameW+cargoW+2,y+1.2);
 
     // Sucesor
     doc.setFontSize(4.5);doc.setFont('helvetica','normal');
     if(p.sucesor && p.sucesor.toLowerCase()==='si'){
-      doc.setTextColor(...GREEN);doc.text('Sí',margin+nameW+cargoW+gerenciaW+boxW+4,y+0.5);
+      doc.setTextColor(...GREEN);doc.text('Sí',margin+nameW+cargoW+boxW+4,y+0.5);
     } else {
-      doc.setTextColor(160,160,160);doc.text('—',margin+nameW+cargoW+gerenciaW+boxW+4,y+0.5);
+      doc.setTextColor(160,160,160);doc.text('—',margin+nameW+cargoW+boxW+4,y+0.5);
     }
 
     // Tiempo
     doc.setTextColor(...DARK);
     const tiempoTxt = p.tiempo && p.tiempo !== 'N/A' ? p.tiempo : '—';
-    doc.text(tiempoTxt,margin+nameW+cargoW+gerenciaW+boxW+sucW+4,y+0.5);
+    doc.text(tiempoTxt,margin+nameW+cargoW+boxW+sucW+4,y+0.5);
 
     y+=6;
   });
