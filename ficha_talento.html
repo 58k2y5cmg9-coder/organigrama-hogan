@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha de Talento · Claro Colombia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f5f7;--panel:#fff;--border:#e2e5ea;--text:#1a1d23;--text-dim:#6b7280;--red:#e21836;--orange:#e97b1a;--blue:#2563eb;--green:#16a34a;--cyan:#0891b2;--radius:12px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.header{background:var(--red);color:#fff;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;}
+.header h1{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;}
+.header-search{display:flex;align-items:center;gap:10px;}
+.header-search input{padding:10px 14px;border-radius:8px;border:none;font-size:14px;width:220px;font-family:'Inter',sans-serif;}
+.header-search button{background:#fff;color:var(--red);border:none;padding:10px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px;}
+.header-search button:hover{background:#f0f0f0;}
+.main{max-width:1320px;margin:0 auto;padding:24px 32px 60px;}
+.section-title{background:var(--red);color:#fff;padding:10px 18px;border-radius:8px;font-weight:700;font-size:15px;margin:24px 0 12px;text-align:center;}
+.section-title.orange{background:var(--orange);}
+.section-title.blue{background:var(--cyan);}
+.section-title.blue2{background:#1e40af;}
+.info-header{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px 28px;margin-bottom:24px;display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.info-header .ih-photo{width:160px;height:160px;border-radius:8px;background:linear-gradient(135deg,#e2e5ea,#c9cdd4);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:3px solid var(--red);overflow:hidden;}
+.info-header .ih-photo svg{width:36px;height:36px;opacity:.45;}
+.info-header .ih-photo img{width:100%;height:100%;border-radius:50%;object-fit:cover;}
+.info-header .ih-text{display:flex;flex-direction:column;gap:6px;flex:1;min-width:200px;}
+.info-header .ih-name{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.02em;}
+.info-header .ih-meta{display:flex;flex-wrap:wrap;gap:4px 8px;font-size:13px;color:var(--text-dim);align-items:center;}
+.info-header .ih-meta span{display:flex;align-items:center;gap:4px;}
+.info-header .ih-meta strong{color:var(--text);font-weight:600;}
+.info-header .ih-sep{color:#d1d5db;font-weight:300;}
+.sub-title{background:var(--cyan);color:#fff;padding:8px 14px;border-radius:6px;font-weight:600;font-size:13px;margin:16px 0 8px;}
+.sub-title.orange{background:var(--orange);}
+.sub-title.blue{background:#1e40af;}
+.sub-title.green{background:var(--green);}
+.data-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px;}
+.data-table th{background:var(--text);color:#fff;padding:10px 14px;text-align:left;font-weight:600;font-size:12px;}
+.data-table td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text-dim);}
+.data-table tr:hover td{background:#f9fafb;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;}
+.chart-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;}
+.chart-card .chart-title{font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:12px;}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:160px;justify-content:center;margin:12px 0;overflow-x:auto;}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;}
+.bar{width:40px;border-radius:4px 4px 0 0;flex-shrink:0;}
+.bar-label{font-size:10px;color:var(--text-dim);text-align:center;word-wrap:break-word;max-width:80px;line-height:1.2;}
+.bar-value{font-size:11px;font-weight:700;}
+.score-bar-row{display:flex;align-items:center;gap:10px;margin:6px 0;}
+.score-bar-label{font-size:12px;color:var(--text-dim);min-width:100px;text-align:right;}
+.score-bar-track{flex:1;height:18px;background:#e5e7eb;border-radius:100px;overflow:hidden;}
+.score-bar-fill{height:100%;border-radius:100px;}
+.score-bar-val{font-size:12px;font-weight:700;min-width:40px;}
+.result-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;}
+.result-card .rc-label{background:var(--text);color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;display:inline-block;margin-bottom:10px;}
+.result-card .rc-value{font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:800;}
+.scores-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0;}
+.score-pill{text-align:center;padding:12px 8px;border-radius:8px;}
+.score-pill .sp-label{font-size:11px;font-weight:600;margin-bottom:4px;}
+.score-pill .sp-value{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:800;}
+.score-pill.total{background:var(--text);color:#fff;}
+.score-pill.auto{background:#e97b1a;color:#fff;}
+.score-pill.lider{background:#e97b1a;color:#fff;}
+.score-pill.equipo{background:var(--red);color:#fff;}
+.score-pill.pares{background:var(--cyan);color:#fff;}
+.talent-obj{display:grid;grid-template-columns:110px 1fr;gap:0;margin:8px 0;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.talent-obj .to-talent{background:var(--text);color:#fff;padding:10px 12px;font-size:12px;font-weight:600;}
+.talent-obj .to-obj{padding:10px 14px;font-size:13px;color:var(--text-dim);}
+.formation-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.formation-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:14px;}
+.formation-card .fc-title{color:#fff;padding:6px 10px;border-radius:6px;font-size:11px;font-weight:600;margin-bottom:8px;text-align:center;}
+.formation-card .fc-content{font-size:12px;color:var(--text-dim);line-height:1.5;}
+.empty-msg{color:var(--text-dim);font-size:13px;text-align:center;padding:20px;}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr;}.formation-grid{grid-template-columns:1fr 1fr;}.scores-row{grid-template-columns:repeat(3,1fr);}.info-header{flex-direction:column;gap:8px;}}
+@media print{
+  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important;box-sizing:border-box !important;}
+  html,body{margin:0 !important;padding:0 !important;width:100% !important;}
+  body{background:#fff !important;font-size:10px !important;}
+  .header-search{display:none !important;}
+  .header{justify-content:center !important;background:#e21836 !important;padding:8px 16px !important;margin:0 !important;}
+  .header h1{color:#fff !important;font-size:16px !important;margin:0 !important;}
+  .main{padding:8px 12px !important;max-width:100% !important;margin:0 !important;}
+  
+  .info-header{background:#fff !important;border:1px solid #ccc !important;display:flex !important;align-items:center !important;padding:8px 12px !important;margin:0 0 8px 0 !important;gap:12px !important;page-break-inside:avoid !important;box-shadow:none !important;}
+  .ih-photo{width:90px !important;height:90px !important;background:#e2e5ea !important;border-radius:6px !important;display:flex !important;align-items:center !important;justify-content:center !important;flex-shrink:0 !important;border:2px solid #e21836 !important;overflow:hidden !important;}
+  .ih-photo svg{width:24px !important;height:24px !important;}
+  .ih-photo img{width:100% !important;height:100% !important;border-radius:6px !important;object-fit:cover !important;}
+  .ih-text{flex:1 !important;}
+  .ih-name{font-size:14px !important;font-weight:700 !important;color:#1a1d23 !important;margin:0 !important;}
+  .ih-meta{display:flex !important;flex-wrap:wrap !important;gap:2px 6px !important;font-size:9px !important;color:#6b7280 !important;margin-top:2px !important;}
+  .ih-meta strong{color:#1a1d23 !important;}
+  .ih-sep{color:#d1d5db !important;}
+  
+  .section-title{background:#e21836 !important;color:#fff !important;padding:5px 10px !important;border-radius:4px !important;font-size:11px !important;margin:8px 0 4px 0 !important;text-align:center !important;page-break-after:avoid !important;}
+  .section-title.orange{background:#e97b1a !important;}
+  .section-title.blue{background:#0891b2 !important;}
+  .section-title.blue2{background:#1e40af !important;}
+  
+  .sub-title{background:#0891b2 !important;color:#fff !important;padding:4px 8px !important;border-radius:3px !important;font-size:9px !important;margin:4px 0 3px 0 !important;}
+  .sub-title.orange{background:#e97b1a !important;}
+  
+  .data-table{font-size:9px !important;margin-bottom:4px !important;}
+  .data-table th{background:#1a1d23 !important;color:#fff !important;padding:4px 6px !important;font-size:8px !important;}
+  .data-table td{padding:3px 6px !important;font-size:8px !important;border-bottom:1px solid #e5e7eb !important;}
+  
+  .grid-2{display:grid !important;grid-template-columns:1fr 1fr !important;gap:6px !important;margin-bottom:6px !important;}
+  .grid-3{display:grid !important;grid-template-columns:1fr 1fr 1fr !important;gap:6px !important;margin-bottom:6px !important;}
+  
+  .chart-card{background:#fff !important;border:1px solid #e2e5ea !important;border-radius:6px !important;padding:4px 6px !important;text-align:center !important;page-break-inside:avoid !important;overflow:hidden !important;}
+  .chart-card .chart-title{font-size:9px !important;margin-bottom:2px !important;color:#6b7280 !important;}
+  
+  .bar-chart{display:flex !important;align-items:flex-end !important;gap:2px !important;height:auto !important;justify-content:center !important;margin:2px 0 !important;overflow:visible !important;}
+  .bar-col{display:flex !important;flex-direction:column !important;align-items:center !important;gap:0 !important;flex-shrink:0 !important;}
+  .bar{width:20px !important;border-radius:2px 2px 0 0 !important;flex-shrink:0 !important;}
+  .bar-label{font-size:6px !important;color:#374151 !important;text-align:center !important;word-wrap:break-word !important;max-width:48px !important;line-height:1 !important;font-weight:500 !important;}
+  .bar-value{font-size:6px !important;font-weight:700 !important;}
+  
+  .score-bar-row{display:flex !important;align-items:center !important;gap:6px !important;margin:4px 0 !important;}
+  .score-bar-label{font-size:9px !important;color:#6b7280 !important;min-width:70px !important;text-align:right !important;}
+  .score-bar-track{flex:1 !important;height:10px !important;background:#e5e7eb !important;border-radius:100px !important;overflow:hidden !important;}
+  .score-bar-fill{height:100% !important;border-radius:100px !important;}
+  .score-bar-val{font-size:9px !important;font-weight:700 !important;min-width:30px !important;}
+  
+  .formation-grid{display:grid !important;grid-template-columns:1fr 1fr !important;gap:6px !important;margin-bottom:6px !important;}
+  .formation-card{background:#fff !important;border:1px solid #e2e5ea !important;border-radius:6px !important;padding:6px !important;page-break-inside:avoid !important;}
+  .formation-card .fc-title{color:#fff !important;padding:3px 6px !important;border-radius:3px !important;font-size:8px !important;margin-bottom:4px !important;text-align:center !important;}
+  .formation-card .fc-content{font-size:8px !important;color:#6b7280 !important;line-height:1.3 !important;}
+  
+  .talent-obj{display:grid !important;grid-template-columns:80px 1fr !important;gap:0 !important;margin:3px 0 !important;border:1px solid #e2e5ea !important;border-radius:4px !important;overflow:hidden !important;page-break-inside:avoid !important;}
+  .talent-obj .to-talent{background:#1a1d23 !important;color:#fff !important;padding:4px 6px !important;font-size:8px !important;font-weight:600 !important;}
+  .talent-obj .to-obj{padding:4px 8px !important;font-size:8px !important;color:#6b7280 !important;}
+  
+  .scores-row{display:grid !important;grid-template-columns:repeat(5,1fr) !important;gap:4px !important;margin:6px 0 !important;}
+  .score-pill{text-align:center !important;padding:6px 4px !important;border-radius:4px !important;}
+  .score-pill .sp-label{font-size:7px !important;font-weight:600 !important;margin-bottom:2px !important;}
+  .score-pill .sp-value{font-size:14px !important;font-weight:800 !important;}
+  .score-pill.total{background:#1a1d23 !important;color:#fff !important;}
+  .score-pill.auto{background:#e97b1a !important;color:#fff !important;}
+  .score-pill.lider{background:#e97b1a !important;color:#fff !important;}
+  .score-pill.equipo{background:#e21836 !important;color:#fff !important;}
+  .score-pill.pares{background:#0891b2 !important;color:#fff !important;}
+  
+  .result-card{background:#fff !important;border:1px solid #e2e5ea !important;border-radius:6px !important;padding:6px !important;text-align:center !important;page-break-inside:avoid !important;}
+  .result-card .rc-label{background:#1a1d23 !important;color:#fff !important;padding:3px 8px !important;border-radius:3px !important;font-size:8px !important;font-weight:600 !important;display:inline-block !important;margin-bottom:4px !important;}
+  .result-card .rc-value{font-size:20px !important;font-weight:800 !important;}
+  
+  canvas{max-width:100% !important;height:auto !important;page-break-inside:avoid !important;}
+  
+  .empty-msg{font-size:9px !important;padding:10px !important;}
+  
+  .hogan-info{page-break-inside:avoid !important;}
+  
+  @page{margin:0.8cm !important;size:letter portrait !important;}
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Ficha de Talento</h1>
+  <div class="header-search">
+    <input type="text" id="cedulaInput" placeholder="Cédula o nombre..." autocomplete="off" list="cedulas">
+    <datalist id="cedulas"></datalist>
+    <button onclick="searchPerson()">Buscar</button>
+    <button onclick="downloadPDF()" style="background:#fff;color:var(--red);border:2px solid #fff;padding:10px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px;">Descargar PDF</button>
+  </div>
+</div>
+<div class="main" id="fichaContent">
+  <div class="info-header">
+    <div class="ih-photo" id="ihPhoto">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    </div>
+    <div class="ih-text">
+      <span class="ih-name" id="iNombre">—</span>
+      <div class="ih-meta">
+        <span><strong>Edad:</strong> <span id="iEdad">—</span></span>
+        <span class="ih-sep">|</span>
+        <span><strong>Cargo:</strong> <span id="iCargo">—</span></span>
+        <span class="ih-sep">|</span>
+        <span><strong>Dir. Comité:</strong> <span id="iDirComite">—</span></span>
+        <span class="ih-sep">|</span>
+        <span><strong>Gerencia:</strong> <span id="iGerencia">—</span></span>
+        <span class="ih-sep">|</span>
+        <span><strong>Jefe:</strong> <span id="iJefe">—</span></span>
+        <span class="ih-sep">|</span>
+        <span><strong>Antigüedad:</strong> <span id="iAntiguedad">—</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title orange">Experiencia laboral y educación</div>
+  <div class="grid-2">
+    <div><div class="sub-title">Experiencia interna</div><table class="data-table"><thead><tr><th>Historial de cargos</th></tr></thead><tbody id="tInterna"><tr><td class="empty-msg">Sin datos</td></tr></tbody></table></div>
+    <div><div class="sub-title">Experiencia externa</div><table class="data-table"><thead><tr><th>Historial de cargos</th></tr></thead><tbody id="tExterna"><tr><td class="empty-msg">Sin datos</td></tr></tbody></table></div>
+  </div>
+
+  <div class="section-title blue">Formación</div>
+  <div class="formation-grid" style="grid-template-columns:repeat(2,1fr);">
+    <div class="formation-card"><div class="fc-title" style="background:#1e40af;">Formación profesional</div><div class="fc-content" id="fProfesional">Sin datos</div></div>
+    <div class="formation-card"><div class="fc-title" style="background:var(--orange);">Formación complementaria</div><div class="fc-content" id="fMedida">Sin datos</div></div>
+  </div>
+
+  <div class="section-title">Valoraciones</div>
+  <div class="grid-3">
+    <div class="chart-card"><div class="chart-title">Resultados de desempeño</div><div class="bar-chart" id="barDesempeno"></div></div>
+    <div class="chart-card" style="display:flex;flex-direction:column;"><div class="chart-title">Valoración de comportamientos 2026</div><div id="barComportamientos" style="flex:1;display:flex;flex-direction:column;justify-content:center;"></div></div>
+    <div class="chart-card"><div class="chart-title">Objetivos de desarrollo 2026</div><div id="objDesarrollo"><div class="empty-msg">Sin datos</div></div></div>
+  </div>
+
+  <div id="section360">
+  <div class="section-title blue">Valoración 360°</div>
+  <div class="scores-row">
+    <div class="score-pill total"><div class="sp-label">Resultado 360°</div><div class="sp-value" id="v360total">—</div></div>
+    <div class="score-pill auto"><div class="sp-label">Autoevaluación</div><div class="sp-value" id="v360auto">—</div></div>
+    <div class="score-pill lider"><div class="sp-label">Líder</div><div class="sp-value" id="v360lider">—</div></div>
+    <div class="score-pill equipo"><div class="sp-label">Equipo</div><div class="sp-value" id="v360equipo">—</div></div>
+    <div class="score-pill pares"><div class="sp-label">Pares</div><div class="sp-value" id="v360pares">—</div></div>
+  </div>
+  <div class="chart-card"><canvas id="radar360" width="700" height="500"></canvas></div>
+  </div>
+
+  <div class="section-title blue">Clima organizacional</div>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;"><span style="font-size:13px;font-weight:700;color:var(--text);">Resultado general:</span><span style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:var(--text);" id="climaGeneral">—</span></div>
+  <div class="chart-card"><div class="bar-chart" id="barClima" style="height:260px;flex-wrap:wrap;"></div></div>
+
+  <div class="section-title blue2">Competencias HOGAN</div>
+  <div id="hoganInfo"></div>
+  <div class="chart-card"><div class="bar-chart" id="barHogan" style="height:260px;flex-wrap:wrap;"></div></div>
+  <div class="grid-2" style="margin-top:12px;">
+    <div class="chart-card" id="hoganFortalezas" style="text-align:left;"></div>
+    <div class="chart-card" id="hoganMejora" style="text-align:left;"></div>
+  </div>
+</div>
+
+<script>
+const SUCESORES=[{"userId": "HL738967", "exp": "80527831", "nombre": "GUEVARA TOCANCHON JOSE FRANCISCO", "direccion": "Unidad Mercado Corporativo", "cargo": "Gerente Soluciones IT", "email": "jose.guevara@claro.com.co"}, {"userId": "HL738969", "exp": "91474368", "nombre": "PINTO ALONSO CARLOS DAVID", "direccion": "Unidad Mercado Corporativo", "cargo": "Gerente Soluciones UC", "email": "carlos.pinto@claro.com.co"}, {"userId": "HL738970", "exp": "52807479", "nombre": "JIMENEZ GONZALEZ JENNY", "direccion": "Unidad Mercado Corporativo", "cargo": "Gerente Cuidado Al Cliente Corporativo", "email": "jhenny.jimenez@claro.com.co"}, {"userId": "HL738971", "exp": "1015425926", "nombre": "VILLANUEVA ARGUELLO JORGE ANDRES", "direccion": "Unidad Mercado Corporativo", "cargo": "Gerente Cuidado al Cliente Negocios", "email": "jorge.villanuevaa@claro.com.co"}, {"userId": "HL738982", "exp": "52236050", "nombre": "PRADO MEJIA CAROL ALEXANDRA", "direccion": "Unidad Mercado Corporativo", "cargo": "Jefe Operaciones Multicloud", "email": "carol.prado@claro.com.co"}, {"userId": "HL738993", "exp": "79805697", "nombre": "CASTIBLANCO CLAVIJO JIMMY ANDERSON", "direccion": "Unidad Mercado Corporativo", "cargo": "Gerente Comercial Pymes R4", "email": "jimmy.castiblanco@claro.com.co"}, {"userId": "HL738994", "exp": "37844585", "nombre": "ARIAS ROJAS JENNY MILENA", "direccion": "Unidad Mercado Corporativo", "cargo": "Gerente Comercial Pymes R2", "email": "jenny.ariasr@claro.com.co"}, {"userId": "HL738996", "exp": "1036648287", "nombre": "VELEZ BARON HAROLD STEVEN", "direccion": "Unidad Mercado Corporativo", "cargo": "Gerente Comercial Pymes R1", "email": "Harold.Velez@claro.com.co"}, {"userId": "HL739000", "exp": "52879980", "nombre": "RODRIGUEZ FUENTES LUZ DARY", "direccion": "Unidad Mercado Corporativo", "cargo": "Jefe Mejoramiento Comercial", "email": "luz.rodriguezf@claro.com.co"}, {"userId": "HL739003", "exp": "76333059", "nombre": "MUÑOZ IBARRA ANDHERSON FABIAN", "direccion": "Unidad Mercado Corporativo", "cargo": "Gerente Comercial Gobierno 1", "email": "andherson.munoz@claro.com.co"}, {"userId": "HL739004", "exp": "98393973", "nombre": "LOZANO ERASO OSCAR FERNANDO", "direccion": "Unidad Mercado Corporativo", "cargo": "Gerente Comercial Gobierno 2", "email": "oscar.lozanoe@claro.com.co"}, {"userId": "HL739007", "exp": "79553598", "nombre": "RODRIGUEZ MORENO FERNANDO GUSTAVO", "direccion": "Unidad Mercado Corporativo", "cargo": "Gerente Comercial Grandes Empresas Bogota 2", "email": "fernando.rodriguezm@claro.com.co"}, {"userId": "HL739008", "exp": "43869457", "nombre": "CASTRO MARIN VICTORIA EUGENIA", "direccion": "Unidad Mercado Corporativo", "cargo": "Gerente Comercial Grandes Empresas R2", "email": "victoria.castro@claro.com.co"}];
+const DATA={"informacion": {"80527831": {"direccion_comite": "(UMC) Unidad Mercado Corporativo", "direccion_area": "Direccion Consultoria y Diseño", "gerencia": "Gerencia Soluciones IT", "antiguedad": "19 años antigüedad", "jefe": "JAIME ALBERTO ARIAS MORA", "fecha_nacimiento": "1974-03-18"}, "91474368": {"direccion_comite": "(UMC) Unidad Mercado Corporativo", "direccion_area": "Direccion Consultoria y Diseño", "gerencia": "Gerencia Soluciones UC", "antiguedad": "14 años antigüedad", "jefe": "JAIME ALBERTO ARIAS MORA", "fecha_nacimiento": "1973-11-22"}, "52807479": {"direccion_comite": "(UMC) Unidad Mercado Corporativo", "direccion_area": "Servicio A Cliente Corporativo", "gerencia": "Gerencia Servicio Al Cliente Corporativo", "antiguedad": "14 años antigüedad", "jefe": "SONIA ANGELICA DE LA ROCHE BENITEZ", "fecha_nacimiento": "1980-10-11"}, "1015425926": {"direccion_comite": "(UMC) Unidad Mercado Corporativo", "direccion_area": "Servicio A Cliente Corporativo", "gerencia": "Gerencia Cuidado Al Cliente Negocios", "antiguedad": "8 años antigüedad", "jefe": "SONIA ANGELICA DE LA ROCHE BENITEZ", "fecha_nacimiento": "1991-09-18"}, "52236050": {"direccion_comite": "(UMC) Unidad Mercado Corporativo", "direccion_area": "Soluciones Cloud", "gerencia": "Gerencia Soluciones Cloud", "antiguedad": "20 años antigüedad", "jefe": "JOSE JULIAN JIMENEZ MORALES", "fecha_nacimiento": "1979-06-12"}, "79805697": {"direccion_comite": "(UMC) Unidad Mercado Corporativo", "direccion_area": "Direccion Comercial Pymes", "gerencia": "Gerencia Comercial Pymes R4", "antiguedad": "21 años antigüedad", "jefe": "LUIS FERNANDO PARRA BELTRAN", "fecha_nacimiento": "1976-08-31"}, "1036648287": {"direccion_comite": "(UMC) Unidad Mercado Corporativo", "direccion_area": "Direccion Comercial Pymes", "gerencia": "Gerencia Comercial Pymes R1", "antiguedad": "7 años antigüedad", "jefe": "LUIS FERNANDO PARRA BELTRAN", "fecha_nacimiento": "1993-08-04"}, "52879980": {"direccion_comite": "(UMC) Unidad Mercado Corporativo", "direccion_area": "Inteligencia Comercial", "gerencia": "Gerencia Inteligencia Comercial", "antiguedad": "7 años antigüedad", "jefe": "PATRICIA PEÑA VEGA", "fecha_nacimiento": "1984-02-01"}, "76333059": {"direccion_comite": "(UMC) Unidad Mercado Corporativo", "direccion_area": "Direccion Comercial Gobierno", "gerencia": "Gerencia Comercial Gobierno 1", "antiguedad": "8 años antigüedad", "jefe": "ADRIAN ALFREDO VERGARA VALENCIA", "fecha_nacimiento": "1979-09-20"}, "43869457": {"direccion_comite": "(UMC) Unidad Mercado Corporativo", "direccion_area": "Direccion Comercial Grandes Empresas", "gerencia": "Gerencia Comercial Grandes Empresas R2", "antiguedad": "22 años antigüedad", "jefe": "BEATRIZ ZAPATA ORTIZ", "fecha_nacimiento": "1980-04-05"}, "79553598": {"direccion_comite": "(UMC) Unidad Mercado Corporativo", "direccion_area": "Direccion Comercial Grandes Empresas", "gerencia": "Gerencia Comercial Grandes Empresas Bogota 2", "antiguedad": "26 años antigüedad", "jefe": "BEATRIZ ZAPATA ORTIZ", "fecha_nacimiento": "1971-02-13"}, "98393973": {"direccion_comite": "(UMC) Unidad Mercado Corporativo", "direccion_area": "Direccion Comercial Gobierno", "gerencia": "Gerencia Comercial Gobierno 2", "antiguedad": "9 años antigüedad", "jefe": "ADRIAN ALFREDO VERGARA VALENCIA", "fecha_nacimiento": "1976-07-03"}}, "desempeno": {"80527831": {"y2024": 60.42, "y2025": 104.2625, "y2026": 104}, "98393973": {"y2024": 83.46, "y2025": 104.525, "y2026": 104}, "79553598": {"y2024": 91.22, "y2025": 98.925, "y2026": 104}, "76333059": {"y2024": 104.7, "y2025": 104.525, "y2026": 104}, "52879980": {"y2024": 85.6, "y2025": 101.891, "y2026": 101}, "1015425926": {"y2024": 98, "y2025": 98.697, "y2026": 103}, "91474368": {"y2024": 72.37, "y2025": 104.2625, "y2026": 98}, "52807479": {"y2024": 19.24, "y2025": 100.505, "y2026": 95}, "79805697": {"y2024": 59.56, "y2025": 93.793, "y2026": 75}, "37844585": {"y2024": 89.87, "y2025": 89.962, "y2026": 81}, "43869457": {"y2024": 95.16, "y2025": 101.6975, "y2026": 84}, "52236050": {"y2024": 104, "y2025": 104, "y2026": 103}, "1036648287": {"y2024": 104, "y2025": 84.563, "y2026": 87}}, "talentos": {"43869457": [{"score": 102.5, "talento": "Soy Digital", "year": 2026}, {"score": 105, "talento": "Soy Dueño", "year": 2026}, {"score": 103.75, "talento": "Soy Lider", "year": 2026}], "52807479": [{"score": 101.25, "talento": "Soy Digital", "year": 2026}, {"score": 103.75, "talento": "Soy Dueño", "year": 2026}, {"score": 103.75, "talento": "Soy Lider", "year": 2026}], "79553598": [{"score": 101.25, "talento": "Soy Digital", "year": 2026}, {"score": 102.5, "talento": "Soy Dueño", "year": 2026}, {"score": 102.5, "talento": "Soy Lider", "year": 2026}], "79805697": [{"score": 101.25, "talento": "Soy Digital", "year": 2026}, {"score": 102.5, "talento": "Soy Dueño", "year": 2026}, {"score": 102.5, "talento": "Soy Lider", "year": 2026}], "1015425926": [{"score": 101.25, "talento": "Soy Digital", "year": 2026}, {"score": 102.5, "talento": "Soy Dueño", "year": 2026}, {"score": 102.5, "talento": "Soy Lider", "year": 2026}], "52236050": [{"score": 103.75, "talento": "Soy Digital", "year": 2026}, {"score": 105, "talento": "Soy Dueño", "year": 2026}, {"score": 105, "talento": "Soy Lider", "year": 2026}], "98393973": [{"score": 103.75, "talento": "Soy Digital", "year": 2026}, {"score": 103.75, "talento": "Soy Dueño", "year": 2026}, {"score": 105, "talento": "Soy Lider", "year": 2026}], "1036648287": [{"score": 103.75, "talento": "Soy Digital", "year": 2026}, {"score": 105, "talento": "Soy Dueño", "year": 2026}, {"score": 105, "talento": "Soy Lider", "year": 2026}], "76333059": [{"score": 105, "talento": "Soy Digital", "year": 2026}, {"score": 105, "talento": "Soy Dueño", "year": 2026}, {"score": 105, "talento": "Soy Lider", "year": 2026}], "80527831": [{"score": 97.5, "talento": "Soy Digital", "year": 2026}, {"score": 105, "talento": "Soy Dueño", "year": 2026}, {"score": 103.75, "talento": "Soy Lider", "year": 2026}], "91474368": [{"score": 97.5, "talento": "Soy Digital", "year": 2026}, {"score": 103.75, "talento": "Soy Dueño", "year": 2026}, {"score": 103.75, "talento": "Soy Lider", "year": 2026}], "52879980": [{"score": 93.75, "talento": "Soy Digital", "year": 2026}, {"score": 101.25, "talento": "Soy Dueño", "year": 2026}, {"score": 103.75, "talento": "Soy Lider", "year": 2026}]}, "objetivos": {"43869457": [{"obj": "Fortalecer mi capacidad de usar datos y herramientas digitales para tomar mejores decisiones y mejorar mis resultados.", "year": 2026, "talento": "Soy Digital"}], "52807479": [{"obj": "Desarrollar el aseguramiento de cierres de los diferentes compromisos con la Dirección. Acorde con las estrategia de la Dirección y de la Compañia.", "year": 2026, "talento": "Soy Dueño"}, {"obj": "Fortalecer mi mentalidad de due o, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.", "year": 2026, "talento": "Soy Dueño"}], "76333059": [{"obj": "Fortalecer mi mentalidad de due o, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.", "year": 2026, "talento": "Soy Dueño"}], "79553598": [{"obj": "Fortalecer mi mentalidad de due o, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.", "year": 2026, "talento": "Soy Dueño"}], "79805697": [{"obj": "Fortalecer mi mentalidad de due o, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.", "year": 2026, "talento": "Soy Dueño"}], "98393973": [{"obj": "Fortalecer mi mentalidad de due o, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.", "year": 2026, "talento": "Soy Dueño"}], "37844585": [{"obj": "Fortalecer mi mentalidad de due o, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.", "year": 2026, "talento": "Soy Dueño"}], "1036648287": [{"obj": "Fortalecer mi capacidad de liderar personas de forma cercana y colaborativa, alineando propósito y resultados sostenibles.", "year": 2026, "talento": "Soy Lider"}], "52236050": [{"obj": "Fortalecer mi capacidad de liderar personas de forma cercana y colaborativa, alineando propósito y resultados sostenibles.", "year": 2026, "talento": "Soy Lider"}], "52879980": [{"obj": "Fortalecer mi capacidad de liderar personas de forma cercana y colaborativa, alineando propósito y resultados sostenibles.", "year": 2026, "talento": "Soy Lider"}], "80527831": [{"obj": "Fortalecer mi capacidad de liderar personas de forma cercana y colaborativa, alineando propósito y resultados sostenibles.", "year": 2026, "talento": "Soy Lider"}], "91474368": [{"obj": "Fortalecer mi capacidad de liderar personas de forma cercana y colaborativa, alineando propósito y resultados sostenibles.", "year": 2026, "talento": "Soy Lider"}]}, "clima": {"79805697": [{"pct": 0.8156, "dim": "Administración De Recursos"}, {"pct": 0.8377, "dim": "Orientación A Resultados Y Logro De Objetivos"}, {"pct": 0.8255, "dim": "Orientación Al Servicio"}, {"pct": 0.8556, "dim": "Comunicación Organizacional"}, {"pct": 0.7933, "dim": "Objetivos Y Procesos Organizacionales"}, {"pct": 0.8592, "dim": "Cultura, Equidad Y Código De Ética"}, {"pct": 0.8997, "dim": "Desarrollo Profesional Y Capacitacion"}, {"pct": 0.8602, "dim": "Trabajo En Equipo"}, {"pct": 0.9314, "dim": "Satisfaccion Y Compromiso Organizacional"}], "37844585": [{"pct": 0.8156, "dim": "Administración De Recursos"}, {"pct": 0.8377, "dim": "Orientación A Resultados Y Logro De Objetivos"}, {"pct": 0.8255, "dim": "Orientación Al Servicio"}, {"pct": 0.8556, "dim": "Comunicación Organizacional"}, {"pct": 0.7933, "dim": "Objetivos Y Procesos Organizacionales"}, {"pct": 0.8592, "dim": "Cultura, Equidad Y Código De Ética"}, {"pct": 0.8997, "dim": "Desarrollo Profesional Y Capacitacion"}, {"pct": 0.8602, "dim": "Trabajo En Equipo"}, {"pct": 0.9314, "dim": "Satisfaccion Y Compromiso Organizacional"}], "1036648287": [{"pct": 0.8156, "dim": "Administración De Recursos"}, {"pct": 0.8377, "dim": "Orientación A Resultados Y Logro De Objetivos"}, {"pct": 0.8255, "dim": "Orientación Al Servicio"}, {"pct": 0.8556, "dim": "Comunicación Organizacional"}, {"pct": 0.7933, "dim": "Objetivos Y Procesos Organizacionales"}, {"pct": 0.8592, "dim": "Cultura, Equidad Y Código De Ética"}, {"pct": 0.8997, "dim": "Desarrollo Profesional Y Capacitacion"}, {"pct": 0.8602, "dim": "Trabajo En Equipo"}, {"pct": 0.9314, "dim": "Satisfaccion Y Compromiso Organizacional"}], "52807479": [{"pct": 0.7744, "dim": "Administración De Recursos"}, {"pct": 0.8353, "dim": "Orientación A Resultados Y Logro De Objetivos"}, {"pct": 0.8809, "dim": "Orientación Al Servicio"}, {"pct": 0.8462, "dim": "Comunicación Organizacional"}, {"pct": 0.743, "dim": "Objetivos Y Procesos Organizacionales"}, {"pct": 0.8755, "dim": "Cultura, Equidad Y Código De Ética"}, {"pct": 0.8787, "dim": "Desarrollo Profesional Y Capacitacion"}, {"pct": 0.8565, "dim": "Trabajo En Equipo"}, {"pct": 0.9072, "dim": "Satisfaccion Y Compromiso Organizacional"}], "1015425926": [{"pct": 0.7744, "dim": "Administración De Recursos"}, {"pct": 0.8353, "dim": "Orientación A Resultados Y Logro De Objetivos"}, {"pct": 0.8809, "dim": "Orientación Al Servicio"}, {"pct": 0.8462, "dim": "Comunicación Organizacional"}, {"pct": 0.743, "dim": "Objetivos Y Procesos Organizacionales"}, {"pct": 0.8755, "dim": "Cultura, Equidad Y Código De Ética"}, {"pct": 0.8787, "dim": "Desarrollo Profesional Y Capacitacion"}, {"pct": 0.8565, "dim": "Trabajo En Equipo"}, {"pct": 0.9072, "dim": "Satisfaccion Y Compromiso Organizacional"}], "80527831": [{"pct": 0.875, "dim": "Administración De Recursos"}, {"pct": 0.9877, "dim": "Orientación A Resultados Y Logro De Objetivos"}, {"pct": 0.9889, "dim": "Orientación Al Servicio"}, {"pct": 0.9593, "dim": "Comunicación Organizacional"}, {"pct": 0.9944, "dim": "Objetivos Y Procesos Organizacionales"}, {"pct": 0.9637, "dim": "Cultura, Equidad Y Código De Ética"}, {"pct": 0.9944, "dim": "Desarrollo Profesional Y Capacitacion"}, {"pct": 0.9778, "dim": "Trabajo En Equipo"}, {"pct": 0.9879, "dim": "Satisfaccion Y Compromiso Organizacional"}], "91474368": [{"pct": 0.875, "dim": "Administración De Recursos"}, {"pct": 0.9877, "dim": "Orientación A Resultados Y Logro De Objetivos"}, {"pct": 0.9889, "dim": "Orientación Al Servicio"}, {"pct": 0.9593, "dim": "Comunicación Organizacional"}, {"pct": 0.9944, "dim": "Objetivos Y Procesos Organizacionales"}, {"pct": 0.9637, "dim": "Cultura, Equidad Y Código De Ética"}, {"pct": 0.9944, "dim": "Desarrollo Profesional Y Capacitacion"}, {"pct": 0.9778, "dim": "Trabajo En Equipo"}, {"pct": 0.9879, "dim": "Satisfaccion Y Compromiso Organizacional"}], "52879980": [{"pct": 0.7992, "dim": "Administración De Recursos"}, {"pct": 0.9024, "dim": "Orientación A Resultados Y Logro De Objetivos"}, {"pct": 0.9318, "dim": "Orientación Al Servicio"}, {"pct": 0.8384, "dim": "Comunicación Organizacional"}, {"pct": 0.8561, "dim": "Objetivos Y Procesos Organizacionales"}, {"pct": 0.8517, "dim": "Cultura, Equidad Y Código De Ética"}, {"pct": 0.899, "dim": "Desarrollo Profesional Y Capacitacion"}, {"pct": 0.8182, "dim": "Trabajo En Equipo"}, {"pct": 0.9421, "dim": "Satisfaccion Y Compromiso Organizacional"}], "76333059": [{"pct": 0.9107, "dim": "Administración De Recursos"}, {"pct": 1, "dim": "Orientación A Resultados Y Logro De Objetivos"}, {"pct": 0.9821, "dim": "Orientación Al Servicio"}, {"pct": 0.9762, "dim": "Comunicación Organizacional"}, {"pct": 0.9821, "dim": "Objetivos Y Procesos Organizacionales"}, {"pct": 0.9662, "dim": "Cultura, Equidad Y Código De Ética"}, {"pct": 0.9881, "dim": "Desarrollo Profesional Y Capacitacion"}, {"pct": 1, "dim": "Trabajo En Equipo"}, {"pct": 0.9805, "dim": "Satisfaccion Y Compromiso Organizacional"}], "98393973": [{"pct": 0.9107, "dim": "Administración De Recursos"}, {"pct": 1, "dim": "Orientación A Resultados Y Logro De Objetivos"}, {"pct": 0.9821, "dim": "Orientación Al Servicio"}, {"pct": 0.9762, "dim": "Comunicación Organizacional"}, {"pct": 0.9821, "dim": "Objetivos Y Procesos Organizacionales"}, {"pct": 0.9662, "dim": "Cultura, Equidad Y Código De Ética"}, {"pct": 0.9881, "dim": "Desarrollo Profesional Y Capacitacion"}, {"pct": 1, "dim": "Trabajo En Equipo"}, {"pct": 0.9805, "dim": "Satisfaccion Y Compromiso Organizacional"}], "79553598": [{"pct": 0.5782, "dim": "Administración De Recursos"}, {"pct": 0.708, "dim": "Orientación A Resultados Y Logro De Objetivos"}, {"pct": 0.6451, "dim": "Orientación Al Servicio"}, {"pct": 0.7853, "dim": "Comunicación Organizacional"}, {"pct": 0.605, "dim": "Objetivos Y Procesos Organizacionales"}, {"pct": 0.7719, "dim": "Cultura, Equidad Y Código De Ética"}, {"pct": 0.8862, "dim": "Desarrollo Profesional Y Capacitacion"}, {"pct": 0.7843, "dim": "Trabajo En Equipo"}, {"pct": 0.9299, "dim": "Satisfaccion Y Compromiso Organizacional"}], "43869457": [{"pct": 0.5782, "dim": "Administración De Recursos"}, {"pct": 0.708, "dim": "Orientación A Resultados Y Logro De Objetivos"}, {"pct": 0.6451, "dim": "Orientación Al Servicio"}, {"pct": 0.7853, "dim": "Comunicación Organizacional"}, {"pct": 0.605, "dim": "Objetivos Y Procesos Organizacionales"}, {"pct": 0.7719, "dim": "Cultura, Equidad Y Código De Ética"}, {"pct": 0.8862, "dim": "Desarrollo Profesional Y Capacitacion"}, {"pct": 0.7843, "dim": "Trabajo En Equipo"}, {"pct": 0.9299, "dim": "Satisfaccion Y Compromiso Organizacional"}], "52236050": [{"pct": null, "dim": null}]}, "tres60": {"1036648287": [{"valor": "13 Promueve el cumplimiento del Código de Ética", "lider": 5, "propio": 5, "reporte": 5, "par": 5, "num": "13"}, {"valor": "5 Desarrolla y mantiene relaciones productivas en el trabajo", "lider": 5, "propio": 5, "reporte": 5, "par": 5, "num": "5"}, {"valor": "9 Dirige adecuadamente a su equipo de trabajo", "lider": 5, "propio": 5, "reporte": 5, "par": 5, "num": "9"}, {"valor": "11 Promueve el compromiso organizacional", "lider": 5, "propio": 5, "reporte": 5, "par": 5, "num": "11"}, {"valor": "12 Promueve el trato justo y de respeto a la persona", "lider": 5, "propio": 5, "reporte": 5, "par": 5, "num": "12"}, {"valor": "2 Comunica efectivamente", "lider": 5, "propio": 5, "reporte": 5, "par": 4.9375, "num": "2"}, {"valor": "4 Contribuye a la efectividad en el trabajo", "lider": 5, "propio": 5, "reporte": 5, "par": 4.83333333333333, "num": "4"}, {"valor": "7 Aplica adecuadamente los conocimientos requeridos", "lider": 5, "propio": 5, "reporte": 5, "par": 4.66666666666667, "num": "7"}, {"valor": "8 Promueve la mejora continua e innovación", "lider": 5, "propio": 5, "reporte": 5, "par": 4.83333333333333, "num": "8"}, {"valor": "10 Promueve el desarrollo de sus colaboradores", "lider": 5, "propio": 5, "reporte": 5, "par": 4.875, "num": "10"}, {"valor": "14 Aplica la Inteligencia Emocional de forma adecuada", "lider": 5, "propio": 5, "reporte": 5, "par": 4.91666666666667, "num": "14"}, {"valor": "15 Gestiona de forma adecuada los recursos de su área de trabajo", "lider": 5, "propio": 5, "reporte": 5, "par": 4.91666666666667, "num": "15"}, {"valor": "3 Soluciona problemas y toma decisiones adecuadas", "lider": 4.66666666666667, "propio": 5, "reporte": 5, "par": 4.91666666666667, "num": "3"}, {"valor": "6 Mantiene su orientación al cliente de manera efectiva", "lider": 4.66666666666667, "propio": 5, "reporte": 5, "par": 4.91666666666667, "num": "6"}, {"valor": "16 Ownership", "lider": 4.75, "propio": 5, "reporte": 5, "par": 5, "num": "16"}, {"valor": "1 Participa activamente como miembro del equipo", "lider": 5, "propio": 4.75, "reporte": 5, "par": 4.75, "num": "1"}], "79553598": [{"valor": "13 Promueve el cumplimiento del Código de Ética", "lider": 5, "propio": 5, "reporte": 5, "par": 5, "num": "13"}, {"valor": "14 Aplica la Inteligencia Emocional de forma adecuada", "lider": 5, "propio": 5, "reporte": 4.66666666666667, "par": 4.77777777777778, "num": "14"}, {"valor": "3 Soluciona problemas y toma decisiones adecuadas", "lider": 5, "propio": 5, "reporte": 4.66666666666667, "par": 5, "num": "3"}, {"valor": "5 Desarrolla y mantiene relaciones productivas en el trabajo", "lider": 5, "propio": 5, "reporte": 4.8125, "par": 5, "num": "5"}, {"valor": "6 Mantiene su orientación al cliente de manera efectiva", "lider": 5, "propio": 5, "reporte": 4.79166666666667, "par": 5, "num": "6"}, {"valor": "9 Dirige adecuadamente a su equipo de trabajo", "lider": 5, "propio": 5, "reporte": 4.71875, "par": 5, "num": "9"}, {"valor": "11 Promueve el compromiso organizacional", "lider": 5, "propio": 5, "reporte": 4.8125, "par": 5, "num": "11"}, {"valor": "12 Promueve el trato justo y de respeto a la persona", "lider": 5, "propio": 5, "reporte": 4.75, "par": 5, "num": "12"}, {"valor": "15 Gestiona de forma adecuada los recursos de su área de trabajo", "lider": 5, "propio": 5, "reporte": 4.83333333333333, "par": 5, "num": "15"}, {"valor": "7 Aplica adecuadamente los conocimientos requeridos", "lider": 4.66666666666667, "propio": 5, "reporte": 4.66666666666667, "par": 4.77777777777778, "num": "7"}, {"valor": "8 Promueve la mejora continua e innovación", "lider": 3.66666666666667, "propio": 5, "reporte": 4.25, "par": 4.66666666666667, "num": "8"}, {"valor": "1 Participa activamente como miembro del equipo", "lider": 4.75, "propio": 5, "reporte": 4.65625, "par": 5, "num": "1"}, {"valor": "2 Comunica efectivamente", "lider": 4.75, "propio": 5, "reporte": 4.75, "par": 5, "num": "2"}, {"valor": "4 Contribuye a la efectividad en el trabajo", "lider": 4.66666666666667, "propio": 5, "reporte": 4.45833333333333, "par": 5, "num": "4"}, {"valor": "10 Promueve el desarrollo de sus colaboradores", "lider": 4.5, "propio": 5, "reporte": 4.4375, "par": 5, "num": "10"}, {"valor": "16 Ownership", "lider": 4.75, "propio": 5, "reporte": 4.8125, "par": 5, "num": "16"}], "98393973": [{"valor": "13 Promueve el cumplimiento del Código de Ética", "lider": 5, "propio": 5, "reporte": 5, "par": 5, "num": "13"}, {"valor": "10 Promueve el desarrollo de sus colaboradores", "lider": 5, "propio": 5, "reporte": 5, "par": 5, "num": "10"}, {"valor": "11 Promueve el compromiso organizacional", "lider": 5, "propio": 5, "reporte": 5, "par": 5, "num": "11"}, {"valor": "14 Aplica la Inteligencia Emocional de forma adecuada", "lider": 5, "propio": 5, "reporte": 4.88888888888889, "par": 4.66666666666667, "num": "14"}, {"valor": "1 Participa activamente como miembro del equipo", "lider": 5, "propio": 5, "reporte": 4.83333333333333, "par": 5, "num": "1"}, {"valor": "2 Comunica efectivamente", "lider": 5, "propio": 5, "reporte": 4.91666666666667, "par": 5, "num": "2"}, {"valor": "3 Soluciona problemas y toma decisiones adecuadas", "lider": 5, "propio": 5, "reporte": 4.83333333333333, "par": 5, "num": "3"}, {"valor": "5 Desarrolla y mantiene relaciones productivas en el trabajo", "lider": 5, "propio": 5, "reporte": 4.91666666666667, "par": 5, "num": "5"}, {"valor": "6 Mantiene su orientación al cliente de manera efectiva", "lider": 5, "propio": 5, "reporte": 4.83333333333333, "par": 5, "num": "6"}, {"valor": "9 Dirige adecuadamente a su equipo de trabajo", "lider": 5, "propio": 5, "reporte": 4.875, "par": 5, "num": "9"}, {"valor": "12 Promueve el trato justo y de respeto a la persona", "lider": 5, "propio": 5, "reporte": 4.94444444444444, "par": 5, "num": "12"}, {"valor": "15 Gestiona de forma adecuada los recursos de su área de trabajo", "lider": 5, "propio": 5, "reporte": 4.88888888888889, "par": 5, "num": "15"}, {"valor": "16 Ownership", "lider": 5, "propio": 5, "reporte": 4.875, "par": 5, "num": "16"}, {"valor": "4 Contribuye a la efectividad en el trabajo", "lider": 5, "propio": 4.66666666666667, "reporte": 4.72222222222222, "par": 5, "num": "4"}, {"valor": "7 Aplica adecuadamente los conocimientos requeridos", "lider": 5, "propio": 4.66666666666667, "reporte": 4.83333333333333, "par": 5, "num": "7"}, {"valor": "8 Promueve la mejora continua e innovación", "lider": 5, "propio": 4.66666666666667, "reporte": 4.55555555555556, "par": 5, "num": "8"}], "76333059": [{"valor": "12 Promueve el trato justo y de respeto a la persona", "lider": 5, "propio": 5, "reporte": 5, "par": 5, "num": "12"}, {"valor": "15 Gestiona de forma adecuada los recursos de su área de trabajo", "lider": 5, "propio": 5, "reporte": 5, "par": 5, "num": "15"}, {"valor": "8 Promueve la mejora continua e innovación", "lider": 5, "propio": 5, "reporte": 4.93333333333333, "par": 4.66666666666667, "num": "8"}, {"valor": "1 Participa activamente como miembro del equipo", "lider": 5, "propio": 5, "reporte": 4.7, "par": 5, "num": "1"}, {"valor": "2 Comunica efectivamente", "lider": 5, "propio": 5, "reporte": 4.9, "par": 5, "num": "2"}, {"valor": "3 Soluciona problemas y toma decisiones adecuadas", "lider": 5, "propio": 5, "reporte": 4.8, "par": 5, "num": "3"}, {"valor": "6 Mantiene su orientación al cliente de manera efectiva", "lider": 5, "propio": 5, "reporte": 4.86666666666667, "par": 5, "num": "6"}, {"valor": "9 Dirige adecuadamente a su equipo de trabajo", "lider": 5, "propio": 5, "reporte": 4.9, "par": 5, "num": "9"}, {"valor": "10 Promueve el desarrollo de sus colaboradores", "lider": 5, "propio": 5, "reporte": 4.7, "par": 5, "num": "10"}, {"valor": "11 Promueve el compromiso organizacional", "lider": 5, "propio": 5, "reporte": 4.8, "par": 5, "num": "11"}, {"valor": "13 Promueve el cumplimiento del Código de Ética", "lider": 5, "propio": 5, "reporte": 4.93333333333333, "par": 5, "num": "13"}, {"valor": "14 Aplica la Inteligencia Emocional de forma adecuada", "lider": 5, "propio": 5, "reporte": 4.93333333333333, "par": 5, "num": "14"}, {"valor": "16 Ownership", "lider": 5, "propio": 5, "reporte": 4.9, "par": 5, "num": "16"}, {"valor": "4 Contribuye a la efectividad en el trabajo", "lider": 5, "propio": 4.33333333333333, "reporte": 4.73333333333333, "par": 4, "num": "4"}, {"valor": "7 Aplica adecuadamente los conocimientos requeridos", "lider": 5, "propio": 4.66666666666667, "reporte": 4.86666666666667, "par": 4.66666666666667, "num": "7"}, {"valor": "5 Desarrolla y mantiene relaciones productivas en el trabajo", "lider": 5, "propio": 4.5, "reporte": 5, "par": 5, "num": "5"}], "37844585": [{"valor": "1 Participa activamente como miembro del equipo", "lider": 5, "propio": 5, "reporte": 4.5, "par": 4.8125, "num": "1"}, {"valor": "3 Soluciona problemas y toma decisiones adecuadas", "lider": 5, "propio": 5, "reporte": 4.58333333333333, "par": 4.66666666666667, "num": "3"}, {"valor": "6 Mantiene su orientación al cliente de manera efectiva", "lider": 5, "propio": 5, "reporte": 4.625, "par": 4.75, "num": "6"}, {"valor": "7 Aplica adecuadamente los conocimientos requeridos", "lider": 5, "propio": 5, "reporte": 4.54166666666667, "par": 4.58333333333333, "num": "7"}, {"valor": "10 Promueve el desarrollo de sus colaboradores", "lider": 5, "propio": 5, "reporte": 4.4375, "par": 4.875, "num": "10"}, {"valor": "11 Promueve el compromiso organizacional", "lider": 5, "propio": 5, "reporte": 4.5625, "par": 4.875, "num": "11"}, {"valor": "15 Gestiona de forma adecuada los recursos de su área de trabajo", "lider": 5, "propio": 5, "reporte": 4.70833333333333, "par": 4.91666666666667, "num": "15"}, {"valor": "2 Comunica efectivamente", "lider": 5, "propio": 5, "reporte": 4.5625, "par": 5, "num": "2"}, {"valor": "4 Contribuye a la efectividad en el trabajo", "lider": 5, "propio": 5, "reporte": 4.625, "par": 5, "num": "4"}, {"valor": "5 Desarrolla y mantiene relaciones productivas en el trabajo", "lider": 5, "propio": 5, "reporte": 4.5, "par": 5, "num": "5"}, {"valor": "8 Promueve la mejora continua e innovación", "lider": 5, "propio": 5, "reporte": 4.45833333333333, "par": 5, "num": "8"}, {"valor": "9 Dirige adecuadamente a su equipo de trabajo", "lider": 5, "propio": 5, "reporte": 4.6875, "par": 5, "num": "9"}, {"valor": "12 Promueve el trato justo y de respeto a la persona", "lider": 5, "propio": 5, "reporte": 4.54166666666667, "par": 5, "num": "12"}, {"valor": "13 Promueve el cumplimiento del Código de Ética", "lider": 5, "propio": 5, "reporte": 4.79166666666667, "par": 5, "num": "13"}, {"valor": "14 Aplica la Inteligencia Emocional de forma adecuada", "lider": 4.66666666666667, "propio": 5, "reporte": 4.58333333333333, "par": 4.83333333333333, "num": "14"}, {"valor": "16 Ownership", "lider": 4.75, "propio": 5, "reporte": 4.625, "par": 4.875, "num": "16"}], "43869457": [{"valor": "1 Participa activamente como miembro del equipo", "lider": 5, "propio": 5, "reporte": 3.91071428571429, "par": 4.58333333333333, "num": "1"}, {"valor": "2 Comunica efectivamente", "lider": 5, "propio": 5, "reporte": 4.03571428571429, "par": 4.75, "num": "2"}, {"valor": "3 Soluciona problemas y toma decisiones adecuadas", "lider": 5, "propio": 5, "reporte": 3.66666666666667, "par": 4.66666666666667, "num": "3"}, {"valor": "6 Mantiene su orientación al cliente de manera efectiva", "lider": 5, "propio": 5, "reporte": 4.02380952380952, "par": 4.88888888888889, "num": "6"}, {"valor": "7 Aplica adecuadamente los conocimientos requeridos", "lider": 5, "propio": 5, "reporte": 4.07142857142857, "par": 4.88888888888889, "num": "7"}, {"valor": "10 Promueve el desarrollo de sus colaboradores", "lider": 5, "propio": 5, "reporte": 3.92857142857143, "par": 4.5, "num": "10"}, {"valor": "11 Promueve el compromiso organizacional", "lider": 5, "propio": 5, "reporte": 4.21428571428571, "par": 4.83333333333333, "num": "11"}, {"valor": "14 Aplica la Inteligencia Emocional de forma adecuada", "lider": 5, "propio": 5, "reporte": 3.71428571428571, "par": 4.88888888888889, "num": "14"}, {"valor": "5 Desarrolla y mantiene relaciones productivas en el trabajo", "lider": 5, "propio": 5, "reporte": 4.03571428571429, "par": 5, "num": "5"}, {"valor": "12 Promueve el trato justo y de respeto a la persona", "lider": 5, "propio": 5, "reporte": 4.14285714285714, "par": 5, "num": "12"}, {"valor": "13 Promueve el cumplimiento del Código de Ética", "lider": 5, "propio": 5, "reporte": 4.28571428571429, "par": 5, "num": "13"}, {"valor": "15 Gestiona de forma adecuada los recursos de su área de trabajo", "lider": 5, "propio": 5, "reporte": 4.16666666666667, "par": 5, "num": "15"}, {"valor": "16 Ownership", "lider": 5, "propio": 5, "reporte": 4, "par": 5, "num": "16"}, {"valor": "8 Promueve la mejora continua e innovación", "lider": 4, "propio": 5, "reporte": 3.95238095238095, "par": 4.66666666666667, "num": "8"}, {"valor": "4 Contribuye a la efectividad en el trabajo", "lider": 4.66666666666667, "propio": 5, "reporte": 3.88095238095238, "par": 4.77777777777778, "num": "4"}, {"valor": "9 Dirige adecuadamente a su equipo de trabajo", "lider": 4.75, "propio": 5, "reporte": 3.89285714285714, "par": 4.91666666666667, "num": "9"}], "79805697": [{"valor": "2 Comunica efectivamente", "lider": 5, "propio": 5, "reporte": 3.63888888888889, "par": 4.875, "num": "2"}, {"valor": "4 Contribuye a la efectividad en el trabajo", "lider": 5, "propio": 5, "reporte": 3.11111111111111, "par": 4.91666666666667, "num": "4"}, {"valor": "1 Participa activamente como miembro del equipo", "lider": 5, "propio": 5, "reporte": 3.41666666666667, "par": 5, "num": "1"}, {"valor": "5 Desarrolla y mantiene relaciones productivas en el trabajo", "lider": 5, "propio": 5, "reporte": 3.61111111111111, "par": 5, "num": "5"}, {"valor": "8 Promueve la mejora continua e innovación", "lider": 5, "propio": 5, "reporte": 3.25925925925926, "par": 5, "num": "8"}, {"valor": "9 Dirige adecuadamente a su equipo de trabajo", "lider": 5, "propio": 5, "reporte": 3.47222222222222, "par": 5, "num": "9"}, {"valor": "12 Promueve el trato justo y de respeto a la persona", "lider": 5, "propio": 5, "reporte": 3.85185185185185, "par": 5, "num": "12"}, {"valor": "13 Promueve el cumplimiento del Código de Ética", "lider": 5, "propio": 5, "reporte": 4.33333333333333, "par": 5, "num": "13"}, {"valor": "15 Gestiona de forma adecuada los recursos de su área de trabajo", "lider": 5, "propio": 5, "reporte": 3.66666666666667, "par": 5, "num": "15"}, {"valor": "16 Ownership", "lider": 5, "propio": 5, "reporte": 3.75, "par": 5, "num": "16"}, {"valor": "6 Mantiene su orientación al cliente de manera efectiva", "lider": 4.66666666666667, "propio": 4.66666666666667, "reporte": 3.55555555555556, "par": 5, "num": "6"}, {"valor": "3 Soluciona problemas y toma decisiones adecuadas", "lider": 5, "propio": 4.66666666666667, "reporte": 3.44444444444444, "par": 4.91666666666667, "num": "3"}, {"valor": "7 Aplica adecuadamente los conocimientos requeridos", "lider": 5, "propio": 4.66666666666667, "reporte": 3.40740740740741, "par": 4.83333333333333, "num": "7"}, {"valor": "10 Promueve el desarrollo de sus colaboradores", "lider": 5, "propio": 4, "reporte": 3.33333333333333, "par": 5, "num": "10"}, {"valor": "11 Promueve el compromiso organizacional", "lider": 5, "propio": 4.5, "reporte": 3.61111111111111, "par": 5, "num": "11"}, {"valor": "14 Aplica la Inteligencia Emocional de forma adecuada", "lider": 5, "propio": 4.66666666666667, "reporte": 4, "par": 5, "num": "14"}], "1015425926": [{"valor": "2 Comunica efectivamente", "lider": 5, "propio": 5, "reporte": 4.5, "par": 5, "num": "2"}, {"valor": "6 Mantiene su orientación al cliente de manera efectiva", "lider": 5, "propio": 5, "reporte": 4.6, "par": 5, "num": "6"}, {"valor": "9 Dirige adecuadamente a su equipo de trabajo", "lider": 5, "propio": 5, "reporte": 4.5, "par": 5, "num": "9"}, {"valor": "10 Promueve el desarrollo de sus colaboradores", "lider": 5, "propio": 5, "reporte": 4.2, "par": 5, "num": "10"}, {"valor": "11 Promueve el compromiso organizacional", "lider": 5, "propio": 5, "reporte": 4.4, "par": 5, "num": "11"}, {"valor": "12 Promueve el trato justo y de respeto a la persona", "lider": 5, "propio": 5, "reporte": 4.46666666666667, "par": 5, "num": "12"}, {"valor": "13 Promueve el cumplimiento del Código de Ética", "lider": 5, "propio": 5, "reporte": 4.73333333333333, "par": 5, "num": "13"}, {"valor": "5 Desarrolla y mantiene relaciones productivas en el trabajo", "lider": 4, "propio": 5, "reporte": 4.6, "par": 5, "num": "5"}, {"valor": "15 Gestiona de forma adecuada los recursos de su área de trabajo", "lider": 4, "propio": 5, "reporte": 4.53333333333333, "par": 5, "num": "15"}, {"valor": "4 Contribuye a la efectividad en el trabajo", "lider": 4.66666666666667, "propio": 5, "reporte": 4.4, "par": 5, "num": "4"}, {"valor": "8 Promueve la mejora continua e innovación", "lider": 4.66666666666667, "propio": 5, "reporte": 4.4, "par": 5, "num": "8"}, {"valor": "14 Aplica la Inteligencia Emocional de forma adecuada", "lider": 4.66666666666667, "propio": 5, "reporte": 4.4, "par": 5, "num": "14"}, {"valor": "3 Soluciona problemas y toma decisiones adecuadas", "lider": 4.66666666666667, "propio": 4.66666666666667, "reporte": 4.73333333333333, "par": 5, "num": "3"}, {"valor": "7 Aplica adecuadamente los conocimientos requeridos", "lider": 4.66666666666667, "propio": 4.66666666666667, "reporte": 4.53333333333333, "par": 5, "num": "7"}, {"valor": "1 Participa activamente como miembro del equipo", "lider": 5, "propio": 4.75, "reporte": 4.5, "par": 5, "num": "1"}, {"valor": "16 Ownership", "lider": 5, "propio": 4.75, "reporte": 4.55, "par": 5, "num": "16"}], "52807479": [{"valor": "3 Soluciona problemas y toma decisiones adecuadas", "lider": 4.66666666666667, "propio": "", "reporte": 4.26666666666667, "par": 4.66666666666667, "num": "3"}, {"valor": "8 Promueve la mejora continua e innovación", "lider": 4.66666666666667, "propio": "", "reporte": 4.2, "par": 5, "num": "8"}, {"valor": "9 Dirige adecuadamente a su equipo de trabajo", "lider": 4.75, "propio": "", "reporte": 4.7, "par": 5, "num": "9"}, {"valor": "1 Participa activamente como miembro del equipo", "lider": 5, "propio": "", "reporte": 4.25, "par": 4, "num": "1"}, {"valor": "2 Comunica efectivamente", "lider": 5, "propio": "", "reporte": 4.425, "par": 5, "num": "2"}, {"valor": "4 Contribuye a la efectividad en el trabajo", "lider": 5, "propio": "", "reporte": 4.2, "par": 5, "num": "4"}, {"valor": "5 Desarrolla y mantiene relaciones productivas en el trabajo", "lider": 5, "propio": "", "reporte": 4.4, "par": 5, "num": "5"}, {"valor": "6 Mantiene su orientación al cliente de manera efectiva", "lider": 5, "propio": "", "reporte": 4.56666666666667, "par": 4.66666666666667, "num": "6"}, {"valor": "7 Aplica adecuadamente los conocimientos requeridos", "lider": 5, "propio": "", "reporte": 4.43333333333333, "par": 4.33333333333333, "num": "7"}, {"valor": "10 Promueve el desarrollo de sus colaboradores", "lider": 5, "propio": "", "reporte": 4.6, "par": 5, "num": "10"}, {"valor": "11 Promueve el compromiso organizacional", "lider": 5, "propio": "", "reporte": 4.7, "par": 5, "num": "11"}, {"valor": "12 Promueve el trato justo y de respeto a la persona", "lider": 5, "propio": "", "reporte": 4.7, "par": 5, "num": "12"}, {"valor": "14 Aplica la Inteligencia Emocional de forma adecuada", "lider": 5, "propio": "", "reporte": 4.36666666666667, "par": 5, "num": "14"}, {"valor": "15 Gestiona de forma adecuada los recursos de su área de trabajo", "lider": 5, "propio": "", "reporte": 4.53333333333333, "par": 5, "num": "15"}, {"valor": "16 Ownership", "lider": 5, "propio": "", "reporte": 4.625, "par": 4.75, "num": "16"}, {"valor": "13 Promueve el cumplimiento del Código de Ética", "lider": 5, "propio": "", "reporte": 5, "par": 5, "num": "13"}]}, "formacion": {"79805697": {"cargos_int": ["ANALISTA DE ACTIVACIONES", "ANALISTA NACIONAL DE GRANDES SUPERFICIES COMCEL SA", "COORDINADOR DE VENTAS DIRECTAS REGIONAL BOGOTÁ", "COORDINADOR DE VENTAS EN GRANDES SUPERFICIES NOR OCCIDENTE (ANTIOQUIA Y EJE CAFETERO)", "COORDINADOR NACIONAL DE VENTAS SINERGIA", "Gerente Comercial Negocios 2"], "cargos_ext": [], "titulos": ["Administrador de Empresas", "Gerencia de Marketing", "Habilidades en Gestión Comercial", "Técnico Industrial"], "formaciones": [], "certificaciones": []}, "91474368": {"cargos_int": ["INGENIERO LIDER PREVENTA", "INGENIERO PREVENTA"], "cargos_ext": ["INGENIERO LIDER PREVENTA — EMPRESADETELECOMUNICACIONESDEBOGOTÁ", "INGENIERO LIDER PREVENTA — IMPSAT", "INGENIERO LIDER PREVENTA — IMPSAT(ACTUALLEVEL3)"], "titulos": ["Especialista en Telemática", "Ingeniero electrónico"], "formaciones": [], "certificaciones": []}, "76333059": {"cargos_int": ["Consultor Corporativo Sr"], "cargos_ext": ["Gerente de Producto — ETB", "Profesional Sr — Telefonica"], "titulos": ["ESPECIALIZACIÓN EN GERENCIA DE PROYECTOS DE TELECOMUNICACIONES", "Esp en Análisis y Administración Financiera", "Ing Electrónico y de Telecomunicaciones"], "formaciones": [], "certificaciones": []}, "52807479": {"cargos_int": ["Coordinador de Soporte Tecnico Negocios", "Jefe de Operaciones Call center", "SUPERVISOR DE OPERACIONES CALL CENTER"], "cargos_ext": ["JEFE DE OPERACIONES CALL CENTER — AFPHORIZONTE–COLPATRIA", "JEFE DE OPERACIONES CALL CENTER — CONTACTCENTERAMERICAS*611COMCEL", "JEFE DE OPERACIONES CALL CENTER — CONTACTCENTERAMÉRICAS-EMPRESADEENERGÍADECUNDINAMARCA", "JEFE DE OPERACIONES CALL CENTER — ETB(OUTSOURCING)", "JEFE DE OPERACIONES CALL CENTER — FALABELLADECOLOMBIASA"], "titulos": ["Economista en Comercio Exterior", "Especialista en Gestion Empresarial"], "formaciones": [], "certificaciones": []}, "1036648287": {"cargos_int": ["ESPECIALISTA CANALES NEGOCIOS", "Jefe Comercial Negocios"], "cargos_ext": ["EJECUTIVO DE ENTRENAMIENTO COMERCIAL — Grupo Spira", "supervisor comercial — People contac"], "titulos": ["ESPECIALISTA EN GERENCIA DE MERCADEO", "Psicologo"], "formaciones": [], "certificaciones": []}, "37844585": {"cargos_int": ["Coordinador servicio especializado 3", "Gerente Comercial Negocios 1", "Jefe Comercial Negocios 1"], "cargos_ext": ["JEFE PGC — ALMACENES EXITO", "Jefe de compras — SUPERMERCADO MAS X MENOS"], "titulos": ["MAESTRIA EN MARKETING Y GESTION COMERCIAL", "PROFESIONAL"], "formaciones": [], "certificaciones": []}, "98393973": {"cargos_int": ["Consultor Corporativo Senior"], "cargos_ext": ["Líder de Mercadeo — ETB"], "titulos": ["Ingeniero en Electrónica y Telecomunicaciones", "Specialization in Strategic Marketing"], "formaciones": [], "certificaciones": []}, "80527831": {"cargos_int": ["COORDINADOR PREVENTA PROYECTOS", "INGENIERO PREVENTA", "JEFE PREVENTA"], "cargos_ext": ["INGENIERO DE SERVICIOS EMPRESARIALES — AMERICATELCOLOMBIASA", "INGENIERO DE SERVICIOS EMPRESARIALES — COLOMBIATELECOMUNICACIONES", "INGENIERO DE SERVICIOS EMPRESARIALES — IMPSATCOLOMBIA"], "titulos": ["Gerente de proyectos de telecomunicaciones", "Ingeniero electrónico"], "formaciones": ["Curso Ingles"], "certificaciones": []}, "1015425926": {"cargos_int": ["Coordinador Servicio A Clientes Negocios", "Gerente Cuidado al Cliente Negocios", "Jefe Cuidado al Cliente Negocios"], "cargos_ext": ["Jefe de Negocios — Atento Colombia SA", "Jefe de Operaciones — Atento Colombia SA"], "titulos": ["ABOGADO"], "formaciones": ["Administración de RRHH y Liderazgo", "Diplomado en Derechos Humanos y políticas públicas", "Gestión de Proyectos Coursera", "Gestión ágil de Proyectos", "Middle Managament Programa", "SCRUM 360 Scrum Master, Product Owner y Developer"], "certificaciones": []}, "43869457": {"cargos_int": ["CONSULTOR DE SERVICIO AL CLIENTE TELEFÓNICO", "CONSULTOR DE VENTAS SEGMENTO EMPRESAS", "Consultor de servicio al Cliente Corporativo", "Coordinador Ventas Corporativas", "EJECUTIVA DE ENTRENAMIENTO", "consultor de servicio al cliente"], "cargos_ext": ["Operadora de Beeper — COMBIPER", "Operadora de Beeper — COMLINE", "Operadora de Beeper — LUCELLYRAMIREZASESORAENSEGUROS"], "titulos": ["Especialista en mercadeo Gerencial", "Profesional en Comunicación y Relaciones Corporativas"], "formaciones": ["Diplomado en habilidades de gestión comercial", "Escuela de Servicio", "Fortalecimiento de Competencias en Ventas Corporativas", "Maestría Personal", "Modelos Disruptivos de Negocios", "Seminario Taller el Vendedor Profesional", "Tech Summit:Cumbre de tecnología e Innovación", "Ventas de Soluciones de Nokia"], "certificaciones": []}, "79553598": {"cargos_int": ["ANALISTA DE COMPRAS", "ANALISTA DE INVENTARIOS", "COORDINADOR DE INVENTARIOS", "COORDINADOR DE PRODUCTO POSTPAGO", "COORDINADOR DE SOPORTE AL DISTRIBUIDOR", "GERENTE DE CUENTAS CORPORATIVAS Y GOBIERNO", "GERENTE DE MERCADEO", "GERENTE DE PRECIOS E INCENTIVOS"], "cargos_ext": ["GERENTE DE CUENTAS CORPORATIVAS Y GOBIERNO — MINISTERIODEJUSTICIA-FONPRENOR"], "titulos": ["ESPECIALISTA EN GERENCIA DE MERCADEO", "Ingeniero Industrial"], "formaciones": ["DIPLOMADO NEGOCIOS RENTABLES Y SOSTENIBLES"], "certificaciones": []}, "52236050": {"cargos_int": ["Analista de Informática (Gerencia de Calidad QA)", "Consultor (Gerencia de Cobranzas e informacion)", "Coordinador de Proyectos (Desarrollo CLOUD)", "Coordinador de Proyectos (Desarrollo de ecosistema de Soluciones Verticales)", "Coordinador de Proyectos (Desarrollo e Innovacion de Producto Empresas y Negocios)", "Ingeniero de Proyectos (Oficina de Proyectos IT)"], "cargos_ext": [], "titulos": ["ingeniero de sistemas"], "formaciones": ["Aplicacion de la Calidad de Software", "CERTIFICACION SCRUM PRODUCT OWNER", "Certificacion Master Scrum Expert", "Certificacion Scrum Foundations", "Couch de Innovación SIT", "Curso Safe para Equipos (Agilismo)", "DIRECCION DE PROYECTOS", "Design Thinking (Google)", "Fundamentos AWS", "TALLER CISCO CAMS"], "certificaciones": ["ITIL Foundation (2 credits) (18 PDUs)", "PMP Exam Prep Bootcamp (36 PDUs)"]}, "52879980": {"cargos_int": ["Analista Inteligencia Comercial", "Jefe Mejoramiento Comercial"], "cargos_ext": ["Process Team Leader — Everis"], "titulos": ["Profesional administración de empresas", "TECNÓLOGO EN GESTIÓN BANCARIA Y DE ENTIDADES FINANCIERAS", "Técnico Auxiliar de la Justicia \"Criminalistica\""], "formaciones": ["ANÁLISIS DE DATOS PARA LA TOMA DE DECISIONES BASADO EN EXCEL AVANZADO", "Conceptos básicos de DA (Disciplined Agile) PMI", "Scrum Fundamentals Certified"], "certificaciones": ["PMP Exam Prep Bootcamp (36 PDUs)"]}}, "hogan": {"91474368": {"tipo": "Estratégico", "competencias": {"Toma de Decisiones": 64, "Liderar a otros": 72, "Impulsar el Cambio": 69, "Impulsar la Estrategia": 86, "Desarrollo de Otros": 77, "Impulsar la Innovación": 86, "Escuchar a Otros": 66, "Influenciar a otros": 75, "Responsabilidad": 77, "Comunicación de Impacto": 75}, "clasificacion": "Alta Versatilidad", "promedio": 75}, "1036648287": {"tipo": "Estratégico", "competencias": {"Toma de Decisiones": 64, "Liderar a otros": 79, "Impulsar el Cambio": 66, "Impulsar la Estrategia": 89, "Desarrollo de Otros": 76, "Impulsar la Innovación": 93, "Escuchar a Otros": 50, "Influenciar a otros": 76, "Responsabilidad": 69, "Comunicación de Impacto": 74}, "clasificacion": "Alta Versatilidad", "promedio": 74}, "79805697": {"tipo": "Estratégico", "competencias": {"Toma de Decisiones": 63, "Liderar a otros": 66, "Impulsar el Cambio": 68, "Impulsar la Estrategia": 72, "Desarrollo de Otros": 53, "Impulsar la Innovación": 67, "Escuchar a Otros": 89, "Influenciar a otros": 88, "Responsabilidad": 72, "Comunicación de Impacto": 94}, "clasificacion": "Alta Versatilidad", "promedio": 73}, "80527831": {"tipo": "Estratégico", "competencias": {"Toma de Decisiones": 89, "Liderar a otros": 69, "Impulsar el Cambio": 58, "Impulsar la Estrategia": 71, "Desarrollo de Otros": 71, "Impulsar la Innovación": 57, "Escuchar a Otros": 86, "Influenciar a otros": 56, "Responsabilidad": 93, "Comunicación de Impacto": 59}, "clasificacion": "Alta Versatilidad", "promedio": 71}, "76333059": {"tipo": "Estratégico", "competencias": {"Toma de Decisiones": 50, "Liderar a otros": 36, "Impulsar el Cambio": 71, "Impulsar la Estrategia": 62, "Desarrollo de Otros": 41, "Impulsar la Innovación": 73, "Escuchar a Otros": 89, "Influenciar a otros": 71, "Responsabilidad": 73, "Comunicación de Impacto": 73}, "clasificacion": "Media Versatilidad", "promedio": 64}, "79553598": {"tipo": "Estratégico", "competencias": {"Toma de Decisiones": 67, "Liderar a otros": 59, "Impulsar el Cambio": 69, "Impulsar la Estrategia": 65, "Desarrollo de Otros": 61, "Impulsar la Innovación": 71, "Escuchar a Otros": 69, "Influenciar a otros": 55, "Responsabilidad": 73, "Comunicación de Impacto": 54}, "clasificacion": "Media Versatilidad", "promedio": 64}, "37844585": {"tipo": "Estratégico", "competencias": {"Toma de Decisiones": 47, "Liderar a otros": 56, "Impulsar el Cambio": 64, "Impulsar la Estrategia": 67, "Desarrollo de Otros": 77, "Impulsar la Innovación": 70, "Escuchar a Otros": 70, "Influenciar a otros": 65, "Responsabilidad": 67, "Comunicación de Impacto": 36}, "clasificacion": "Media Versatilidad", "promedio": 62}, "52807479": {"tipo": "Estratégico", "competencias": {"Toma de Decisiones": 42, "Liderar a otros": 60, "Impulsar el Cambio": 68, "Impulsar la Estrategia": 71, "Desarrollo de Otros": 63, "Impulsar la Innovación": 71, "Escuchar a Otros": 59, "Influenciar a otros": 59, "Responsabilidad": 48, "Comunicación de Impacto": 58}, "clasificacion": "Media Versatilidad", "promedio": 60}, "43869457": {"tipo": "Estratégico", "competencias": {"Toma de Decisiones": 27, "Liderar a otros": 28, "Impulsar el Cambio": 65, "Impulsar la Estrategia": 45, "Desarrollo de Otros": 45, "Impulsar la Innovación": 63, "Escuchar a Otros": 47, "Influenciar a otros": 61, "Responsabilidad": 44, "Comunicación de Impacto": 81}, "clasificacion": "Media Versatilidad", "promedio": 51}, "98393973": {"tipo": "Estratégico", "competencias": {"Toma de Decisiones": 47, "Liderar a otros": 38, "Impulsar el Cambio": 41, "Impulsar la Estrategia": 64, "Desarrollo de Otros": 35, "Impulsar la Innovación": 66, "Escuchar a Otros": 38, "Influenciar a otros": 40, "Responsabilidad": 69, "Comunicación de Impacto": 42}, "clasificacion": "Profundidad", "promedio": 48}, "1015425926": {"tipo": "Estratégico", "competencias": {"Toma de Decisiones": 29, "Liderar a otros": 36, "Impulsar el Cambio": 32, "Impulsar la Estrategia": 41, "Desarrollo de Otros": 18, "Impulsar la Innovación": 43, "Escuchar a Otros": 30, "Influenciar a otros": 52, "Responsabilidad": 17, "Comunicación de Impacto": 91}, "clasificacion": "Profundidad", "promedio": 39}, "52236050": {"tipo": "Operación", "competencias": {"Toma de Decisiones": 62, "Construcción de Equipos": 48, "Impulsar la Ejecución": 59, "Delegación": 64, "Visión del Negocio": 87, "Resolución de Problemas": 49, "Impulsar la Diversidad": 48, "Trabajo en Equipo": 51, "Responsabilidad": 53, "Manejo de la Ambigüedad": 56}, "clasificacion": "Media Versatilidad", "promedio": 58}, "52879980": {"tipo": "Operación", "competencias": {"Toma de Decisiones": 56, "Construcción de Equipos": 55, "Impulsar la Ejecución": 47, "Delegación": 56, "Visión del Negocio": 34, "Resolución de Problemas": 70, "Impulsar la Diversidad": 28, "Trabajo en Equipo": 30, "Responsabilidad": 49, "Manejo de la Ambigüedad": 37}, "clasificacion": "Profundidad", "promedio": 46}}};
+
+// Populate datalist
+const dl=document.getElementById('cedulas');
+SUCESORES.forEach(p=>{
+  const o=document.createElement('option');
+  o.value=p.exp;
+  o.textContent=p.nombre+' ('+p.exp+')';
+  dl.appendChild(o);
+});
+
+function searchPerson(){
+  const q=document.getElementById('cedulaInput').value.trim();
+  if(!q)return;
+  const p=SUCESORES.find(x=>x.exp===q||x.nombre.toUpperCase().includes(q.toUpperCase()));
+  if(!p){alert('No se encontró');return;}
+  loadFicha(p);
+}
+
+function loadFicha(p){
+  document.getElementById('iNombre').textContent=p.nombre;
+  document.getElementById('iCargo').textContent=p.cargo;
+  
+  // Photo
+  const ihPhoto=document.getElementById('ihPhoto');
+  const img=new Image();
+  img.src='FOTOS/'+p.exp+'.png';
+  img.alt=p.nombre;
+  img.onerror=function(){ihPhoto.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';};
+  img.onload=function(){ihPhoto.innerHTML='';ihPhoto.appendChild(img);};
+  ihPhoto.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+  img.src='FOTOS/'+p.exp+'.png';
+
+  // Get info from INFORMACION
+  const info=DATA.informacion[p.exp];
+  document.getElementById('iDirComite').textContent=info?info.direccion_comite:'—';
+  document.getElementById('iGerencia').textContent=info?info.gerencia:p.direccion;
+  
+  // Jefe
+  document.getElementById('iJefe').textContent=info&&info.jefe?info.jefe:'—';
+  
+  // Edad from fecha_nacimiento
+  if(info&&info.fecha_nacimiento){
+    const fnac=new Date(info.fecha_nacimiento);
+    const hoy=new Date();
+    let edad=hoy.getFullYear()-fnac.getFullYear();
+    const m=hoy.getMonth()-fnac.getMonth();
+    if(m<0||(m===0&&hoy.getDate()<fnac.getDate()))edad--;
+    document.getElementById('iEdad').textContent=edad+' años';
+  }else{
+    document.getElementById('iEdad').textContent='—';
+  }
+  
+  const rawAntig=info?info.antiguedad:'—';
+  const matchAntig=typeof rawAntig==='string'?rawAntig.match(/(\d+)/):null;
+  document.getElementById('iAntiguedad').textContent=matchAntig?matchAntig[1]+' años':rawAntig;
+
+  // Desempeño
+  const d=DATA.desempeno[p.exp];
+  renderDesempeno(d);
+
+  // Talentos/Comportamientos
+  const t=DATA.talentos[p.exp]||[];
+  renderComportamientos(t);
+
+  // Objetivos
+  const o=DATA.objetivos[p.exp]||[];
+  renderObjetivos(o);
+
+  // 360
+  const t360=DATA.tres60[p.exp]||[];
+  render360(t360);
+
+  // Formación & Experiencia
+  renderFormacion(p);
+
+  // Clima
+  const c=DATA.clima[p.exp]||[];
+  renderClima(c);
+
+  // HOGAN
+  const h=DATA.hogan[p.exp];
+  renderHogan(h);
+}
+
+function renderDesempeno(d){
+  const el=document.getElementById('barDesempeno');
+  if(!d){el.innerHTML='<div class="empty-msg">Sin datos</div>';return;}
+  const vals=[d.y2024||0,d.y2025||0,d.y2026||0];
+  const max=Math.max(...vals,1);
+  const colors=['var(--red)','var(--green)','var(--orange)'];
+  const labels=['2024','2025','2026'];
+  el.innerHTML=vals.map((v,i)=>{
+    const h=Math.round((v/max)*130);
+    return '<div class="bar-col"><span class="bar-value">'+(typeof v==='number'?Math.round(v):v)+'</span><div class="bar" style="height:'+h+'px;background:'+colors[i]+';"></div><span class="bar-label">'+labels[i]+'</span></div>';
+  }).join('');
+}
+
+function renderComportamientos(t){
+  const el=document.getElementById('barComportamientos');
+  if(!t.length){el.innerHTML='<div class="empty-msg">Sin datos</div>';return;}
+  const groups={};
+  t.forEach(x=>{
+    const name=x.talento||'Sin nombre';
+    if(!groups[name])groups[name]=[];
+    groups[name].push(x.score);
+  });
+  let html='';
+  Object.entries(groups).forEach(([name,scores])=>{
+    const avg=(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1);
+    const pct=Math.min(100,Math.round((avg/110)*100));
+    const color=avg>=103?'var(--green)':avg>=100?'var(--cyan)':'var(--orange)';
+    html+='<div class="score-bar-row"><span class="score-bar-label">'+name+'</span><div class="score-bar-track"><div class="score-bar-fill" style="width:'+pct+'%;background:'+color+';"></div></div><span class="score-bar-val">'+avg+'</span></div>';
+  });
+  el.innerHTML=html;
+}
+
+function renderObjetivos(objs){
+  const el=document.getElementById('objDesarrollo');
+  if(!objs.length){el.innerHTML='<div class="empty-msg">Sin datos</div>';return;}
+  el.style.display='flex';el.style.flexDirection='column';el.style.alignItems='center';
+  el.innerHTML=objs.slice(0,4).map(o=>'<div class="talent-obj" style="width:100%;max-width:500px;"><div class="to-talent">'+(o.talento||'—')+'</div><div class="to-obj" style="text-align:center;">'+(o.obj||'—')+'</div></div>').join('');
+}
+
+function render360(data){
+  const section=document.getElementById('section360');
+  if(!data.length){
+    section.style.display='none';
+    return;
+  }
+  section.style.display='';
+  const avg=(arr)=>{const v=arr.filter(x=>x!==null&&x!==undefined);return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(2):'—';};
+  const leaders=data.map(d=>d.lider).filter(x=>x!==null);
+  const selves=data.map(d=>d.propio).filter(x=>x!==null);
+  const reports=data.map(d=>d.reporte).filter(x=>x!==null);
+  const pars=data.map(d=>d.par).filter(x=>x!==null);
+  const all=[...leaders,...selves,...reports,...pars];
+
+  document.getElementById('v360total').textContent=all.length?(all.reduce((a,b)=>a+b,0)/all.length).toFixed(2):'—';
+  document.getElementById('v360auto').textContent=avg(selves);
+  document.getElementById('v360lider').textContent=avg(leaders);
+  document.getElementById('v360equipo').textContent=avg(reports);
+  document.getElementById('v360pares').textContent=avg(pars);
+
+  drawRadar360(data);
+}
+
+function drawRadar360(data){
+  const canvas=document.getElementById('radar360');
+  const ctx=canvas.getContext('2d');
+  canvas.width=700;
+  canvas.height=500;
+  const W=canvas.width,H=canvas.height;
+  const cx=W/2,cy=H/2,R=130;
+
+  // Get unique values by number
+  const vals={};
+  data.forEach(d=>{if(d.num)vals[d.num]={val:d,lbl:d.valor};});
+  const keys=Object.keys(vals).sort((a,b)=>Number(a)-Number(b));
+  const n=keys.length;
+  if(n===0)return;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Grid
+  for(let ring=1;ring<=5;ring++){
+    const r=R*ring/5;
+    ctx.beginPath();
+    for(let i=0;i<=n;i++){
+      const angle=(Math.PI*2/n)*i-Math.PI/2;
+      const x=cx+r*Math.cos(angle),y=cy+r*Math.sin(angle);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.closePath();ctx.strokeStyle='rgba(0,0,0,.1)';ctx.stroke();
+  }
+
+  // Axes
+  ctx.font='9px Inter';ctx.fillStyle='#374151';
+  keys.forEach((k,i)=>{
+    const angle=(Math.PI*2/n)*i-Math.PI/2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R*Math.cos(angle),cy+R*Math.sin(angle));ctx.strokeStyle='rgba(0,0,0,.06)';ctx.stroke();
+    const lx=cx+(R+25)*Math.cos(angle),ly=cy+(R+25)*Math.sin(angle);
+    ctx.textAlign=Math.cos(angle)>0.1?'left':Math.cos(angle)<-0.1?'right':'center';
+    ctx.textBaseline=Math.sin(angle)>0.1?'top':Math.sin(angle)<-0.1?'bottom':'middle';
+    const txt=vals[k].lbl;
+    ctx.fillText(txt,lx,ly);
+  });
+
+  // Draw datasets
+  function drawSet(color,getVal,alpha){
+    ctx.beginPath();
+    for(let i=0;i<=n;i++){
+      const idx=i%n;
+      const angle=(Math.PI*2/n)*idx-Math.PI/2;
+      const v=getVal(vals[keys[idx]].val);
+      const r=R*(v||0)/5;
+      const x=cx+r*Math.cos(angle),y=cy+r*Math.sin(angle);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.closePath();ctx.fillStyle=color.replace('1)',alpha+')');ctx.fill();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
+    for(let i=0;i<n;i++){
+      const angle=(Math.PI*2/n)*i-Math.PI/2;
+      const v=getVal(vals[keys[i]].val);
+      const r=R*(v||0)/5;
+      ctx.beginPath();ctx.arc(cx+r*Math.cos(angle),cy+r*Math.sin(angle),3,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
+    }
+  }
+
+  drawSet('rgba(233,123,26,1)',d=>d.lider,.06);
+  drawSet('rgba(37,99,235,1)',d=>d.propio,.06);
+  drawSet('rgba(226,24,54,1)',d=>d.reporte,.06);
+  drawSet('rgba(8,145,178,1)',d=>d.par,.06);
+}
+
+function renderFormacion(p){
+  const f=DATA.formacion[p.exp]||null;
+  if(!f){['tInterna','tExterna','fProfesional','fMedida'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<tr><td class="empty-msg">Sin datos</td></tr>';});return;}
+  // Experiencia interna
+  const ti=document.getElementById('tInterna');
+  if(f.cargos_int&&f.cargos_int.length)ti.innerHTML=f.cargos_int.map(c=>'<tr><td>'+c+'</td></tr>').join('');
+  else ti.innerHTML='<tr><td class="empty-msg">Sin datos</td></tr>';
+  // Experiencia externa
+  const te=document.getElementById('tExterna');
+  if(f.cargos_ext&&f.cargos_ext.length)te.innerHTML=f.cargos_ext.map(c=>'<tr><td>'+c+'</td></tr>').join('');
+  else te.innerHTML='<tr><td class="empty-msg">Sin datos</td></tr>';
+  // Títulos (formación profesional)
+  const fp=document.getElementById('fProfesional');
+  if(f.titulos&&f.titulos.length)fp.innerHTML=f.titulos.map(t=>'<div style="margin:4px 0;padding:6px 10px;background:#f0f4ff;border-radius:6px;font-size:12px;">'+t+'</div>').join('');
+  else fp.textContent='Sin datos';
+  // Formaciones (a la medida)
+  const fm=document.getElementById('fMedida');
+  if(f.formaciones&&f.formaciones.length)fm.innerHTML=f.formaciones.map(t=>'<div style="margin:4px 0;padding:6px 10px;background:#fff7ed;border-radius:6px;font-size:12px;">'+t+'</div>').join('');
+  else fm.textContent='Sin datos';
+}
+
+function renderClima(c){
+  if(!c.length){document.getElementById('climaGeneral').textContent='—';document.getElementById('barClima').innerHTML='';return;}
+  const dims={};
+  c.forEach(x=>{dims[x.dim]=x.pct;});
+  const entries=Object.entries(dims).sort((a,b)=>b[1]-a[1]);
+  const avg=(entries.reduce((s,e)=>s+e[1],0)/entries.length*100).toFixed(0);
+  document.getElementById('climaGeneral').textContent=avg+'%';
+  const getClimaColor=(v)=>{
+    if(v>=70)return 'var(--green)';
+    if(v>=40)return 'var(--orange)';
+    return 'var(--red)';
+  };
+  const shortNames={'Objetivos Y Procesos Organizacionales':'Obj. Procesos','Desarrollo Profesional Y Capacitacion':'Des. Profesional','Orientación Al Servicio':'Orient. Servicio','Satisfaccion Y Compromiso Organizacional':'Satisfacción','Orientación A Resultados Y Logro De Objetivos':'Orient. Resultados','Trabajo En Equipo':'Trabajo Equipo','Cultura, Equidad Y Código De Ética':'Cultura Y Ética','Comunicación Organizacional':'Comunicación','Administración De Recursos':'Adm. Recursos'};
+  document.getElementById('barClima').innerHTML=entries.map((e,i)=>{
+    const h=Math.round(e[1]*170);
+    const pct=Math.round(e[1]*100);
+    const color=getClimaColor(pct);
+    const short=shortNames[e[0]]||e[0];
+    return '<div class="bar-col"><span class="bar-value">'+pct+'%</span><div class="bar" style="height:'+h+'px;background:'+color+';width:36px;"></div><span class="bar-label" style="font-size:10px;text-align:center;max-width:80px;word-wrap:break-word;">'+short+'</span></div>';
+  }).join('');
+}
+
+const COMP_TIPO_MAP={'Estratégico':'V. Ejecutivo','Operación':'V. Gerente'};
+const COMP_DESC={"V. Ejecutivo":{"Toma de Decisiones":{"alto":"Toma decisiones de manera estructurada y bien fundamentada, evaluando riesgos, alternativas e impactos de forma rapida.","bajo":"Le toma mas tiempo la toma de decisiones, suele  profundizar  en el análisis previo lo que lo demora en llevarlo a la acción."},"Liderar a otros":{"alto":"Demuestra una capacidad consistente para movilizar, orientar y generar compromiso en las personas hacia los objetivos organizacionales.","bajo":"Tiende a influir más desde su conocimiento o experiencia que desde un rol de liderazgo directo, mostrando menor inclinación a dirigir o movilizar equipos."},"Impulsar el Cambio":{"alto":"Promueve activamente nuevas iniciativas y busca oportunidades para transformar procesos, prácticas y formas de trabajo.","bajo":"Prefiere contextos estables y predecibles, mostrando una mayor tendencia a mantener prácticas conocidas y probadas."},"Impulsar la Estrategia":{"alto":"Mantiene una visión amplia del negocio, anticipando escenarios futuros y alineando sus acciones con objetivos de largo plazo.","bajo":"Tiende a enfocarse principalmente en la operación y en los resultados inmediatos, requiriendo apoyo para ampliar su visión de largo plazo."},"Desarrollo de Otros":{"alto":"Dedica tiempo y esfuerzo a fortalecer las capacidades de las personas, promoviendo activamente su crecimiento y desarrollo.","bajo":"Tiende a concentrarse en el cumplimiento de objetivos y resultados, brindando menor acompañamiento al crecimiento de los colaboradores."},"Impulsar la Innovación":{"alto":"Busca constantemente nuevas ideas y enfoques, promoviendo soluciones creativas para generar mejoras y valor.","bajo":"Prefiere soluciones conocidas y metodologías probadas, priorizando la estabilidad y la eficiencia operativa."},"Escuchar a Otros":{"alto":"Demuestra una alta disposición para comprender perspectivas diversas, fomentando espacios de diálogo y participación.","bajo":"Tiende a enfocarse principalmente en los hechos y resultados, pudiendo dedicar menos atención a las necesidades o percepciones de los demás."},"Influenciar a otros":{"alto":"Logra generar adhesión y compromiso en otros, comunicando sus ideas de manera persuasiva y movilizando acciones.","bajo":"Tiende a influir principalmente desde su conocimiento técnico o experiencia, mostrando menor inclinación a persuadir activamente."},"Responsabilidad":{"alto":"Asume con compromiso sus obligaciones, mantiene consistencia en el cumplimiento de acuerdos y responde por los resultados obtenidos.","bajo":"Puede mostrar una orientación más flexible frente a normas, procesos o compromisos, requiriendo mayor estructura y seguimiento."},"Comunicación de Impacto":{"alto":"Comunica sus ideas de manera clara, segura y persuasiva, logrando captar la atención e influir en diferentes audiencias.","bajo":"Tiende a utilizar un estilo de comunicación más reservado o técnico, requiriendo mayor esfuerzo para generar impacto o visibilidad en sus mensajes."}},"V. Gerente":{"Toma de Decisiones":{"alto":"Toma decisiones de manera estructurada y bien fundamentada, evaluando riesgos, alternativas e impactos de forma rapida.","bajo":"Tiende a retrasar o escalar decisiones que podría asumir directamente, afectando la oportunidad en la respuesta o la ejecución."},"Construcción de Equipos":{"alto":"Fortalece el desempeño del equipo, promueve la colaboración y desarrolla las capacidades de las personas para alcanzar los resultados del área.","bajo":"Presenta dificultades para integrar al equipo, generar compromiso o desarrollar las capacidades necesarias para alcanzar los resultados esperados."},"Impulsar la Ejecución":{"alto":"Asegura el cumplimiento de los planes de trabajo mediante seguimiento constante, priorización efectiva y gestión oportuna de desviaciones.","bajo":"Puede presentar dificultades para dar seguimiento, gestionar prioridades o asegurar el cumplimiento oportuno de los compromisos."},"Delegación":{"alto":"Asigna responsabilidades de manera clara, empodera a las personas y realiza seguimiento efectivo sin necesidad de intervenir constantemente.","bajo":"Tiende a centralizar actividades o a realizar un seguimiento insuficiente, limitando la autonomía y efectividad del equipo."},"Visión del Negocio":{"alto":"Comprende cómo las decisiones y resultados de su área impactan los objetivos del negocio, orientando las acciones del equipo hacia la generación de valor.","bajo":"Se enfoca principalmente en la operación de corto plazo, con menor comprensión del impacto de sus decisiones en los resultados del negocio."},"Resolución de Problemas":{"alto":"Identifica oportunamente problemas, analiza sus causas y lidera la implementación de soluciones efectivas para evitar su recurrencia.","bajo":"Puede presentar dificultades para identificar causas raíz o implementar soluciones sostenibles ante problemas recurrentes."},"Impulsar la Diversidad":{"alto":"Promueve activamente el respeto por las diferencias, fomenta la participación de diversas perspectivas y contribuye a un ambiente inclusivo.","bajo":"Puede mostrar dificultades para valorar perspectivas distintas o generar espacios de participación equitativos."},"Trabajo en Equipo":{"alto":"Fomenta la colaboración entre áreas y personas, compartiendo información y recursos para alcanzar objetivos comunes.","bajo":"Tiende a trabajar de manera aislada o a priorizar los objetivos individuales sobre los colectivos."},"Responsabilidad":{"alto":"Asume la responsabilidad por los resultados de su gestión, cumple sus compromisos y actúa con integridad frente a las decisiones que toma.","bajo":"Puede requerir mayor seguimiento para asegurar el cumplimiento de compromisos o la asunción de responsabilidades frente a los resultados."},"Manejo de la Ambigüedad":{"alto":"Mantiene la efectividad ante cambios, incertidumbre o información incompleta, guiando al equipo en contextos de transformación.","bajo":"Prefiere contextos definidos y puede requerir mayor claridad, estructura o dirección cuando enfrenta escenarios ambiguos."}}};
+
+function renderHogan(h){
+  const el=document.getElementById('barHogan');
+  const fortEl=document.getElementById('hoganFortalezas');
+  const mejEl=document.getElementById('hoganMejora');
+  if(!h||!h.competencias){el.innerHTML='<div class="empty-msg">Sin datos</div>';fortEl.innerHTML='';mejEl.innerHTML='';return;}
+  const comps=Object.entries(h.competencias);
+  const getBarColor=(v)=>{
+    if(v>=70)return 'var(--green)';
+    if(v>=40)return 'var(--orange)';
+    return 'var(--red)';
+  };
+  el.innerHTML=comps.map(([name,val])=>{
+    const v=val||0;
+    const h=Math.round((v/100)*170);
+    const color=getBarColor(v);
+    return '<div class="bar-col"><span class="bar-value">'+v+'</span><div class="bar" style="height:'+h+'px;background:'+color+';width:36px;"></div><span class="bar-label" style="font-size:10px;text-align:center;max-width:80px;word-wrap:break-word;">'+name+'</span></div>';
+  }).join('');
+
+  // Clasificación y promedio - insertar antes de la gráfica
+  const infoEl=document.getElementById('hoganInfo');
+  const cls=h.clasificacion||'';
+  const prom=h.promedio||0;
+  const clsColor=cls==='Alta Versatilidad'?'var(--green)':cls==='Media Versatilidad'?'var(--cyan)':'var(--orange)';
+  infoEl.innerHTML='<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;padding:10px 16px;background:var(--panel);border:1px solid var(--border);border-radius:8px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;font-weight:600;color:var(--text-dim);">Clasificación:</span><span style="padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;color:#fff;background:'+clsColor+';">'+cls+'</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;font-weight:600;color:var(--text-dim);">Promedio:</span><span style="font-family:\'Space Grotesk\',sans-serif;font-size:18px;font-weight:800;color:var(--text);">'+prom+'</span></div></div>';
+
+  // Fortalezas (>=70) y oportunidades de desarrollo (<60)
+  const tipo=COMP_TIPO_MAP[h.tipo]||'V. Ejecutivo';
+  const desc=COMP_DESC[tipo]||{};
+  const fortalezas=comps.filter(([n,v])=>v>=70).sort((a,b)=>b[1]-a[1]);
+  const mejoras=comps.filter(([n,v])=>v<60).sort((a,b)=>a[1]-b[1]);
+
+  fortEl.innerHTML=fortalezas.length?'<div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px;">Fortalezas</div>'+
+    fortalezas.map(([n,v])=>{
+      const d=desc[n]||{};
+      return '<div style="margin:6px 0;padding:8px 10px;background:#ecfdf5;border-radius:6px;border-left:3px solid var(--green);"><div style="font-size:12px;font-weight:600;color:var(--text);">'+n+'</div>'+
+        (d.alto?'<div style="font-size:11px;color:var(--text-dim);margin-top:3px;">'+d.alto+'</div>':'')+'</div>';
+    }).join(''):'';
+
+  mejEl.innerHTML='<div style="font-size:13px;font-weight:700;color:var(--orange);margin-bottom:8px;">Oportunidades de desarrollo</div>'+
+    (mejoras.length?mejoras.map(([n,v])=>{
+      const d=desc[n]||{};
+      return '<div style="margin:6px 0;padding:8px 10px;background:#fff7ed;border-radius:6px;border-left:3px solid var(--orange);"><div style="font-size:12px;font-weight:600;color:var(--text);">'+n+'</div>'+
+        (d.bajo?'<div style="font-size:11px;color:var(--text-dim);margin-top:3px;">'+d.bajo+'</div>':'')+'</div>';
+    }).join(''):'<div style="font-size:12px;color:var(--text-dim);">Sin competencias con puntaje <60</div>');
+}
+
+function downloadPDF(){
+  window.print();
+}
+
+// Auto-load first
+loadFicha(SUCESORES[0]);
+</script>
+</body>
+</html>
