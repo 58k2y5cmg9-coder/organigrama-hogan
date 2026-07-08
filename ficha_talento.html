@@ -546,8 +546,20 @@ function downloadPDF(){
   window.print();
 }
 
-// Auto-load first
-loadFicha(SUCESORES[0]);
+// Auto-load: check URL param ?nombre=NAME
+const urlParams=new URLSearchParams(window.location.search);
+const nombreParam=urlParams.get('nombre');
+if(nombreParam){
+  const match=SUCESORES.find(x=>x.nombre.toUpperCase()===nombreParam.toUpperCase());
+  if(match){
+    document.getElementById('cedulaInput').value=nombreParam;
+    loadFicha(match);
+  }else{
+    loadFicha(SUCESORES[0]);
+  }
+}else{
+  loadFicha(SUCESORES[0]);
+}
 </script>
 </body>
 </html>
