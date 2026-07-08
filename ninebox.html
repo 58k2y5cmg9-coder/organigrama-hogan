@@ -1142,8 +1142,8 @@ document.getElementById('fJefe').addEventListener('change', e=>{
   state.jefe = e.target.value;
   state.page = 1;
   state.search=''; document.getElementById('fSearch').value='';
-  state.direccion=''; state.gerencia=''; state.region=''; state.ciudad=''; state.sucesor='';
-  ['fDireccion','fGerencia','fRegion','fCiudad','fSucesor'].forEach(id=> document.getElementById(id).value='');
+  state.region=''; state.ciudad=''; state.sucesor='';
+  ['fRegion','fCiudad','fSucesor'].forEach(id=> document.getElementById(id).value='');
   updateAllCascading();
   renderAll();
 });
