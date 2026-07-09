@@ -1649,12 +1649,12 @@ function exportPDF(){
   doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(200,210,230);
   doc.text('Equipo de Trabajo',margin,32);
 
-  const pdfJefe = state.jefe || (data.length ? data[0].jefe : '');
   const pdfDirArea = data.length ? (data[0].direccion_area || '') : '';
   doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);
-  if(pdfJefe) doc.text(pdfJefe,margin,42);
+  if(state.jefe) doc.text(state.jefe,margin,42);
+  else if(pdfDirArea) doc.text(pdfDirArea,margin,42);
   doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(200,210,230);
-  if(pdfDirArea) doc.text(pdfDirArea,margin,48);
+  if(state.jefe && pdfDirArea) doc.text(pdfDirArea,margin,48);
 
   // Stats in header
   doc.setFontSize(7);doc.setTextColor(180,195,220);
@@ -1795,8 +1795,8 @@ function exportPDF(){
     doc.setFontSize(5);doc.setFont('helvetica','normal');doc.setTextColor(...GRAY);
     doc.text('persona'+(people.length===1?'':'s'),bx+gridW-10,by+20);
 
-    // Names list - left side
-    if(people.length>0){
+    // Names list - left side (only when filtering by jefe)
+    if(people.length>0 && state.jefe){
       const sortedPeople=[...people].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
       sortedPeople.slice(0,7).forEach((p,pi)=>{
         const ny=by+10+pi*2.8;
