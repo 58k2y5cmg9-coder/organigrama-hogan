@@ -44,11 +44,11 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;}
 .chart-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;}
 .chart-card .chart-title{font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:12px;}
-.bar-chart{display:flex;align-items:flex-end;gap:8px;height:160px;justify-content:center;margin:12px 0;overflow-x:auto;}
+.bar-chart{display:flex;align-items:flex-end;gap:12px;height:160px;justify-content:center;margin:12px 0;overflow-x:auto;}
 .bar-col{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;}
-.bar{width:40px;border-radius:4px 4px 0 0;flex-shrink:0;}
+.bar{width:50px;border-radius:4px 4px 0 0;flex-shrink:0;}
 .bar-label{font-size:10px;color:var(--text-dim);text-align:center;word-wrap:break-word;max-width:80px;line-height:1.2;}
-.bar-value{font-size:11px;font-weight:700;}
+.bar-value{font-size:13px;font-weight:700;}
 .score-bar-row{display:flex;align-items:center;gap:10px;margin:6px 0;}
 .score-bar-label{font-size:12px;color:var(--text-dim);min-width:100px;text-align:right;}
 .score-bar-track{flex:1;height:18px;background:#e5e7eb;border-radius:100px;overflow:hidden;}
@@ -354,7 +354,8 @@ function renderObjetivos(objs){
   const el=document.getElementById('objDesarrollo');
   if(!objs.length){el.innerHTML='<div class="empty-msg">Sin datos</div>';return;}
   el.style.display='flex';el.style.flexDirection='column';el.style.alignItems='center';
-  el.innerHTML=objs.slice(0,4).map(o=>'<div class="talent-obj" style="width:100%;max-width:500px;"><div class="to-talent">'+(o.talento||'—')+'</div><div class="to-obj" style="text-align:center;">'+(o.obj||'—')+'</div></div>').join('');
+  const items=objs.slice(0,4);
+  el.innerHTML=items.map(o=>'<div class="talent-obj" style="width:100%;max-width:500px;'+(items.length===1?'margin-left:auto;margin-right:auto;':'')+'"><div class="to-talent">'+(o.talento||'—')+'</div><div class="to-obj" style="text-align:center;">'+(o.obj||'—')+'</div></div>').join('');
 }
 
 function render360(data){
