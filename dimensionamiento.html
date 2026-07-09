@@ -156,7 +156,7 @@ body.dark thead th{background:#1e293b}
     <div class="kpi blue">
       <div class="kpi-label">Total Personal</div>
       <div class="kpi-value" id="kpiTotal">—</div>
-      <div class="kpi-sub"><span id="kpiDirectos">0</span> directos + <span id="kpiTemporales">0</span> temporales</div>
+      <div class="kpi-sub"><span class="text-green" style="font-weight:700" id="kpiDirectos">0</span> directos · <span class="text-orange" style="font-weight:700" id="kpiTemporales">0</span> temporales</div>
     </div>
     <div class="kpi green">
       <div class="kpi-label">% Directos</div>
@@ -164,14 +164,14 @@ body.dark thead th{background:#1e293b}
       <div class="kpi-sub">Meta ideal: <span id="kpiMetaIdeal">—</span></div>
     </div>
     <div class="kpi orange">
-      <div class="kpi-label">Dim. Aprobado</div>
+      <div class="kpi-label">Dim. Aprobado (Cierre Dic)</div>
       <div class="kpi-value" id="kpiDimAprob">—</div>
-      <div class="kpi-sub">Total a nivel nacional</div>
+      <div class="kpi-sub" id="kpiDimAprobSub">Meta cierre Dic: — directos</div>
     </div>
     <div class="kpi red">
-      <div class="kpi-label">Brecha vs Meta</div>
+      <div class="kpi-label">Brecha vs Meta Directos</div>
       <div class="kpi-value" id="kpiBrecha">—</div>
-      <div class="kpi-sub" id="kpiBrechaSub">Directos vs meta dic</div>
+      <div class="kpi-sub" id="kpiBrechaSub">Directos vs meta directos Dic</div>
     </div>
   </div>
 
@@ -325,55 +325,58 @@ const DIMS={"R1":395,"Aguachica":15,"Barranquilla":130,"Cartagena":70,"Montería
 
 const R4_CITIES=['Bogotá, D.C.','Chía','Mosquera','Soacha','Zipaquirá'];
 
+const DIM_CIERRE_TOTAL=2716;
+const META_DIRECTOS_TOTAL=1982.68;
+
 const BASE=[
-{label:"Bogotá, D.C.",dim:762,directos:[511,512,513,515,524,520],temporales:[257,245,240,226,202,191],pct:[.665,.676,.681,.695,.722,.731],brecha:[-30.18,1,1,2,9,-4],proy:.701},
-{label:"Chía",dim:40,directos:[25,26,26,26,25,25],temporales:[18,14,13,10,10,10],pct:[.581,.65,.667,.722,.714,.714],brecha:[-3.41,1,0,0,-1,0],proy:.642},
-{label:"Mosquera",dim:29,directos:[11,11,11,11,13,12],temporales:[16,17,17,16,15,14],pct:[.407,.393,.393,.407,.464,.462],brecha:[-9.6,0,0,0,2,-1],proy:.425},
-{label:"Soacha",dim:75,directos:[35,35,37,37,37,43],temporales:[26,26,29,26,22,23],pct:[.574,.574,.561,.587,.627,.652],brecha:[-18.27,0,2,0,0,6],proy:.589},
-{label:"Zipaquirá",dim:16,directos:[15,15,15,14,14,14],temporales:[2,2,1,2,2,2],pct:[.882,.882,.938,.875,.875,.875],brecha:[3.64,0,0,-1,0,0],proy:.899},
-{label:"Aguachica",dim:15,region:"R1",directos:[8,8,8,8,8,8],temporales:[5,5,6,7,7,7],pct:[.615,.615,.571,.533,.533,.533],brecha:[-2.81,0,0,0,0,0],proy:.540},
-{label:"Barranquilla",dim:130,region:"R1",directos:[107,107,107,107,106,106],temporales:[25,29,28,28,30,30],pct:[.811,.787,.793,.793,.779,.779],brecha:[13.3,0,0,0,-1,0],proy:.826},
-{label:"Cartagena",dim:70,region:"R1",directos:[51,51,51,51,51,51],temporales:[19,18,18,19,19,17],pct:[.729,.739,.739,.729,.729,.75],brecha:[.55,0,0,0,0,0],proy:.738},
-{label:"Montería",dim:35,region:"R1",directos:[28,28,28,28,28,28],temporales:[6,7,7,7,7,7],pct:[.824,.8,.8,.8,.8,.8],brecha:[2.77,0,0,0,0,0],proy:.810},
-{label:"Riohacha",dim:22,region:"R1",directos:[22,22,20,20,20,20],temporales:[4,4,4,6,6,6],pct:[.846,.846,.833,.769,.769,.769],brecha:[6.14,0,-2,0,0,0],proy:.921},
-{label:"San Andrés",dim:12,region:"R1",directos:[8,8,8,7,7,7],temporales:[4,4,4,4,4,4],pct:[.667,.667,.667,.636,.636,.636],brecha:[-.65,0,0,-1,0,0],proy:.591},
-{label:"Santa Marta",dim:39,region:"R1",directos:[30,30,30,30,29,29],temporales:[6,6,7,10,10,11],pct:[.833,.833,.811,.75,.744,.725],brecha:[1.89,0,0,0,-1,0],proy:.753},
-{label:"Sincelejo",dim:33,region:"R1",directos:[20,20,20,20,20,20],temporales:[8,10,10,10,10,10],pct:[.714,.667,.667,.667,.667,.667],brecha:[-3.79,0,0,0,0,0],proy:.614},
-{label:"Valledupar",dim:39,region:"R1",directos:[34,34,34,34,34,34],temporales:[7,9,10,10,9,9],pct:[.829,.791,.773,.773,.791,.791],brecha:[5.89,0,0,0,0,0],proy:.883},
-{label:"Apartadó",dim:15,region:"R2",directos:[10,10,11,11,12,11],temporales:[5,5,4,4,3,4],pct:[.667,.667,.733,.733,.8,.733],brecha:[-.75,0,1,0,1,-1],proy:.747},
-{label:"Armenia",dim:46,region:"R2",directos:[28,28,28,30,30,30],temporales:[20,21,19,19,17,18],pct:[.583,.571,.596,.612,.638,.625],brecha:[-4.98,0,0,2,0,0],proy:.664},
-{label:"Bello",dim:41,region:"R2",directos:[29,28,28,27,28,28],temporales:[16,15,14,12,10,10],pct:[.644,.651,.667,.692,.737,.737],brecha:[-.39,-1,0,-1,1,0],proy:.695},
-{label:"Caucasia",dim:16,region:"R2",directos:[13,13,13,13,14,14],temporales:[4,4,4,4,3,3],pct:[.765,.765,.765,.765,.824,.824],brecha:[1.53,0,0,0,1,0],proy:.891},
-{label:"La Dorada",dim:13,region:"R2",directos:[10,10,10,10,10,10],temporales:[5,5,5,5,5,5],pct:[.667,.667,.667,.667,.667,.667],brecha:[.68,0,0,0,0,0],proy:.783},
-{label:"Manizales",dim:39,region:"R2",directos:[18,20,20,20,21,21],temporales:[18,19,19,19,17,20],pct:[.5,.513,.513,.513,.553,.512],brecha:[-9.96,2,0,0,1,0],proy:.548},
-{label:"Medellín",dim:213,region:"R2",directos:[118,125,129,133,139,143],temporales:[101,97,89,99,98,92],pct:[.539,.563,.592,.573,.586,.609],brecha:[-34.7,7,4,4,6,4],proy:.684},
-{label:"Pereira",dim:74,region:"R2",directos:[36,38,40,44,47,49],temporales:[30,27,29,19,17,13],pct:[.545,.585,.580,.698,.734,.790],brecha:[-17.05,2,2,4,3,2],proy:.674},
-{label:"Quibdó",dim:18,region:"R2",directos:[15,15,15,15,15,15],temporales:[2,3,3,3,3,3],pct:[.882,.833,.833,.833,.833,.833],brecha:[2.1,0,0,0,0,0],proy:.849},
-{label:"Rionegro",dim:26,region:"R2",directos:[16,15,15,16,18,18],temporales:[8,8,11,7,5,5],pct:[.667,.652,.577,.696,.783,.783],brecha:[-2.64,-1,0,1,2,0],proy:.705},
-{label:"Buenaventura",dim:15,region:"R3",directos:[13,13,13,13,13,13],temporales:[2,2,3,2,2,2],pct:[.867,.867,.813,.867,.867,.867],brecha:[2.17,0,0,0,0,0],proy:.876},
-{label:"Cali",dim:183,region:"R3",directos:[113,115,117,119,123,129],temporales:[73,71,66,66,62,56],pct:[.608,.618,.639,.643,.665,.697],brecha:[-19.1,2,2,2,4,6],proy:.713},
-{label:"Cartago",dim:16,region:"R3",directos:[6,7,8,8,8,8],temporales:[12,10,8,9,9,9],pct:[.333,.412,.5,.471,.471,.471],brecha:[-5.55,1,1,0,0,0],proy:.506},
-{label:"Florencia",dim:22,region:"R3",directos:[14,14,14,14,14,14],temporales:[8,8,7,8,8,8],pct:[.636,.636,.667,.636,.636,.636],brecha:[-1.88,0,0,0,0,0],proy:.644},
-{label:"Ibagué",dim:66,region:"R3",directos:[50,50,50,51,53,54],temporales:[18,18,17,15,14,13],pct:[.735,.735,.746,.773,.791,.806],brecha:[2.36,0,0,1,2,1],proy:.827},
-{label:"Ipiales",dim:13,region:"R3",directos:[9,9,10,10,10,10],temporales:[4,4,4,4,3,3],pct:[.692,.692,.714,.714,.769,.769],brecha:[-.38,0,1,0,0,0],proy:.778},
-{label:"Neiva",dim:58,region:"R3",directos:[34,35,36,37,37,38],temporales:[26,25,23,23,23,21],pct:[.567,.583,.610,.617,.617,.644],brecha:[-7.87,1,1,1,0,1],proy:.663},
-{label:"Palmira",dim:34,region:"R3",directos:[20,23,23,25,26,26],temporales:[13,11,13,11,10,8],pct:[.606,.676,.639,.694,.722,.765],brecha:[-4.54,3,0,2,1,0],proy:.773},
-{label:"Pasto",dim:38,region:"R3",directos:[32,31,31,30,30,30],temporales:[5,6,7,8,8,8],pct:[.865,.838,.816,.789,.789,.789],brecha:[4.57,-1,0,-1,0,0],proy:.798},
-{label:"Popayán",dim:52,region:"R3",directos:[30,31,31,32,33,33],temporales:[23,21,20,22,21,19],pct:[.566,.596,.608,.593,.611,.635],brecha:[-7.54,1,0,1,1,0],proy:.642},
-{label:"Tuluá",dim:25,region:"R3",directos:[13,13,14,15,16,16],temporales:[11,11,10,9,8,8],pct:[.542,.542,.583,.625,.667,.667],brecha:[-5.05,0,1,1,1,0],proy:.647},
-{label:"Tumaco",dim:14,region:"R3",directos:[12,12,12,12,12,12],temporales:[2,2,1,1,1,1],pct:[.857,.857,.923,.923,.923,.923],brecha:[1.89,0,0,0,0,0],proy:.867},
-{label:"Acacías",dim:11,region:"R5",directos:[5,5,5,5,5,5],temporales:[6,6,5,6,6,6],pct:[.455,.455,.5,.455,.455,.455],brecha:[-2.97,0,0,0,0,0],proy:.458},
-{label:"Barrancabermeja",dim:24,region:"R5",directos:[23,23,20,20,20,19],temporales:[1,0,2,2,2,2],pct:[.958,1,.909,.909,.909,.905],brecha:[5.61,0,-3,0,0,-1],proy:.798},
-{label:"Bucaramanga",dim:75,region:"R5",directos:[62,62,63,63,63,63],temporales:[12,14,16,16,15,15],pct:[.838,.816,.797,.797,.808,.808],brecha:[7.65,0,1,0,0,0],proy:.846},
-{label:"Cúcuta",dim:90,region:"R5",directos:[71,70,70,70,70,68],temporales:[20,19,18,19,20,20],pct:[.780,.787,.795,.787,.778,.773],brecha:[5.78,-1,0,0,0,-2],proy:.761},
-{label:"Duitama",dim:15,region:"R5",directos:[7,7,7,7,7,7],temporales:[8,8,8,7,8,8],pct:[.467,.467,.467,.5,.467,.467],brecha:[-3.87,0,0,0,0,0],proy:.470},
-{label:"Floridablanca",dim:7,region:"R5",directos:[6,6,6,6,7,7],temporales:[3,2,2,2,2,2],pct:[.667,.75,.75,.75,.778,.778],brecha:[.93,0,0,0,1,0],proy:1.007},
-{label:"Fusagasugá",dim:23,region:"R5",directos:[16,16,16,16,16,16],temporales:[7,7,6,5,6,8],pct:[.696,.696,.727,.762,.727,.667],brecha:[-.67,0,0,0,0,0],proy:.701},
-{label:"Girardot",dim:21,region:"R5",directos:[11,11,11,11,11,11],temporales:[8,6,7,9,8,9],pct:[.579,.647,.611,.55,.579,.55],brecha:[-4.22,0,0,0,0,0],proy:.528},
-{label:"Sogamoso",dim:19,region:"R5",directos:[13,10,10,10,10,10],temporales:[6,6,9,8,9,9],pct:[.684,.625,.526,.556,.526,.526],brecha:[-.77,-3,0,0,0,0],proy:.530},
-{label:"Tunja",dim:26,region:"R5",directos:[23,23,23,23,23,23],temporales:[4,4,4,4,4,4],pct:[.852,.852,.852,.852,.852,.852],brecha:[4.16,0,0,0,0,0],proy:.891},
-{label:"Villavicencio",dim:71,region:"R5",directos:[55,55,55,55,54,54],temporales:[15,17,16,17,17,16],pct:[.786,.764,.775,.764,.761,.771],brecha:[3.55,0,0,0,-1,0],proy:.766},
-{label:"Yopal",dim:28,region:"R5",directos:[22,22,22,22,22,22],temporales:[7,6,4,5,6,6],pct:[.759,.786,.846,.815,.786,.786],brecha:[1.71,0,0,0,0,0],proy:.792}
+{label:"Bogotá, D.C.",dim:762,dic:741.34,metaDir:541.18,directos:[511,512,513,515,524,520],temporales:[257,245,240,226,202,191],pct:[.665,.676,.681,.695,.722,.731],brecha:[-30.18,1,1,2,9,-4],proy:.701},
+{label:"Chía",dim:40,dic:38.92,metaDir:28.41,directos:[25,26,26,26,25,25],temporales:[18,14,13,10,10,10],pct:[.581,.65,.667,.722,.714,.714],brecha:[-3.41,1,0,0,-1,0],proy:.642},
+{label:"Mosquera",dim:29,dic:28.21,metaDir:20.60,directos:[11,11,11,11,13,12],temporales:[16,17,17,16,15,14],pct:[.407,.393,.393,.407,.464,.462],brecha:[-9.6,0,0,0,2,-1],proy:.425},
+{label:"Soacha",dim:75,dic:72.97,metaDir:53.27,directos:[35,35,37,37,37,43],temporales:[26,26,29,26,22,23],pct:[.574,.574,.561,.587,.627,.652],brecha:[-18.27,0,2,0,0,6],proy:.589},
+{label:"Zipaquirá",dim:16,dic:15.57,metaDir:11.36,directos:[15,15,15,14,14,14],temporales:[2,2,1,2,2,2],pct:[.882,.882,.938,.875,.875,.875],brecha:[3.64,0,0,-1,0,0],proy:.899},
+{label:"Aguachica",dim:15,dic:14.81,metaDir:10.81,region:"R1",directos:[8,8,8,8,8,8],temporales:[5,5,6,7,7,7],pct:[.615,.615,.571,.533,.533,.533],brecha:[-2.81,0,0,0,0,0],proy:.540},
+{label:"Barranquilla",dim:130,dic:128.35,metaDir:93.70,region:"R1",directos:[107,107,107,107,106,106],temporales:[25,29,28,28,30,30],pct:[.811,.787,.793,.793,.779,.779],brecha:[13.3,0,0,0,-1,0],proy:.826},
+{label:"Cartagena",dim:70,dic:69.11,metaDir:50.45,region:"R1",directos:[51,51,51,51,51,51],temporales:[19,18,18,19,19,17],pct:[.729,.739,.739,.729,.729,.75],brecha:[.55,0,0,0,0,0],proy:.738},
+{label:"Montería",dim:35,dic:34.56,metaDir:25.23,region:"R1",directos:[28,28,28,28,28,28],temporales:[6,7,7,7,7,7],pct:[.824,.8,.8,.8,.8,.8],brecha:[2.77,0,0,0,0,0],proy:.810},
+{label:"Riohacha",dim:22,dic:21.72,metaDir:15.86,region:"R1",directos:[22,22,20,20,20,20],temporales:[4,4,4,6,6,6],pct:[.846,.846,.833,.769,.769,.769],brecha:[6.14,0,-2,0,0,0],proy:.921},
+{label:"San Andrés",dim:12,dic:11.85,metaDir:8.65,region:"R1",directos:[8,8,8,7,7,7],temporales:[4,4,4,4,4,4],pct:[.667,.667,.667,.636,.636,.636],brecha:[-.65,0,0,-1,0,0],proy:.591},
+{label:"Santa Marta",dim:39,dic:38.51,metaDir:28.11,region:"R1",directos:[30,30,30,30,29,29],temporales:[6,6,7,10,10,11],pct:[.833,.833,.811,.75,.744,.725],brecha:[1.89,0,0,0,-1,0],proy:.753},
+{label:"Sincelejo",dim:33,dic:32.58,metaDir:23.79,region:"R1",directos:[20,20,20,20,20,20],temporales:[8,10,10,10,10,10],pct:[.714,.667,.667,.667,.667,.667],brecha:[-3.79,0,0,0,0,0],proy:.614},
+{label:"Valledupar",dim:39,dic:38.51,metaDir:28.11,region:"R1",directos:[34,34,34,34,34,34],temporales:[7,9,10,10,9,9],pct:[.829,.791,.773,.773,.791,.791],brecha:[5.89,0,0,0,0,0],proy:.883},
+{label:"Apartadó",dim:15,dic:14.73,metaDir:10.75,region:"R2",directos:[10,10,11,11,12,11],temporales:[5,5,4,4,3,4],pct:[.667,.667,.733,.733,.8,.733],brecha:[-.75,0,1,0,1,-1],proy:.747},
+{label:"Armenia",dim:46,dic:45.17,metaDir:32.98,region:"R2",directos:[28,28,28,30,30,30],temporales:[20,21,19,19,17,18],pct:[.583,.571,.596,.612,.638,.625],brecha:[-4.98,0,0,2,0,0],proy:.664},
+{label:"Bello",dim:41,dic:40.26,metaDir:29.39,region:"R2",directos:[29,28,28,27,28,28],temporales:[16,15,14,12,10,10],pct:[.644,.651,.667,.692,.737,.737],brecha:[-.39,-1,0,-1,1,0],proy:.695},
+{label:"Caucasia",dim:16,dic:15.71,metaDir:11.47,region:"R2",directos:[13,13,13,13,14,14],temporales:[4,4,4,4,3,3],pct:[.765,.765,.765,.765,.824,.824],brecha:[1.53,0,0,0,1,0],proy:.891},
+{label:"La Dorada",dim:13,dic:12.77,metaDir:9.32,region:"R2",directos:[10,10,10,10,10,10],temporales:[5,5,5,5,5,5],pct:[.667,.667,.667,.667,.667,.667],brecha:[.68,0,0,0,0,0],proy:.783},
+{label:"Manizales",dim:39,dic:38.30,metaDir:27.96,region:"R2",directos:[18,20,20,20,21,21],temporales:[18,19,19,19,17,20],pct:[.5,.513,.513,.513,.553,.512],brecha:[-9.96,2,0,0,1,0],proy:.548},
+{label:"Medellín",dim:213,dic:209.17,metaDir:152.70,region:"R2",directos:[118,125,129,133,139,143],temporales:[101,97,89,99,98,92],pct:[.539,.563,.592,.573,.586,.609],brecha:[-34.7,7,4,4,6,4],proy:.684},
+{label:"Pereira",dim:74,dic:72.67,metaDir:53.05,region:"R2",directos:[36,38,40,44,47,49],temporales:[30,27,29,19,17,13],pct:[.545,.585,.580,.698,.734,.790],brecha:[-17.05,2,2,4,3,2],proy:.674},
+{label:"Quibdó",dim:18,dic:17.68,metaDir:12.90,region:"R2",directos:[15,15,15,15,15,15],temporales:[2,3,3,3,3,3],pct:[.882,.833,.833,.833,.833,.833],brecha:[2.1,0,0,0,0,0],proy:.849},
+{label:"Rionegro",dim:26,dic:25.53,metaDir:18.64,region:"R2",directos:[16,15,15,16,18,18],temporales:[8,8,11,7,5,5],pct:[.667,.652,.577,.696,.783,.783],brecha:[-2.64,-1,0,1,2,0],proy:.705},
+{label:"Buenaventura",dim:15,dic:14.83,metaDir:10.83,region:"R3",directos:[13,13,13,13,13,13],temporales:[2,2,3,2,2,2],pct:[.867,.867,.813,.867,.867,.867],brecha:[2.17,0,0,0,0,0],proy:.876},
+{label:"Cali",dim:183,dic:180.95,metaDir:132.09,region:"R3",directos:[113,115,117,119,123,129],temporales:[73,71,66,66,62,56],pct:[.608,.618,.639,.643,.665,.697],brecha:[-19.1,2,2,2,4,6],proy:.713},
+{label:"Cartago",dim:16,dic:15.82,metaDir:11.55,region:"R3",directos:[6,7,8,8,8,8],temporales:[12,10,8,9,9,9],pct:[.333,.412,.5,.471,.471,.471],brecha:[-5.55,1,1,0,0,0],proy:.506},
+{label:"Florencia",dim:22,dic:21.75,metaDir:15.88,region:"R3",directos:[14,14,14,14,14,14],temporales:[8,8,7,8,8,8],pct:[.636,.636,.667,.636,.636,.636],brecha:[-1.88,0,0,0,0,0],proy:.644},
+{label:"Ibagué",dim:66,dic:65.26,metaDir:47.64,region:"R3",directos:[50,50,50,51,53,54],temporales:[18,18,17,15,14,13],pct:[.735,.735,.746,.773,.791,.806],brecha:[2.36,0,0,1,2,1],proy:.827},
+{label:"Ipiales",dim:13,dic:12.85,metaDir:9.38,region:"R3",directos:[9,9,10,10,10,10],temporales:[4,4,4,4,3,3],pct:[.692,.692,.714,.714,.769,.769],brecha:[-.38,0,1,0,0,0],proy:.778},
+{label:"Neiva",dim:58,dic:57.35,metaDir:41.87,region:"R3",directos:[34,35,36,37,37,38],temporales:[26,25,23,23,23,21],pct:[.567,.583,.610,.617,.617,.644],brecha:[-7.87,1,1,1,0,1],proy:.663},
+{label:"Palmira",dim:34,dic:33.62,metaDir:24.54,region:"R3",directos:[20,23,23,25,26,26],temporales:[13,11,13,11,10,8],pct:[.606,.676,.639,.694,.722,.765],brecha:[-4.54,3,0,2,1,0],proy:.773},
+{label:"Pasto",dim:38,dic:37.57,metaDir:27.43,region:"R3",directos:[32,31,31,30,30,30],temporales:[5,6,7,8,8,8],pct:[.865,.838,.816,.789,.789,.789],brecha:[4.57,-1,0,-1,0,0],proy:.798},
+{label:"Popayán",dim:52,dic:51.42,metaDir:37.54,region:"R3",directos:[30,31,31,32,33,33],temporales:[23,21,20,22,21,19],pct:[.566,.596,.608,.593,.611,.635],brecha:[-7.54,1,0,1,1,0],proy:.642},
+{label:"Tuluá",dim:25,dic:24.72,metaDir:18.05,region:"R3",directos:[13,13,14,15,16,16],temporales:[11,11,10,9,8,8],pct:[.542,.542,.583,.625,.667,.667],brecha:[-5.05,0,1,1,1,0],proy:.647},
+{label:"Tumaco",dim:14,dic:13.84,metaDir:10.11,region:"R3",directos:[12,12,12,12,12,12],temporales:[2,2,1,1,1,1],pct:[.857,.857,.923,.923,.923,.923],brecha:[1.89,0,0,0,0,0],proy:.867},
+{label:"Acacías",dim:11,dic:10.92,metaDir:7.97,region:"R5",directos:[5,5,5,5,5,5],temporales:[6,6,5,6,6,6],pct:[.455,.455,.5,.455,.455,.455],brecha:[-2.97,0,0,0,0,0],proy:.458},
+{label:"Barrancabermeja",dim:24,dic:23.82,metaDir:17.39,region:"R5",directos:[23,23,20,20,20,19],temporales:[1,0,2,2,2,2],pct:[.958,1,.909,.909,.909,.905],brecha:[5.61,0,-3,0,0,-1],proy:.798},
+{label:"Bucaramanga",dim:75,dic:74.45,metaDir:54.35,region:"R5",directos:[62,62,63,63,63,63],temporales:[12,14,16,16,15,15],pct:[.838,.816,.797,.797,.808,.808],brecha:[7.65,0,1,0,0,0],proy:.846},
+{label:"Cúcuta",dim:90,dic:89.34,metaDir:65.22,region:"R5",directos:[71,70,70,70,70,68],temporales:[20,19,18,19,20,20],pct:[.780,.787,.795,.787,.778,.773],brecha:[5.78,-1,0,0,0,-2],proy:.761},
+{label:"Duitama",dim:15,dic:14.89,metaDir:10.87,region:"R5",directos:[7,7,7,7,7,7],temporales:[8,8,8,7,8,8],pct:[.467,.467,.467,.5,.467,.467],brecha:[-3.87,0,0,0,0,0],proy:.470},
+{label:"Floridablanca",dim:7,dic:6.95,metaDir:5.07,region:"R5",directos:[6,6,6,6,7,7],temporales:[3,2,2,2,2,2],pct:[.667,.75,.75,.75,.778,.778],brecha:[.93,0,0,0,1,0],proy:1.007},
+{label:"Fusagasugá",dim:23,dic:22.83,metaDir:16.67,region:"R5",directos:[16,16,16,16,16,16],temporales:[7,7,6,5,6,8],pct:[.696,.696,.727,.762,.727,.667],brecha:[-.67,0,0,0,0,0],proy:.701},
+{label:"Girardot",dim:21,dic:20.85,metaDir:15.22,region:"R5",directos:[11,11,11,11,11,11],temporales:[8,6,7,9,8,9],pct:[.579,.647,.611,.55,.579,.55],brecha:[-4.22,0,0,0,0,0],proy:.528},
+{label:"Sogamoso",dim:19,dic:18.86,metaDir:13.77,region:"R5",directos:[13,10,10,10,10,10],temporales:[6,6,9,8,9,9],pct:[.684,.625,.526,.556,.526,.526],brecha:[-.77,-3,0,0,0,0],proy:.530},
+{label:"Tunja",dim:26,dic:25.81,metaDir:18.84,region:"R5",directos:[23,23,23,23,23,23],temporales:[4,4,4,4,4,4],pct:[.852,.852,.852,.852,.852,.852],brecha:[4.16,0,0,0,0,0],proy:.891},
+{label:"Villavicencio",dim:71,dic:70.48,metaDir:51.45,region:"R5",directos:[55,55,55,55,54,54],temporales:[15,17,16,17,17,16],pct:[.786,.764,.775,.764,.761,.771],brecha:[3.55,0,0,0,-1,0],proy:.766},
+{label:"Yopal",dim:28,dic:27.80,metaDir:20.29,region:"R5",directos:[22,22,22,22,22,22],temporales:[7,6,4,5,6,6],pct:[.759,.786,.846,.815,.786,.786],brecha:[1.71,0,0,0,0,0],proy:.792}
 ];
 
 const RESUMEN=[
@@ -458,11 +461,12 @@ function applyFilters(){
 // ─── KPIs ────────────────────────────────────────────────────────────
 function renderKPIs(data){
   const mi=state.mes!==''?parseInt(state.mes):null;
-  let totalDir=0,totalTemp=0,totalDim=0;
+  let totalDir=0,totalTemp=0,totalDic=0,totalMetaDir=0;
   data.forEach(d=>{
     if(mi!==null){totalDir+=d.directos[mi]||0;totalTemp+=d.temporales[mi]||0;}
     else{d.directos.forEach(v=>totalDir+=v);d.temporales.forEach(v=>totalTemp+=v);totalDir=Math.round(totalDir/6);totalTemp=Math.round(totalTemp/6);}
-    totalDim+=d.dim;
+    totalDic+=d.dic||0;
+    totalMetaDir+=d.metaDir||0;
   });
   const total=totalDir+totalTemp;
   const pctDir=total?totalDir/total:0;
@@ -470,10 +474,13 @@ function renderKPIs(data){
   document.getElementById('kpiDirectos').textContent=fmt(totalDir);
   document.getElementById('kpiTemporales').textContent=fmt(totalTemp);
   document.getElementById('kpiPctDir').textContent=fmtPct(pctDir);
-  document.getElementById('kpiDimAprob').textContent=fmt(totalDim);
-  const brecha=totalDir-(totalDim*.726);
+  document.getElementById('kpiMetaIdeal').textContent=fmtPct(totalDic?totalMetaDir/totalDic:0);
+  document.getElementById('kpiDimAprob').textContent=fmt(Math.round(totalDic));
+  document.getElementById('kpiDimAprobSub').textContent='Meta cierre Dic: '+fmt(totalMetaDir)+' directos';
+  const brecha=totalDir-totalMetaDir;
   document.getElementById('kpiBrecha').textContent=(brecha>=0?'+':'')+fmt(brecha);
   document.getElementById('kpiBrecha').style.color=brecha>=0?'var(--green)':'var(--red)';
+  document.getElementById('kpiBrechaSub').textContent='Directos vs meta directos Dic';
 }
 
 // ─── TABLE ───────────────────────────────────────────────────────────
@@ -489,22 +496,23 @@ function renderTable(data){
   REGIONS.forEach(r=>{
     const cities=data.filter(d=>d.region===r);
     if(!cities.length)return;
-    let rDir=0,rTemp=0,rDim=0;
+    let rDir=0,rTemp=0,rDim=0,rMeta=0;
     cities.forEach(c=>{
       if(mi!==null){rDir+=c.directos[mi]||0;rTemp+=c.temporales[mi]||0;}
       else{rDir+=Math.round(c.directos.reduce((a,b)=>a+b,0)/6);rTemp+=Math.round(c.temporales.reduce((a,b)=>a+b,0)/6);}
       rDim+=c.dim;
+      rMeta+=c.metaDir||0;
     });
     const rTotal=rDir+rTemp;
     const rPct=rTotal?rDir/rTotal:0;
-    const rBrecha=rDir-(rDim*.726);
+    const rBrecha=rDir-rMeta;
     html+='<tr class="region-row"><td>'+REGION_NAMES[r]+'</td><td></td><td class="text-right font-mono">'+fmt(rDim)+'</td><td class="text-right font-mono">'+fmt(rDir)+'</td><td class="text-right font-mono">'+fmt(rTemp)+'</td><td class="text-right font-mono">'+fmt(rTotal)+'</td><td class="text-right"><span class="chip '+chipColor(rPct*100)+'">'+fmtPct(rPct)+'</span></td><td class="text-right font-mono '+(rBrecha>=0?'text-green':'text-red')+'">'+(rBrecha>=0?'+':'')+fmt(rBrecha)+'</td></tr>';
     cities.sort((a,b)=>b.dim-a.dim).forEach(c=>{
       const dir=mi!==null?c.directos[mi]:Math.round(c.directos.reduce((a,b)=>a+b,0)/6);
       const temp=mi!==null?c.temporales[mi]:Math.round(c.temporales.reduce((a,b)=>a+b,0)/6);
       const tot=dir+temp;
       const pct=tot?dir/tot:0;
-      const brecha=dir-(c.dim*.726);
+      const brecha=dir-(c.metaDir||0);
       html+='<tr><td>'+r+'</td><td>'+c.label+'</td><td class="text-right font-mono">'+fmt(c.dim)+'</td><td class="text-right font-mono">'+fmt(dir)+'</td><td class="text-right font-mono">'+fmt(temp)+'</td><td class="text-right font-mono">'+fmt(tot)+'</td><td class="text-right"><span class="chip '+chipColor(pct*100)+'">'+fmtPct(pct)+'</span></td><td class="text-right font-mono '+(brecha>=0?'text-green':'text-red')+'">'+(brecha>=0?'+':'')+fmt(brecha)+'</td></tr>';
       count++;
     });
@@ -608,9 +616,9 @@ function renderTopDir(data){
 function renderBrechaChart(data){
   const ctx=document.getElementById('chartBrecha').getContext('2d');
   const regBrecha={};
-  data.forEach(d=>{if(!d.region)return;if(!regBrecha[d.region])regBrecha[d.region]={dir:0,dim:0};regBrecha[d.region].dir+=d.directos[5]||0;regBrecha[d.region].dim+=d.dim;});
+  data.forEach(d=>{if(!d.region)return;if(!regBrecha[d.region])regBrecha[d.region]={dir:0,meta:0};regBrecha[d.region].dir+=d.directos[5]||0;regBrecha[d.region].meta+=d.metaDir||0;});
   const labels=Object.keys(regBrecha);
-  const brechas=labels.map(r=>regBrecha[r].dir-(regBrecha[r].dim*.726));
+  const brechas=labels.map(r=>regBrecha[r].dir-regBrecha[r].meta);
   charts.brecha=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Brecha vs Meta',data:brechas,backgroundColor:brechas.map(b=>b>=0?'#059669':'#dc2626'),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#e2e6eb'}}}}});
 }
 
