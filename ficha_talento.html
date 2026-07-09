@@ -221,9 +221,11 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
   <div class="chart-card"><canvas id="radar360" width="700" height="500"></canvas></div>
   </div>
 
+  <div id="climaSection">
   <div class="section-title blue">Clima organizacional</div>
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;"><span style="font-size:13px;font-weight:700;color:var(--text);">Resultado general:</span><span style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:var(--text);" id="climaGeneral">—</span></div>
   <div class="chart-card"><div class="bar-chart" id="barClima" style="height:260px;flex-wrap:wrap;"></div></div>
+  </div>
 
   <div class="grid-2" style="margin-top:12px;">
     <div class="chart-card" id="hoganFortalezas" style="text-align:left;"></div>
@@ -470,9 +472,11 @@ function renderFormacion(p){
 }
 
 function renderClima(c){
-  if(!c.length){document.getElementById('climaGeneral').textContent='—';document.getElementById('barClima').innerHTML='';return;}
+  const valid=c.filter(x=>x.dim&&x.pct!=null&&x.pct>0);
+  if(!valid.length){document.getElementById('climaSection').style.display='none';return;}
+  document.getElementById('climaSection').style.display='';
   const dims={};
-  c.forEach(x=>{dims[x.dim]=x.pct;});
+  valid.forEach(x=>{dims[x.dim]=x.pct;});
   const entries=Object.entries(dims).sort((a,b)=>b[1]-a[1]);
   const avg=(entries.reduce((s,e)=>s+e[1],0)/entries.length*100).toFixed(0);
   document.getElementById('climaGeneral').textContent=avg+'%';
