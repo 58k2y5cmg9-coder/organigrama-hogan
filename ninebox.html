@@ -1649,12 +1649,12 @@ function exportPDF(){
   doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(200,210,230);
   doc.text('Equipo de Trabajo',margin,32);
 
-  const pdfDirArea = data.length ? (data[0].direccion_area || '') : '';
+  const pdfDir = data.length ? (data[0].direccion || '') : '';
   doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);
   if(state.jefe) doc.text(state.jefe,margin,42);
-  else if(pdfDirArea) doc.text(pdfDirArea,margin,42);
+  else if(pdfDir) doc.text(pdfDir,margin,42);
   doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(200,210,230);
-  if(state.jefe && pdfDirArea) doc.text(pdfDirArea,margin,48);
+  if(state.jefe && pdfDir) doc.text(pdfDir,margin,48);
 
   // Stats in header
   doc.setFontSize(7);doc.setTextColor(180,195,220);
