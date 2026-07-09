@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dimensionamiento Directos × Ciudad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f8f9fa;--surface:#fff;--surface2:#f1f3f5;--border:#e2e6eb;--text:#1e293b;--text2:#475569;--text3:#94a3b8;--crimson:#8b1a2b;--crimson-light:#c53030;--blue:#1e3a5f;--blue2:#334155;--green:#059669;--green-bg:#d1fae5;--orange:#d97706;--orange-bg:#ffedd5;--red:#dc2626;--red-bg:#fee2e2;--gold:#d8ad64;--shadow:0 1px 3px rgba(0,0,0,.08);--shadow-lg:0 4px 12px rgba(0,0,0,.1)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.topbar{background:var(--blue);color:#fff;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar h1{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-right a{color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:6px;transition:.2s}
+.topbar-right a:hover{background:rgba(255,255,255,.1);color:#fff}
+.btn-theme{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px}
+.main{max-width:1400px;margin:0 auto;padding:20px}
+.filters{background:var(--surface);border-radius:10px;padding:16px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:20px;box-shadow:var(--shadow)}
+.filter-group{display:flex;flex-direction:column;gap:4px}
+.filter-group label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.filter-group select,.filter-group input{padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--surface);color:var(--text);min-width:160px}
+.filter-group input{min-width:220px}
+.filter-group select:focus,.filter-group input:focus{outline:none;border-color:var(--crimson);box-shadow:0 0 0 2px rgba(139,26,43,.15)}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.kpi{background:var(--surface);border-radius:10px;padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.blue::before{background:var(--blue)}
+.kpi.green::before{background:var(--green)}
+.kpi.orange::before{background:var(--orange)}
+.kpi.red::before{background:var(--red)}
+.kpi-label{font-size:12px;color:var(--text2);font-weight:500;margin-bottom:4px}
+.kpi-value{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;color:var(--text)}
+.kpi-sub{font-size:11px;color:var(--text3);margin-top:4px}
+.kpi-sub .up{color:var(--green)}
+.kpi-sub .down{color:var(--red)}
+.section{background:var(--surface);border-radius:10px;padding:20px;margin-bottom:20px;box-shadow:var(--shadow)}
+.section-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-title .badge{background:var(--blue);color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--blue);color:#fff;padding:10px 12px;text-align:left;font-weight:600;position:sticky;top:0;font-size:12px;white-space:nowrap}
+thead th:first-child{border-radius:6px 0 0 0}
+thead th:last-child{border-radius:0 6px 0 0}
+tbody tr{border-bottom:1px solid var(--border);transition:.15s}
+tbody tr:hover{background:rgba(139,26,43,.03)}
+tbody tr.region-row{background:var(--surface2);font-weight:700}
+tbody tr.region-row td{border-top:2px solid var(--blue);border-bottom:2px solid var(--blue)}
+td{padding:8px 12px;white-space:nowrap}
+.chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.chip.green{background:var(--green-bg);color:var(--green)}
+.chip.orange{background:var(--orange-bg);color:var(--orange)}
+.chip.red{background:var(--red-bg);color:var(--red)}
+.chip.blue{background:#dbeafe;color:#1e40af}
+.chart-container{position:relative;height:300px;margin-top:12px}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+.chart-card{background:var(--surface);border-radius:10px;padding:20px;box-shadow:var(--shadow)}
+.chart-card .section-title{margin-bottom:8px}
+canvas{width:100%!important}
+.table-scroll{max-height:500px;overflow-y:auto;border-radius:8px;border:1px solid var(--border)}
+.table-scroll::-webkit-scrollbar{width:6px}
+.table-scroll::-webkit-scrollbar-track{background:var(--surface2)}
+.table-scroll::-webkit-scrollbar-thumb{background:var(--text3);border-radius:3px}
+.btn-pdf{background:var(--crimson);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+.btn-pdf:hover{opacity:.9}
+.tab-nav{display:flex;gap:4px;margin-bottom:16px;border-bottom:2px solid var(--border);padding-bottom:0}
+.tab-btn{padding:10px 20px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--text3);border-bottom:2px solid transparent;margin-bottom:-2px;transition:.2s}
+.tab-btn.active{color:var(--crimson);border-bottom-color:var(--crimson)}
+.tab-btn:hover{color:var(--text)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.login-overlay{position:fixed;inset:0;background:rgba(15,23,42,.95);z-index:1000;display:flex;align-items:center;justify-content:center}
+.login-overlay.hidden{display:none}
+.login-box{background:var(--surface);border-radius:16px;padding:40px;width:380px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.login-logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px}
+.login-logo svg{color:var(--crimson);width:48px;height:48px}
+.login-logo span{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:var(--text)}
+.login-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;text-align:center;margin-bottom:4px}
+.login-subtitle{text-align:center;color:var(--text2);font-size:13px;margin-bottom:24px}
+.login-field{margin-bottom:16px}
+.login-field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.login-field input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px}
+.login-field input:focus{outline:none;border-color:var(--crimson);box-shadow:0 0 0 3px rgba(139,26,43,.1)}
+.login-error{color:var(--red);font-size:12px;margin-top:8px;display:none}
+.login-btn{width:100%;padding:12px;background:var(--crimson);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px}
+.login-btn:hover{opacity:.9}
+.empty-state{text-align:center;padding:40px;color:var(--text3);font-size:14px}
+.text-right{text-align:right}
+.text-center{text-align:center}
+.text-green{color:var(--green)}
+.text-red{color:var(--red)}
+.text-orange{color:var(--orange)}
+.font-mono{font-family:'Space Grotesk',sans-serif;font-weight:600}
+body.dark{--bg:#0f172a;--surface:#1e293b;--surface2:#334155;--border:#475569;--text:#f1f5f9;--text2:#94a3b8;--text3:#64748b}
+body.dark .topbar{background:#1e293b}
+body.dark thead th{background:#1e293b}
+@media(max-width:768px){.kpi-row{grid-template-columns:1fr 1fr}.charts-grid{grid-template-columns:1fr}.filters{flex-direction:column}.filter-group select,.filter-group input{min-width:100%}}
+</style>
+</head>
+<body>
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="login-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <span>Claro Colombia</span>
+    </div>
+    <div class="login-title">Dimensionamiento</div>
+    <div class="login-subtitle">Directos × Ciudad</div>
+    <div class="login-field"><label>Correo</label><input type="email" id="loginEmail" placeholder="usuario@claro.com.co"></div>
+    <div class="login-field"><label>Contraseña</label><input type="password" id="loginPass" placeholder="••••"></div>
+    <div class="login-error" id="loginError">Credenciales incorrectas</div>
+    <button class="login-btn" id="loginBtn">Ingresar</button>
+  </div>
+</div>
+
+<header class="topbar">
+  <h1>Dimensionamiento Directos × Ciudad</h1>
+  <div class="topbar-right">
+    <a href="index.html">Inicio</a>
+    <a href="ninebox.html">Nine Box</a>
+    <a href="ficha_talento.html">Ficha de Talento</a>
+    <button class="btn-theme" id="btnTheme">🌙</button>
+    <button class="btn-pdf" id="btnPdf">📥 Exportar PDF</button>
+  </div>
+</header>
+
+<div class="main">
+  <div class="filters">
+    <div class="filter-group">
+      <label>Regional</label>
+      <select id="fRegional"><option value="">Todas</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Ciudad</label>
+      <select id="fCiudad"><option value="">Todas</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Mes</label>
+      <select id="fMes">
+        <option value="">Todos (Ene-Jun)</option>
+        <option value="0">Enero</option>
+        <option value="1">Febrero</option>
+        <option value="2">Marzo</option>
+        <option value="3">Abril</option>
+        <option value="4">Mayo</option>
+        <option value="5">Junio</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Buscar ciudad</label>
+      <input type="text" id="fSearch" placeholder="Escribir nombre...">
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi blue">
+      <div class="kpi-label">Total Personal</div>
+      <div class="kpi-value" id="kpiTotal">—</div>
+      <div class="kpi-sub"><span id="kpiDirectos">0</span> directos + <span id="kpiTemporales">0</span> temporales</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-label">% Directos</div>
+      <div class="kpi-value" id="kpiPctDir">—</div>
+      <div class="kpi-sub">Meta ideal: <span id="kpiMetaIdeal">—</span></div>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-label">Dim. Aprobado</div>
+      <div class="kpi-value" id="kpiDimAprob">—</div>
+      <div class="kpi-sub">Total a nivel nacional</div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">Brecha vs Meta</div>
+      <div class="kpi-value" id="kpiBrecha">—</div>
+      <div class="kpi-sub" id="kpiBrechaSub">Directos vs meta dic</div>
+    </div>
+  </div>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="tabTabla">Tabla Detallada</button>
+    <button class="tab-btn" data-tab="tabGraficas">Gráficas</button>
+    <button class="tab-btn" data-tab="tabResumen">Resumen Junio</button>
+    <button class="tab-btn" data-tab="tabRotacion">Rotación</button>
+    <button class="tab-btn" data-tab="tabAprendices">Aprendices</button>
+  </div>
+
+  <div class="tab-panel active" id="tabTabla">
+    <div class="section">
+      <div class="section-title">Detalle por Ciudad <span class="badge" id="countBadge">0 registros</span></div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Regional</th>
+              <th>Ciudad</th>
+              <th class="text-right">Dim. Aprobado</th>
+              <th class="text-right" id="thDirectos">Directos</th>
+              <th class="text-right" id="thTemporales">Temporales</th>
+              <th class="text-right">Total</th>
+              <th class="text-right">% Directos</th>
+              <th class="text-right">Brecha vs Meta</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyMain"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tabGraficas">
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="section-title">Evolución Mensual — Directos vs Temporales</div>
+        <div class="chart-container"><canvas id="chartEvolucion"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="section-title">Distribución por Regional</div>
+        <div class="chart-container"><canvas id="chartRegional"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="section-title">Top 10 Ciudades — % Directos</div>
+        <div class="chart-container"><canvas id="chartTopDir"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="section-title">Brecha vs Meta por Regional</div>
+        <div class="chart-container"><canvas id="chartBrecha"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tabResumen">
+    <div class="section">
+      <div class="section-title">Resumen Ejecutivo — Junio 2025</div>
+      <p style="font-size:12px;color:var(--text3);margin-bottom:12px">Corte junio comparado contra meta/proyección de cierre diciembre.</p>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Regional</th>
+              <th class="text-right">Proy. Dim. Dic</th>
+              <th class="text-right">Meta Directos Dic</th>
+              <th class="text-right">Total Junio</th>
+              <th class="text-right">Directos Junio</th>
+              <th class="text-right">Temporales Junio</th>
+              <th class="text-right">% Directos Junio</th>
+              <th class="text-right">Brecha Junio</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyResumen"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tabRotacion">
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="section-title">Rotación Mensual por Regional</div>
+        <div class="chart-container"><canvas id="chartRotacion"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="section-title">Detalle Rotación</div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Regional</th>
+                <th class="text-center">Ene</th>
+                <th class="text-center">Feb</th>
+                <th class="text-center">Mar</th>
+                <th class="text-center">Abr</th>
+                <th class="text-center">May</th>
+                <th class="text-center">Jun</th>
+                <th class="text-center">Jul</th>
+                <th class="text-center">Ago</th>
+                <th class="text-center">Sep</th>
+                <th class="text-center">Oct</th>
+                <th class="text-center">Nov</th>
+                <th class="text-center">Total</th>
+                <th class="text-center">Prom.</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyRotacion"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="tabAprendices">
+    <div class="section">
+      <div class="section-title">Proporción con Aprendices — Proyección 2026-2027</div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Regional</th>
+              <th class="text-right">Consultores Cierre 2026</th>
+              <th class="text-right">Directos 2026</th>
+              <th class="text-right">Aprendices</th>
+              <th class="text-right">Disminución</th>
+              <th class="text-right">Total Final</th>
+              <th class="text-right">Directos c/ Aprendices</th>
+              <th class="text-right">Directos Junio</th>
+              <th class="text-right">% Directos</th>
+              <th class="text-right">Diferencia</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyAprendices"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const MONTHS=['Ene','Feb','Mar','Abr','May','Jun'];
+const REGIONS=['R1','R2','R3','R4','R5'];
+const REGION_NAMES={R1:'R1 - Caribe',R2:'R2 - Eje Cafetero',R3:'R3 - Sur Occidente',R4:'R4 - Centro',R5:'R5 - Nor oriente'};
+const REGION_COLORS={R1:'#dc2626',R2:'#d97706',R3:'#059669',R4:'#2563eb',R5:'#7c3aed'};
+
+// ─── DATA ────────────────────────────────────────────────────────────
+const DIMS={"R1":395,"Aguachica":15,"Barranquilla":130,"Cartagena":70,"Montería":35,"Riohacha":22,"San Andrés":12,"Santa Marta":39,"Sincelejo":33,"Valledupar":39,"R2":501,"Apartadó":15,"Armenia":46,"Bello":41,"Caucasia":16,"La Dorada":13,"Manizales":39,"Medellín":213,"Pereira":74,"Quibdó":18,"Rionegro":26,"R3":536,"Buenaventura":15,"Cali":183,"Cartago":16,"Florencia":22,"Ibagué":66,"Ipiales":13,"Neiva":58,"Palmira":34,"Pasto":38,"Popayán":52,"Tuluá":25,"Tumaco":14,"R4":922,"Bogotá, D.C.":762,"Chía":40,"Mosquera":29,"Soacha":75,"Zipaquirá":16,"R5":410,"Acacías":11,"Barrancabermeja":24,"Bucaramanga":75,"Cúcuta":90,"Duitama":15,"Floridablanca":7,"Fusagasugá":23,"Girardot":21,"Sogamoso":19,"Tunja":26,"Villavicencio":71,"Yopal":28};
+
+const R4_CITIES=['Bogotá, D.C.','Chía','Mosquera','Soacha','Zipaquirá'];
+
+const BASE=[
+{label:"Bogotá, D.C.",dim:762,directos:[511,512,513,515,524,520],temporales:[257,245,240,226,202,191],pct:[.665,.676,.681,.695,.722,.731],brecha:[-30.18,1,1,2,9,-4],proy:.701},
+{label:"Chía",dim:40,directos:[25,26,26,26,25,25],temporales:[18,14,13,10,10,10],pct:[.581,.65,.667,.722,.714,.714],brecha:[-3.41,1,0,0,-1,0],proy:.642},
+{label:"Mosquera",dim:29,directos:[11,11,11,11,13,12],temporales:[16,17,17,16,15,14],pct:[.407,.393,.393,.407,.464,.462],brecha:[-9.6,0,0,0,2,-1],proy:.425},
+{label:"Soacha",dim:75,directos:[35,35,37,37,37,43],temporales:[26,26,29,26,22,23],pct:[.574,.574,.561,.587,.627,.652],brecha:[-18.27,0,2,0,0,6],proy:.589},
+{label:"Zipaquirá",dim:16,directos:[15,15,15,14,14,14],temporales:[2,2,1,2,2,2],pct:[.882,.882,.938,.875,.875,.875],brecha:[3.64,0,0,-1,0,0],proy:.899},
+{label:"Aguachica",dim:15,region:"R1",directos:[8,8,8,8,8,8],temporales:[5,5,6,7,7,7],pct:[.615,.615,.571,.533,.533,.533],brecha:[-2.81,0,0,0,0,0],proy:.540},
+{label:"Barranquilla",dim:130,region:"R1",directos:[107,107,107,107,106,106],temporales:[25,29,28,28,30,30],pct:[.811,.787,.793,.793,.779,.779],brecha:[13.3,0,0,0,-1,0],proy:.826},
+{label:"Cartagena",dim:70,region:"R1",directos:[51,51,51,51,51,51],temporales:[19,18,18,19,19,17],pct:[.729,.739,.739,.729,.729,.75],brecha:[.55,0,0,0,0,0],proy:.738},
+{label:"Montería",dim:35,region:"R1",directos:[28,28,28,28,28,28],temporales:[6,7,7,7,7,7],pct:[.824,.8,.8,.8,.8,.8],brecha:[2.77,0,0,0,0,0],proy:.810},
+{label:"Riohacha",dim:22,region:"R1",directos:[22,22,20,20,20,20],temporales:[4,4,4,6,6,6],pct:[.846,.846,.833,.769,.769,.769],brecha:[6.14,0,-2,0,0,0],proy:.921},
+{label:"San Andrés",dim:12,region:"R1",directos:[8,8,8,7,7,7],temporales:[4,4,4,4,4,4],pct:[.667,.667,.667,.636,.636,.636],brecha:[-.65,0,0,-1,0,0],proy:.591},
+{label:"Santa Marta",dim:39,region:"R1",directos:[30,30,30,30,29,29],temporales:[6,6,7,10,10,11],pct:[.833,.833,.811,.75,.744,.725],brecha:[1.89,0,0,0,-1,0],proy:.753},
+{label:"Sincelejo",dim:33,region:"R1",directos:[20,20,20,20,20,20],temporales:[8,10,10,10,10,10],pct:[.714,.667,.667,.667,.667,.667],brecha:[-3.79,0,0,0,0,0],proy:.614},
+{label:"Valledupar",dim:39,region:"R1",directos:[34,34,34,34,34,34],temporales:[7,9,10,10,9,9],pct:[.829,.791,.773,.773,.791,.791],brecha:[5.89,0,0,0,0,0],proy:.883},
+{label:"Apartadó",dim:15,region:"R2",directos:[10,10,11,11,12,11],temporales:[5,5,4,4,3,4],pct:[.667,.667,.733,.733,.8,.733],brecha:[-.75,0,1,0,1,-1],proy:.747},
+{label:"Armenia",dim:46,region:"R2",directos:[28,28,28,30,30,30],temporales:[20,21,19,19,17,18],pct:[.583,.571,.596,.612,.638,.625],brecha:[-4.98,0,0,2,0,0],proy:.664},
+{label:"Bello",dim:41,region:"R2",directos:[29,28,28,27,28,28],temporales:[16,15,14,12,10,10],pct:[.644,.651,.667,.692,.737,.737],brecha:[-.39,-1,0,-1,1,0],proy:.695},
+{label:"Caucasia",dim:16,region:"R2",directos:[13,13,13,13,14,14],temporales:[4,4,4,4,3,3],pct:[.765,.765,.765,.765,.824,.824],brecha:[1.53,0,0,0,1,0],proy:.891},
+{label:"La Dorada",dim:13,region:"R2",directos:[10,10,10,10,10,10],temporales:[5,5,5,5,5,5],pct:[.667,.667,.667,.667,.667,.667],brecha:[.68,0,0,0,0,0],proy:.783},
+{label:"Manizales",dim:39,region:"R2",directos:[18,20,20,20,21,21],temporales:[18,19,19,19,17,20],pct:[.5,.513,.513,.513,.553,.512],brecha:[-9.96,2,0,0,1,0],proy:.548},
+{label:"Medellín",dim:213,region:"R2",directos:[118,125,129,133,139,143],temporales:[101,97,89,99,98,92],pct:[.539,.563,.592,.573,.586,.609],brecha:[-34.7,7,4,4,6,4],proy:.684},
+{label:"Pereira",dim:74,region:"R2",directos:[36,38,40,44,47,49],temporales:[30,27,29,19,17,13],pct:[.545,.585,.580,.698,.734,.790],brecha:[-17.05,2,2,4,3,2],proy:.674},
+{label:"Quibdó",dim:18,region:"R2",directos:[15,15,15,15,15,15],temporales:[2,3,3,3,3,3],pct:[.882,.833,.833,.833,.833,.833],brecha:[2.1,0,0,0,0,0],proy:.849},
+{label:"Rionegro",dim:26,region:"R2",directos:[16,15,15,16,18,18],temporales:[8,8,11,7,5,5],pct:[.667,.652,.577,.696,.783,.783],brecha:[-2.64,-1,0,1,2,0],proy:.705},
+{label:"Buenaventura",dim:15,region:"R3",directos:[13,13,13,13,13,13],temporales:[2,2,3,2,2,2],pct:[.867,.867,.813,.867,.867,.867],brecha:[2.17,0,0,0,0,0],proy:.876},
+{label:"Cali",dim:183,region:"R3",directos:[113,115,117,119,123,129],temporales:[73,71,66,66,62,56],pct:[.608,.618,.639,.643,.665,.697],brecha:[-19.1,2,2,2,4,6],proy:.713},
+{label:"Cartago",dim:16,region:"R3",directos:[6,7,8,8,8,8],temporales:[12,10,8,9,9,9],pct:[.333,.412,.5,.471,.471,.471],brecha:[-5.55,1,1,0,0,0],proy:.506},
+{label:"Florencia",dim:22,region:"R3",directos:[14,14,14,14,14,14],temporales:[8,8,7,8,8,8],pct:[.636,.636,.667,.636,.636,.636],brecha:[-1.88,0,0,0,0,0],proy:.644},
+{label:"Ibagué",dim:66,region:"R3",directos:[50,50,50,51,53,54],temporales:[18,18,17,15,14,13],pct:[.735,.735,.746,.773,.791,.806],brecha:[2.36,0,0,1,2,1],proy:.827},
+{label:"Ipiales",dim:13,region:"R3",directos:[9,9,10,10,10,10],temporales:[4,4,4,4,3,3],pct:[.692,.692,.714,.714,.769,.769],brecha:[-.38,0,1,0,0,0],proy:.778},
+{label:"Neiva",dim:58,region:"R3",directos:[34,35,36,37,37,38],temporales:[26,25,23,23,23,21],pct:[.567,.583,.610,.617,.617,.644],brecha:[-7.87,1,1,1,0,1],proy:.663},
+{label:"Palmira",dim:34,region:"R3",directos:[20,23,23,25,26,26],temporales:[13,11,13,11,10,8],pct:[.606,.676,.639,.694,.722,.765],brecha:[-4.54,3,0,2,1,0],proy:.773},
+{label:"Pasto",dim:38,region:"R3",directos:[32,31,31,30,30,30],temporales:[5,6,7,8,8,8],pct:[.865,.838,.816,.789,.789,.789],brecha:[4.57,-1,0,-1,0,0],proy:.798},
+{label:"Popayán",dim:52,region:"R3",directos:[30,31,31,32,33,33],temporales:[23,21,20,22,21,19],pct:[.566,.596,.608,.593,.611,.635],brecha:[-7.54,1,0,1,1,0],proy:.642},
+{label:"Tuluá",dim:25,region:"R3",directos:[13,13,14,15,16,16],temporales:[11,11,10,9,8,8],pct:[.542,.542,.583,.625,.667,.667],brecha:[-5.05,0,1,1,1,0],proy:.647},
+{label:"Tumaco",dim:14,region:"R3",directos:[12,12,12,12,12,12],temporales:[2,2,1,1,1,1],pct:[.857,.857,.923,.923,.923,.923],brecha:[1.89,0,0,0,0,0],proy:.867},
+{label:"Acacías",dim:11,region:"R5",directos:[5,5,5,5,5,5],temporales:[6,6,5,6,6,6],pct:[.455,.455,.5,.455,.455,.455],brecha:[-2.97,0,0,0,0,0],proy:.458},
+{label:"Barrancabermeja",dim:24,region:"R5",directos:[23,23,20,20,20,19],temporales:[1,0,2,2,2,2],pct:[.958,1,.909,.909,.909,.905],brecha:[5.61,0,-3,0,0,-1],proy:.798},
+{label:"Bucaramanga",dim:75,region:"R5",directos:[62,62,63,63,63,63],temporales:[12,14,16,16,15,15],pct:[.838,.816,.797,.797,.808,.808],brecha:[7.65,0,1,0,0,0],proy:.846},
+{label:"Cúcuta",dim:90,region:"R5",directos:[71,70,70,70,70,68],temporales:[20,19,18,19,20,20],pct:[.780,.787,.795,.787,.778,.773],brecha:[5.78,-1,0,0,0,-2],proy:.761},
+{label:"Duitama",dim:15,region:"R5",directos:[7,7,7,7,7,7],temporales:[8,8,8,7,8,8],pct:[.467,.467,.467,.5,.467,.467],brecha:[-3.87,0,0,0,0,0],proy:.470},
+{label:"Floridablanca",dim:7,region:"R5",directos:[6,6,6,6,7,7],temporales:[3,2,2,2,2,2],pct:[.667,.75,.75,.75,.778,.778],brecha:[.93,0,0,0,1,0],proy:1.007},
+{label:"Fusagasugá",dim:23,region:"R5",directos:[16,16,16,16,16,16],temporales:[7,7,6,5,6,8],pct:[.696,.696,.727,.762,.727,.667],brecha:[-.67,0,0,0,0,0],proy:.701},
+{label:"Girardot",dim:21,region:"R5",directos:[11,11,11,11,11,11],temporales:[8,6,7,9,8,9],pct:[.579,.647,.611,.55,.579,.55],brecha:[-4.22,0,0,0,0,0],proy:.528},
+{label:"Sogamoso",dim:19,region:"R5",directos:[13,10,10,10,10,10],temporales:[6,6,9,8,9,9],pct:[.684,.625,.526,.556,.526,.526],brecha:[-.77,-3,0,0,0,0],proy:.530},
+{label:"Tunja",dim:26,region:"R5",directos:[23,23,23,23,23,23],temporales:[4,4,4,4,4,4],pct:[.852,.852,.852,.852,.852,.852],brecha:[4.16,0,0,0,0,0],proy:.891},
+{label:"Villavicencio",dim:71,region:"R5",directos:[55,55,55,55,54,54],temporales:[15,17,16,17,17,16],pct:[.786,.764,.775,.764,.761,.771],brecha:[3.55,0,0,0,-1,0],proy:.766},
+{label:"Yopal",dim:28,region:"R5",directos:[22,22,22,22,22,22],temporales:[7,6,4,5,6,6],pct:[.759,.786,.846,.815,.786,.786],brecha:[1.71,0,0,0,0,0],proy:.792}
+];
+
+const RESUMEN=[
+{r:"R1",dim:390,meta:284.7,total:404,dir:303,temp:101,pct:.75,brecha:18.3,estado:"Cumple / supera meta"},
+{r:"R2",dim:492,meta:359.16,total:512,dir:339,temp:173,pct:.662,brecha:-20.16,estado:"Por debajo de meta"},
+{r:"R3",dim:530,meta:386.9,total:539,dir:383,temp:156,pct:.711,brecha:-3.9,estado:"Por debajo de meta"},
+{r:"R4",dim:897,meta:654.81,total:854,dir:614,temp:240,pct:.719,brecha:-40.81,estado:"Por debajo de meta"},
+{r:"R5",dim:407,meta:297.11,total:410,dir:305,temp:105,pct:.744,brecha:7.89,estado:"Cumple / supera meta"},
+{r:"TOTAL",dim:2716,meta:1982.68,total:2719,dir:1944,temp:775,pct:.715,brecha:-38.68,estado:"Por debajo de meta"}
+];
+
+const ROTACION=[
+{r:"R1",meses:[1,3,0,0,0,0,1,0,0,1,1],total:7,prom:.636},
+{r:"R2",meses:[1,2,1,4,2,0,0,1,3,1,0],total:15,prom:1.364},
+{r:"R3",meses:[2,1,1,3,1,3,1,1,0,0,0],total:13,prom:1.182},
+{r:"R4",meses:[1,1,2,4,3,2,2,2,2,0,1],total:20,prom:1.818},
+{r:"R5",meses:[1,0,2,0,0,1,0,1,0,0,0],total:5,prom:.455}
+];
+
+const APRENDICES=[
+{r:"R1",consult:390,dir2026:284.7,aprend:12,dism:9,total:381,dirAp:278.13,dirJun:303,pct:.795,dif:24.87},
+{r:"R2",consult:492,dir2026:359.16,aprend:20,dism:15,total:477,dirAp:348.21,dirJun:340,pct:.713,dif:-8.21},
+{r:"R3",consult:530,dir2026:386.9,aprend:20,dism:15,total:515,dirAp:375.95,dirJun:383,pct:.744,dif:7.05},
+{r:"R4",consult:897,dir2026:654.81,aprend:100,dism:75,total:822,dirAp:600.06,dirJun:615,pct:.748,dif:14.94},
+{r:"R5",consult:407,dir2026:297.11,aprend:8,dism:6,total:401,dirAp:292.73,dirJun:306,pct:.763,dif:13.27}
+];
+
+// Assign regions to R4 cities
+BASE.forEach(b=>{if(R4_CITIES.includes(b.label))b.region='R4';});
+
+// ─── STATE ───────────────────────────────────────────────────────────
+let state={region:'',ciudad:'',mes:'',search:''};
+let charts={};
+
+// ─── HELPERS ─────────────────────────────────────────────────────────
+function norm(s){return(s||'').toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function getRegion(label){
+  if(R4_CITIES.includes(label))return'R4';
+  const b=BASE.find(x=>x.label===label);
+  return b?b.region:'';
+}
+function fmt(n){return n==null?'—':Math.round(n).toLocaleString('es-CO')}
+function fmtPct(n){return n==null?'—':(n*100).toFixed(1)+'%'}
+function chipColor(v){return v>=70?'green':v>=50?'orange':'red'}
+
+// ─── FILTERS ─────────────────────────────────────────────────────────
+function initFilters(){
+  const fReg=document.getElementById('fRegional');
+  REGIONS.forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;fReg.appendChild(o);});
+  updateCiudades();
+  fReg.addEventListener('change',e=>{state.region=e.target.value;state.ciudad='';updateCiudades();applyFilters();});
+  document.getElementById('fCiudad').addEventListener('change',e=>{state.ciudad=e.target.value;applyFilters();});
+  document.getElementById('fMes').addEventListener('change',e=>{state.mes=e.target.value;applyFilters();});
+  document.getElementById('fSearch').addEventListener('input',e=>{state.search=e.target.value;applyFilters();});
+}
+function updateCiudades(){
+  const sel=document.getElementById('fCiudad');
+  sel.innerHTML='<option value="">Todas</option>';
+  const cities=BASE.filter(b=>!b.region||b.region).sort((a,b)=>a.label.localeCompare(b.label));
+  cities.forEach(c=>{
+    if(state.region && c.region!==state.region)return;
+    const o=document.createElement('option');o.value=c.label;o.textContent=c.label;sel.appendChild(o);
+  });
+}
+
+// ─── APPLY FILTERS ──────────────────────────────────────────────────
+function applyFilters(){
+  let data=BASE.filter(b=>{
+    if(state.region && b.region!==state.region)return false;
+    if(state.ciudad && b.label!==state.ciudad)return false;
+    if(state.search && !norm(b.label).includes(norm(state.search)))return false;
+    return true;
+  });
+  renderKPIs(data);
+  renderTable(data);
+  renderResumen();
+  renderRotacion();
+  renderAprendices();
+  renderCharts(data);
+}
+
+// ─── KPIs ────────────────────────────────────────────────────────────
+function renderKPIs(data){
+  const mi=state.mes!==''?parseInt(state.mes):null;
+  let totalDir=0,totalTemp=0,totalDim=0;
+  data.forEach(d=>{
+    if(mi!==null){totalDir+=d.directos[mi]||0;totalTemp+=d.temporales[mi]||0;}
+    else{d.directos.forEach(v=>totalDir+=v);d.temporales.forEach(v=>totalTemp+=v);totalDir=Math.round(totalDir/6);totalTemp=Math.round(totalTemp/6);}
+    totalDim+=d.dim;
+  });
+  const total=totalDir+totalTemp;
+  const pctDir=total?totalDir/total:0;
+  document.getElementById('kpiTotal').textContent=fmt(total);
+  document.getElementById('kpiDirectos').textContent=fmt(totalDir);
+  document.getElementById('kpiTemporales').textContent=fmt(totalTemp);
+  document.getElementById('kpiPctDir').textContent=fmtPct(pctDir);
+  document.getElementById('kpiDimAprob').textContent=fmt(totalDim);
+  const brecha=totalDir-(totalDim*.726);
+  document.getElementById('kpiBrecha').textContent=(brecha>=0?'+':'')+fmt(brecha);
+  document.getElementById('kpiBrecha').style.color=brecha>=0?'var(--green)':'var(--red)';
+}
+
+// ─── TABLE ───────────────────────────────────────────────────────────
+function renderTable(data){
+  const mi=state.mes!==''?parseInt(state.mes):null;
+  const thD=document.getElementById('thDirectos');
+  const thT=document.getElementById('thTemporales');
+  if(mi!==null){thD.textContent='Directos '+MONTHS[mi];thT.textContent='Temporales '+MONTHS[mi];}
+  else{thD.textContent='Directos (prom)';thT.textContent='Temporales (prom)';}
+
+  let html='';
+  let count=0;
+  REGIONS.forEach(r=>{
+    const cities=data.filter(d=>d.region===r);
+    if(!cities.length)return;
+    let rDir=0,rTemp=0,rDim=0;
+    cities.forEach(c=>{
+      if(mi!==null){rDir+=c.directos[mi]||0;rTemp+=c.temporales[mi]||0;}
+      else{rDir+=Math.round(c.directos.reduce((a,b)=>a+b,0)/6);rTemp+=Math.round(c.temporales.reduce((a,b)=>a+b,0)/6);}
+      rDim+=c.dim;
+    });
+    const rTotal=rDir+rTemp;
+    const rPct=rTotal?rDir/rTotal:0;
+    const rBrecha=rDir-(rDim*.726);
+    html+='<tr class="region-row"><td>'+REGION_NAMES[r]+'</td><td></td><td class="text-right font-mono">'+fmt(rDim)+'</td><td class="text-right font-mono">'+fmt(rDir)+'</td><td class="text-right font-mono">'+fmt(rTemp)+'</td><td class="text-right font-mono">'+fmt(rTotal)+'</td><td class="text-right"><span class="chip '+chipColor(rPct*100)+'">'+fmtPct(rPct)+'</span></td><td class="text-right font-mono '+(rBrecha>=0?'text-green':'text-red')+'">'+(rBrecha>=0?'+':'')+fmt(rBrecha)+'</td></tr>';
+    cities.sort((a,b)=>b.dim-a.dim).forEach(c=>{
+      const dir=mi!==null?c.directos[mi]:Math.round(c.directos.reduce((a,b)=>a+b,0)/6);
+      const temp=mi!==null?c.temporales[mi]:Math.round(c.temporales.reduce((a,b)=>a+b,0)/6);
+      const tot=dir+temp;
+      const pct=tot?dir/tot:0;
+      const brecha=dir-(c.dim*.726);
+      html+='<tr><td>'+r+'</td><td>'+c.label+'</td><td class="text-right font-mono">'+fmt(c.dim)+'</td><td class="text-right font-mono">'+fmt(dir)+'</td><td class="text-right font-mono">'+fmt(temp)+'</td><td class="text-right font-mono">'+fmt(tot)+'</td><td class="text-right"><span class="chip '+chipColor(pct*100)+'">'+fmtPct(pct)+'</span></td><td class="text-right font-mono '+(brecha>=0?'text-green':'text-red')+'">'+(brecha>=0?'+':'')+fmt(brecha)+'</td></tr>';
+      count++;
+    });
+  });
+  document.getElementById('tbodyMain').innerHTML=html;
+  document.getElementById('countBadge').textContent=count+' ciudades';
+}
+
+// ─── RESUMEN ─────────────────────────────────────────────────────────
+function renderResumen(){
+  let html='';
+  RESUMEN.forEach(r=>{
+    const isTotal=r.r==='TOTAL';
+    html+='<tr'+(isTotal?' style="font-weight:700;background:var(--surface2)"':'')+`>
+      <td>${r.r}</td>
+      <td class="text-right font-mono">${fmt(r.dim)}</td>
+      <td class="text-right font-mono">${fmt(r.meta)}</td>
+      <td class="text-right font-mono">${fmt(r.total)}</td>
+      <td class="text-right font-mono">${fmt(r.dir)}</td>
+      <td class="text-right font-mono">${fmt(r.temp)}</td>
+      <td class="text-right"><span class="chip ${chipColor(r.pct*100)}">${fmtPct(r.pct)}</span></td>
+      <td class="text-right font-mono ${r.brecha>=0?'text-green':'text-red'}">${r.brecha>=0?'+':''}${fmt(r.brecha)}</td>
+      <td><span class="chip ${r.estado.includes('Cumple')?'green':'red'}">${r.estado}</span></td>
+    </tr>`;
+  });
+  document.getElementById('tbodyResumen').innerHTML=html;
+}
+
+// ─── ROTACION ────────────────────────────────────────────────────────
+function renderRotacion(){
+  let html='';
+  ROTACION.forEach(r=>{
+    html+='<tr><td><strong>'+REGION_NAMES[r.r]+'</strong></td>';
+    r.meses.forEach(v=>{html+='<td class="text-center font-mono">'+v+'</td>';});
+    html+='<td class="text-center font-mono" style="font-weight:700">'+r.total+'</td>';
+    html+='<td class="text-center font-mono" style="color:var(--crimson)">'+r.prom.toFixed(1)+'</td></tr>';
+  });
+  document.getElementById('tbodyRotacion').innerHTML=html;
+}
+
+// ─── APRENDICES ──────────────────────────────────────────────────────
+function renderAprendices(){
+  let html='';
+  APRENDICES.forEach(a=>{
+    html+=`<tr>
+      <td><strong>${a.r}</strong></td>
+      <td class="text-right font-mono">${fmt(a.consult)}</td>
+      <td class="text-right font-mono">${fmt(a.dir2026)}</td>
+      <td class="text-right font-mono">${fmt(a.aprend)}</td>
+      <td class="text-right font-mono">${fmt(a.dism)}</td>
+      <td class="text-right font-mono">${fmt(a.total)}</td>
+      <td class="text-right font-mono">${fmt(a.dirAp)}</td>
+      <td class="text-right font-mono">${fmt(a.dirJun)}</td>
+      <td class="text-right"><span class="chip ${chipColor(a.pct*100)}">${fmtPct(a.pct)}</span></td>
+      <td class="text-right font-mono ${a.dif>=0?'text-green':'text-red'}">${a.dif>=0?'+':''}${fmt(a.dif)}</td>
+    </tr>`;
+  });
+  document.getElementById('tbodyAprendices').innerHTML=html;
+}
+
+// ─── CHARTS ──────────────────────────────────────────────────────────
+function renderCharts(data){
+  Object.values(charts).forEach(c=>{if(c&&c.destroy)c.destroy();});
+  charts={};
+  renderEvolucion(data);
+  renderRegionalChart(data);
+  renderTopDir(data);
+  renderBrechaChart(data);
+  renderRotacionChart();
+}
+
+function renderEvolucion(data){
+  const ctx=document.getElementById('chartEvolucion').getContext('2d');
+  const totalsDir=[0,0,0,0,0,0],totalsTemp=[0,0,0,0,0,0];
+  data.forEach(d=>{d.directos.forEach((v,i)=>totalsDir[i]+=v);d.temporales.forEach((v,i)=>totalsTemp[i]+=v);});
+  charts.evolucion=new Chart(ctx,{type:'bar',data:{labels:MONTHS,datasets:[
+    {label:'Directos',data:totalsDir,backgroundColor:'#2563eb',borderRadius:4},
+    {label:'Temporales',data:totalsTemp,backgroundColor:'#f59e0b',borderRadius:4}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:true,grid:{color:'#e2e6eb'}}}}});
+}
+
+function renderRegionalChart(data){
+  const ctx=document.getElementById('chartRegional').getContext('2d');
+  const regData={};
+  data.forEach(d=>{if(!d.region)return;regData[d.region]=(regData[d.region]||0)+d.dim;});
+  const labels=Object.keys(regData);
+  const colors=['#dc2626','#d97706','#059669','#2563eb','#7c3aed'];
+  charts.regional=new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data:labels.map(l=>regData[l]),backgroundColor:colors}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right'}}}});
+}
+
+function renderTopDir(data){
+  const ctx=document.getElementById('chartTopDir').getContext('2d');
+  const sorted=[...data].sort((a,b)=>{
+    const avgA=a.directos.reduce((s,v)=>s+v,0)/6/(a.directos.reduce((s,v)=>s+v,0)/6+a.temporales.reduce((s,v)=>s+v,0)/6);
+    const avgB=b.directos.reduce((s,v)=>s+v,0)/6/(b.directos.reduce((s,v)=>s+v,0)/6+b.temporales.reduce((s,v)=>s+v,0)/6);
+    return avgB-avgA;
+  }).slice(0,10);
+  charts.topDir=new Chart(ctx,{type:'bar',data:{labels:sorted.map(d=>d.label),datasets:[{data:sorted.map(d=>{const t=d.directos.reduce((s,v)=>s+v,0)/6;const tt=t+d.temporales.reduce((s,v)=>s+v,0)/6;return tt?(t/tt*100).toFixed(1):0;}),backgroundColor:sorted.map(d=>{const t=d.directos.reduce((s,v)=>s+v,0)/6;const tt=t+d.temporales.reduce((s,v)=>s+v,0)/6;const pct=tt?t/tt:0;return pct>=.7?'#059669':pct>=.5?'#d97706':'#dc2626';}),borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{max:100,grid:{color:'#e2e6eb'}}}}});
+}
+
+function renderBrechaChart(data){
+  const ctx=document.getElementById('chartBrecha').getContext('2d');
+  const regBrecha={};
+  data.forEach(d=>{if(!d.region)return;if(!regBrecha[d.region])regBrecha[d.region]={dir:0,dim:0};regBrecha[d.region].dir+=d.directos[5]||0;regBrecha[d.region].dim+=d.dim;});
+  const labels=Object.keys(regBrecha);
+  const brechas=labels.map(r=>regBrecha[r].dir-(regBrecha[r].dim*.726));
+  charts.brecha=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Brecha vs Meta',data:brechas,backgroundColor:brechas.map(b=>b>=0?'#059669':'#dc2626'),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#e2e6eb'}}}}});
+}
+
+function renderRotacionChart(){
+  const ctx=document.getElementById('chartRotacion').getContext('2d');
+  const monthLabels=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov'];
+  const colors=['#dc2626','#d97706','#059669','#2563eb','#7c3aed'];
+  charts.rotacion=new Chart(ctx,{type:'line',data:{labels:monthLabels,datasets:ROTACION.map((r,i)=>({label:r.r,data:r.meses,borderColor:colors[i],backgroundColor:colors[i]+'20',tension:.3,fill:false}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:true,grid:{color:'#e2e6eb'}}}}});
+}
+
+// ─── TABS ────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab==='tabGraficas')setTimeout(()=>{Object.values(charts).forEach(c=>{if(c&&c.resize)c.resize();});},100);
+  });
+});
+
+// ─── THEME ───────────────────────────────────────────────────────────
+const isDark=localStorage.getItem('dim-theme')==='dark';
+if(isDark)document.body.classList.add('dark');
+document.getElementById('btnTheme').textContent=isDark?'☀️':'🌙';
+document.getElementById('btnTheme').addEventListener('click',()=>{
+  const dark=document.body.classList.toggle('dark');
+  localStorage.setItem('dim-theme',dark?'dark':'light');
+  document.getElementById('btnTheme').textContent=dark?'☀️':'🌙';
+});
+
+// ─── LOGIN ───────────────────────────────────────────────────────────
+const VALID_EMAILS=['laura.amadop@claro.com.co','nicolas.santos@claro.com.co','edespitia@overlap.net.co'];
+document.getElementById('loginBtn').addEventListener('click',()=>{
+  const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass=document.getElementById('loginPass').value;
+  if(VALID_EMAILS.includes(email)&&pass==='1234'){
+    document.getElementById('loginOverlay').classList.add('hidden');
+  }else{
+    document.getElementById('loginError').style.display='block';
+  }
+});
+document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loginBtn').click();});
+
+// ─── INIT ────────────────────────────────────────────────────────────
+initFilters();
+applyFilters();
+</script>
+</body>
+</html>
