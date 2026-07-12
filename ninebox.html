@@ -509,7 +509,7 @@ p.subtitle{
   font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:13.5px;
   color: var(--text-dim); text-align:center;
 }
-.matrix-cells{ display:grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 168px); gap:8px; }
+.matrix-cells{ display:grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, auto); gap:8px; }
 
 .cell{
   position:relative;
@@ -518,6 +518,7 @@ p.subtitle{
   display:flex; flex-direction:column; justify-content:space-between;
   cursor:pointer;
   overflow:hidden;
+  min-height:168px;
   border:1px solid rgba(255,255,255,.06);
   transition: transform .28s var(--ease), box-shadow .28s var(--ease), filter .28s var(--ease);
   transform-style: preserve-3d;
@@ -556,7 +557,7 @@ p.subtitle{
 .cell .count-lbl{ font-size:11.5px; color: rgba(255,255,255,.75); }
 .cell .cell-names{
   display:flex; flex-wrap:wrap; gap:4px; margin-top:8px;
-  max-height:120px; overflow-y:auto;
+  max-height:200px; overflow-y:auto;
 }
 .cell .cell-name{
   font-size:10px; color: rgba(255,255,255,.85);
