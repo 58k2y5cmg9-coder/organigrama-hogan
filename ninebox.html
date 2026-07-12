@@ -1728,11 +1728,11 @@ function exportPDF(){
   y+=cardH+12;
 
   // ─── SECTION: MATRIZ NINE BOX ──────────────────────────────────
+  const showPdfNames=state.jefe||state.search;
   checkY(showPdfNames?180:80);
   y=sectionTitle('02','Matriz Nine Box',y);
 
   const gridW=(W-margin*2-17)/3;
-  const showPdfNames=state.jefe||state.search;
   const gridH=showPdfNames?52:30;
   const gap=2.67;
 
