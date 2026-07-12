@@ -1670,15 +1670,14 @@ function exportPDF(){
 
   // ─── SECTION: RESUMEN POR VERSATILIDAD ──────────────────────────
   function sectionTitle(num, title, yPos){
-    doc.setFillColor(...BLUE);doc.roundedRect(margin,yPos-4,8,6,1,1,'F');
-    doc.setTextColor(255,255,255);doc.setFontSize(6);doc.setFont('helvetica','bold');
-    doc.text(num,margin+1,yPos);
-    doc.setFontSize(11);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
-    doc.text(title,margin+12,yPos+0.5);
-    // Decorative line
+    doc.setFillColor(...BLUE);doc.roundedRect(margin,yPos-3,7,5,1,1,'F');
+    doc.setTextColor(255,255,255);doc.setFontSize(5);doc.setFont('helvetica','bold');
+    doc.text(num,margin+0.8,yPos);
+    doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
+    doc.text(title,margin+10,yPos+0.3);
     doc.setDrawColor(226,230,239);doc.setLineWidth(0.3);
-    doc.line(margin+12,yPos+4,W-margin,yPos+4);
-    return yPos+10;
+    doc.line(margin+10,yPos+3.5,W-margin,yPos+3.5);
+    return yPos+7;
   }
 
   y=sectionTitle('01','Resumen por Versatilidad',y);
@@ -1700,40 +1699,32 @@ function exportPDF(){
     {label:'Alta versatilidad',count:altV,pct:Math.round(altV/total*100),color:[30,122,78],bg:[209,250,229]}
   ];
 
-  const cardW=(W-margin*2-10)/3;
-  const cardH=28;
+  const cardW=(W-margin*2-8)/3;
+  const cardH=18;
 
   summaryItems.forEach((it,i)=>{
-    const cx=margin+i*(cardW+5);
-
-    // Card background
+    const cx=margin+i*(cardW+4);
     doc.setFillColor(255,255,255);doc.setDrawColor(226,230,239);doc.setLineWidth(0.3);
-    doc.roundedRect(cx,y,cardW,cardH,3,3,'FD');
-
-    // Color accent bar
-    doc.setFillColor(...it.color);doc.roundedRect(cx,y,cardW,3,3,3,'F');
-    doc.setFillColor(...it.color);doc.rect(cx,y+1.5,cardW,1.5,'F');
-
-    // Content
-    doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(...GRAY);
-    doc.text(it.label,cx+5,y+9);
-
-    doc.setFontSize(20);doc.setFont('helvetica','bold');doc.setTextColor(...it.color);
-    doc.text(it.pct+'%',cx+5,y+20);
-
-    doc.setFontSize(6.5);doc.setFont('helvetica','normal');doc.setTextColor(...GRAY);
-    doc.text(it.count+' personas',cx+5,y+24);
+    doc.roundedRect(cx,y,cardW,cardH,2,2,'FD');
+    doc.setFillColor(...it.color);doc.roundedRect(cx,y,cardW,2.5,2,2,'F');
+    doc.setFillColor(...it.color);doc.rect(cx,y+1,cardW,1.5,'F');
+    doc.setFontSize(6);doc.setFont('helvetica','normal');doc.setTextColor(...GRAY);
+    doc.text(it.label,cx+4,y+7);
+    doc.setFontSize(16);doc.setFont('helvetica','bold');doc.setTextColor(...it.color);
+    doc.text(it.pct+'%',cx+4,y+15);
+    doc.setFontSize(5.5);doc.setFont('helvetica','normal');doc.setTextColor(...GRAY);
+    doc.text(it.count+' personas',cx+4,y+17.5);
   });
 
-  y+=cardH+12;
+  y+=cardH+6;
 
   // ─── SECTION: MATRIZ NINE BOX ──────────────────────────────────
   const showPdfNames=state.jefe||state.search;
-  checkY(showPdfNames?180:80);
+  checkY(showPdfNames?160:70);
   y=sectionTitle('02','Matriz Nine Box',y);
 
-  const gridW=(W-margin*2-17)/3;
-  const gap=2.67;
+  const gridW=(W-margin*2-14)/3;
+  const gap=2;
 
   const BOX_COLORS={
     7:[29,110,140],8:[47,146,113],9:[30,122,78],
@@ -1748,7 +1739,7 @@ function exportPDF(){
   const gridOrder=[7,8,9,4,5,6,1,2,3];
 
   // Pre-calculate row heights based on max names per row
-  const BASE_H=24, NAME_H=3, MAX_NAMES=12;
+  const BASE_H=18, NAME_H=2.8, MAX_NAMES=12;
   const rowHeights=[];
   for(let r=0;r<3;r++){
     let maxNames=0;
@@ -1758,7 +1749,7 @@ function exportPDF(){
       if(cnt>maxNames) maxNames=cnt;
     }
     const namesToShow=Math.min(maxNames,MAX_NAMES);
-    rowHeights.push(showPdfNames&&namesToShow>0?BASE_H+namesToShow*NAME_H+4:BASE_H);
+    rowHeights.push(showPdfNames&&namesToShow>0?BASE_H+namesToShow*NAME_H+3:BASE_H);
   }
 
   // Y-axis labels
@@ -1793,52 +1784,52 @@ function exportPDF(){
 
     // Card shadow
     doc.setFillColor(0,0,0);doc.setGState(new doc.GState({opacity:0.04}));
-    doc.roundedRect(bx+0.5,by+0.5,gridW,cellH,3,3,'F');
+    doc.roundedRect(bx+0.5,by+0.5,gridW,cellH,2,2,'F');
     doc.setGState(new doc.GState({opacity:1}));
 
     // Card background
-    doc.setFillColor(...bg);doc.setDrawColor(...c);doc.setLineWidth(0.4);
-    doc.roundedRect(bx,by,gridW,cellH,3,3,'FD');
+    doc.setFillColor(...bg);doc.setDrawColor(...c);doc.setLineWidth(0.3);
+    doc.roundedRect(bx,by,gridW,cellH,2,2,'FD');
 
     // Color header
-    doc.setFillColor(...c);doc.roundedRect(bx,by,gridW,7,3,3,'F');
-    doc.setFillColor(...c);doc.rect(bx,by+4,gridW,3,'F');
+    doc.setFillColor(...c);doc.roundedRect(bx,by,gridW,6,2,2,'F');
+    doc.setFillColor(...c);doc.rect(bx,by+3.5,gridW,2.5,'F');
 
     // Box number badge
-    doc.setFillColor(255,255,255);doc.roundedRect(bx+gridW-8,by+1.5,6,3.5,1,1,'F');
-    doc.setFontSize(4.5);doc.setFont('helvetica','bold');doc.setTextColor(...c);
-    doc.text(String(n),bx+gridW-5,by+4,{align:'center'});
+    doc.setFillColor(255,255,255);doc.roundedRect(bx+gridW-7,by+1.2,5,3,1,1,'F');
+    doc.setFontSize(4);doc.setFont('helvetica','bold');doc.setTextColor(...c);
+    doc.text(String(n),bx+gridW-4.5,by+3.5,{align:'center'});
 
     // Box name
-    doc.setTextColor(255,255,255);doc.setFontSize(5);doc.setFont('helvetica','bold');
-    doc.text(meta.short,bx+3,by+5);
+    doc.setTextColor(255,255,255);doc.setFontSize(4.5);doc.setFont('helvetica','bold');
+    doc.text(meta.short,bx+2.5,by+4.2);
 
     // Count - right side
-    doc.setFontSize(12);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
-    doc.text(String(people.length),bx+gridW-9,by+14);
-    doc.setFontSize(4.5);doc.setFont('helvetica','normal');doc.setTextColor(...GRAY);
-    doc.text('persona'+(people.length===1?'':'s'),bx+gridW-9,by+17.5);
+    doc.setFontSize(10);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
+    doc.text(String(people.length),bx+gridW-8,by+12);
+    doc.setFontSize(4);doc.setFont('helvetica','normal');doc.setTextColor(...GRAY);
+    doc.text('persona'+(people.length===1?'':'s'),bx+gridW-8,by+15);
 
     // Names list - left side (only when filtering by jefe or search)
     if(people.length>0 && showPdfNames){
       const sortedPeople=[...people].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
       sortedPeople.slice(0,MAX_NAMES).forEach((p,pi)=>{
-        const ny=by+9+pi*NAME_H;
+        const ny=by+8+pi*NAME_H;
         if(ny<by+cellH-1){
-          doc.setFontSize(4);doc.setFont('helvetica','normal');doc.setTextColor(...DARK);
-          doc.text(p.nombre.length>38?p.nombre.slice(0,36)+'…':p.nombre,bx+3,ny);
+          doc.setFontSize(3.8);doc.setFont('helvetica','normal');doc.setTextColor(...DARK);
+          doc.text(p.nombre.length>40?p.nombre.slice(0,38)+'…':p.nombre,bx+2.5,ny);
         }
       });
       if(people.length>MAX_NAMES){
-        doc.setFontSize(4);doc.setFont('helvetica','italic');doc.setTextColor(...GRAY);
-        doc.text('+'+(people.length-MAX_NAMES)+' más',bx+3,by+9+MAX_NAMES*NAME_H);
+        doc.setFontSize(3.8);doc.setFont('helvetica','italic');doc.setTextColor(...GRAY);
+        doc.text('+'+(people.length-MAX_NAMES)+' más',bx+2.5,by+8+MAX_NAMES*NAME_H);
       }
     }
   });
 
   // Calculate total grid height
   const totalGridH=rowHeights.reduce((a,b)=>a+b,0)+gap*2;
-  y+=totalGridH+14;
+  y+=totalGridH+8;
 
   // ─── SECTION: DETALLE ──────────────────────────────────────────
   checkY(30);
