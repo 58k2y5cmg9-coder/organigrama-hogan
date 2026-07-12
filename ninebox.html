@@ -515,16 +515,18 @@ p.subtitle{
   position:relative;
   border-radius:12px;
   padding:14px;
-  display:flex; flex-direction:column; justify-content:space-between;
+  display:flex; flex-direction:column; justify-content:flex-start;
   cursor:pointer;
   overflow:visible;
   min-height:140px;
   border:1px solid rgba(255,255,255,.06);
   transition: transform .28s var(--ease), box-shadow .28s var(--ease), filter .28s var(--ease);
   transform-style: preserve-3d;
+  z-index:1;
 }
 .cell::before{
   content:""; position:absolute; inset:0; opacity:.9;
+  border-radius:12px; pointer-events:none; z-index:0;
 }
 .cell:nth-child(1){ background: linear-gradient(150deg, var(--c7), #123c4d); }
 .cell:nth-child(2){ background: linear-gradient(150deg, var(--c8), #114430); }
@@ -558,6 +560,7 @@ p.subtitle{
 .cell .cell-names{
   display:flex; flex-wrap:wrap; gap:4px; margin-top:8px;
   max-height:200px; overflow-y:auto;
+  position:relative; z-index:1;
 }
 .cell .cell-name{
   font-size:11px; color: rgba(255,255,255,.85);
@@ -1340,8 +1343,8 @@ function renderGrid(){
     }
 
     cell.innerHTML = `
-      <div class="badge">${n}</div>
-      <div>
+      <div class="badge" style="position:relative;z-index:1">${n}</div>
+      <div style="position:relative;z-index:1">
         <div class="cellname">${meta.short}</div>
         <div class="count-row">
           <span class="count">${people.length}</span>
