@@ -1747,22 +1747,6 @@ function exportPDF(){
   };
   const gridOrder=[7,8,9,4,5,6,1,2,3];
 
-  // Y-axis labels
-  doc.setFontSize(5);doc.setFont('helvetica','bold');doc.setTextColor(...GRAY);
-  const yLabels=['Alto desempeño','Desempeño consistente','Bajo desempeño'];
-  yLabels.forEach((lbl,i)=>{
-    const cy=y+i*(gridH+gap)+gridH/2;
-    doc.text(lbl,margin-3,cy,{align:'center',rotate:90});
-  });
-
-  // X-axis labels
-  const xLabels=['Profundidad','Versatilidad media','Alta versatilidad'];
-  doc.setFontSize(5.5);doc.setFont('helvetica','bold');doc.setTextColor(...GRAY);
-  xLabels.forEach((lbl,i)=>{
-    doc.text(lbl,margin+14+i*(gridW+gap)+gridW/2,y-1,{align:'center'});
-  });
-  y+=2;
-
   // Pre-calculate row heights based on max names per row
   const BASE_H=24, NAME_H=3, MAX_NAMES=12;
   const rowHeights=[];
@@ -1776,6 +1760,24 @@ function exportPDF(){
     const namesToShow=Math.min(maxNames,MAX_NAMES);
     rowHeights.push(showPdfNames&&namesToShow>0?BASE_H+namesToShow*NAME_H+4:BASE_H);
   }
+
+  // Y-axis labels
+  doc.setFontSize(5);doc.setFont('helvetica','bold');doc.setTextColor(...GRAY);
+  const yLabels=['Alto desempeño','Desempeño consistente','Bajo desempeño'];
+  let yLabelY=y;
+  yLabels.forEach((lbl,i)=>{
+    const cy=yLabelY+rowHeights[i]/2;
+    doc.text(lbl,margin-3,cy,{align:'center',rotate:90});
+    yLabelY+=rowHeights[i]+gap;
+  });
+
+  // X-axis labels
+  const xLabels=['Profundidad','Versatilidad media','Alta versatilidad'];
+  doc.setFontSize(5.5);doc.setFont('helvetica','bold');doc.setTextColor(...GRAY);
+  xLabels.forEach((lbl,i)=>{
+    doc.text(lbl,margin+14+i*(gridW+gap)+gridW/2,y-1,{align:'center'});
+  });
+  y+=2;
 
   gridOrder.forEach((n,idx)=>{
     const col=idx%3, row=Math.floor(idx/3);
