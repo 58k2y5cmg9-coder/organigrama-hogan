@@ -1728,11 +1728,12 @@ function exportPDF(){
   y+=cardH+12;
 
   // ─── SECTION: MATRIZ NINE BOX ──────────────────────────────────
-  checkY(80);
+  checkY(showPdfNames?180:80);
   y=sectionTitle('02','Matriz Nine Box',y);
 
   const gridW=(W-margin*2-17)/3;
-  const gridH=30;
+  const showPdfNames=state.jefe||state.search;
+  const gridH=showPdfNames?52:30;
   const gap=2.67;
 
   const BOX_COLORS={
@@ -1800,19 +1801,19 @@ function exportPDF(){
     doc.setFontSize(5);doc.setFont('helvetica','normal');doc.setTextColor(...GRAY);
     doc.text('persona'+(people.length===1?'':'s'),bx+gridW-10,by+20);
 
-    // Names list - left side (only when filtering by jefe)
-    if(people.length>0 && state.jefe){
+    // Names list - left side (only when filtering by jefe or search)
+    if(people.length>0 && showPdfNames){
       const sortedPeople=[...people].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
-      sortedPeople.slice(0,7).forEach((p,pi)=>{
-        const ny=by+10+pi*2.8;
+      sortedPeople.slice(0,12).forEach((p,pi)=>{
+        const ny=by+10+pi*3;
         if(ny<by+gridH-1){
           doc.setFontSize(4.2);doc.setFont('helvetica','normal');doc.setTextColor(...DARK);
-          doc.text(p.nombre.length>35?p.nombre.slice(0,33)+'…':p.nombre,bx+3,ny);
+          doc.text(p.nombre.length>38?p.nombre.slice(0,36)+'…':p.nombre,bx+3,ny);
         }
       });
-      if(people.length>7){
+      if(people.length>12){
         doc.setFontSize(4.2);doc.setFont('helvetica','italic');doc.setTextColor(...GRAY);
-        doc.text('+'+(people.length-7)+' más',bx+3,by+10+7*2.8);
+        doc.text('+'+(people.length-12)+' más',bx+3,by+10+12*3);
       }
     }
   });
