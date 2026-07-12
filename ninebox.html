@@ -1733,7 +1733,6 @@ function exportPDF(){
   y=sectionTitle('02','Matriz Nine Box',y);
 
   const gridW=(W-margin*2-17)/3;
-  const gridH=showPdfNames?52:30;
   const gap=2.67;
 
   const BOX_COLORS={
@@ -1764,10 +1763,27 @@ function exportPDF(){
   });
   y+=2;
 
+  // Pre-calculate row heights based on max names per row
+  const BASE_H=24, NAME_H=3, MAX_NAMES=12;
+  const rowHeights=[];
+  for(let r=0;r<3;r++){
+    let maxNames=0;
+    for(let c=0;c<3;c++){
+      const n=gridOrder[r*3+c];
+      const cnt=data.filter(d=>d.caja===n).length;
+      if(cnt>maxNames) maxNames=cnt;
+    }
+    const namesToShow=Math.min(maxNames,MAX_NAMES);
+    rowHeights.push(showPdfNames&&namesToShow>0?BASE_H+namesToShow*NAME_H+4:BASE_H);
+  }
+
   gridOrder.forEach((n,idx)=>{
     const col=idx%3, row=Math.floor(idx/3);
     const bx=margin+14+col*(gridW+gap);
-    const by=y+row*(gridH+gap);
+    // Calculate y offset using cumulative row heights
+    let by=y;
+    for(let r=0;r<row;r++) by+=rowHeights[r]+gap;
+    const cellH=rowHeights[row];
     const meta=BOX_META[n];
     const people=data.filter(d=>d.caja===n);
     const c=BOX_COLORS[n]||[100,100,100];
@@ -1775,50 +1791,52 @@ function exportPDF(){
 
     // Card shadow
     doc.setFillColor(0,0,0);doc.setGState(new doc.GState({opacity:0.04}));
-    doc.roundedRect(bx+0.5,by+0.5,gridW,gridH,3,3,'F');
+    doc.roundedRect(bx+0.5,by+0.5,gridW,cellH,3,3,'F');
     doc.setGState(new doc.GState({opacity:1}));
 
     // Card background
     doc.setFillColor(...bg);doc.setDrawColor(...c);doc.setLineWidth(0.4);
-    doc.roundedRect(bx,by,gridW,gridH,3,3,'FD');
+    doc.roundedRect(bx,by,gridW,cellH,3,3,'FD');
 
     // Color header
-    doc.setFillColor(...c);doc.roundedRect(bx,by,gridW,8,3,3,'F');
-    doc.setFillColor(...c);doc.rect(bx,by+5,gridW,3,'F');
+    doc.setFillColor(...c);doc.roundedRect(bx,by,gridW,7,3,3,'F');
+    doc.setFillColor(...c);doc.rect(bx,by+4,gridW,3,'F');
 
     // Box number badge
-    doc.setFillColor(255,255,255);doc.roundedRect(bx+gridW-8,by+1.5,6,4,1,1,'F');
-    doc.setFontSize(5);doc.setFont('helvetica','bold');doc.setTextColor(...c);
-    doc.text(String(n),bx+gridW-5,by+4.5,{align:'center'});
+    doc.setFillColor(255,255,255);doc.roundedRect(bx+gridW-8,by+1.5,6,3.5,1,1,'F');
+    doc.setFontSize(4.5);doc.setFont('helvetica','bold');doc.setTextColor(...c);
+    doc.text(String(n),bx+gridW-5,by+4,{align:'center'});
 
     // Box name
-    doc.setTextColor(255,255,255);doc.setFontSize(5.5);doc.setFont('helvetica','bold');
-    doc.text(meta.short,bx+3,by+5.5);
+    doc.setTextColor(255,255,255);doc.setFontSize(5);doc.setFont('helvetica','bold');
+    doc.text(meta.short,bx+3,by+5);
 
     // Count - right side
-    doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
-    doc.text(String(people.length),bx+gridW-10,by+16);
-    doc.setFontSize(5);doc.setFont('helvetica','normal');doc.setTextColor(...GRAY);
-    doc.text('persona'+(people.length===1?'':'s'),bx+gridW-10,by+20);
+    doc.setFontSize(12);doc.setFont('helvetica','bold');doc.setTextColor(...DARK);
+    doc.text(String(people.length),bx+gridW-9,by+14);
+    doc.setFontSize(4.5);doc.setFont('helvetica','normal');doc.setTextColor(...GRAY);
+    doc.text('persona'+(people.length===1?'':'s'),bx+gridW-9,by+17.5);
 
     // Names list - left side (only when filtering by jefe or search)
     if(people.length>0 && showPdfNames){
       const sortedPeople=[...people].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
-      sortedPeople.slice(0,12).forEach((p,pi)=>{
-        const ny=by+10+pi*3;
-        if(ny<by+gridH-1){
-          doc.setFontSize(4.2);doc.setFont('helvetica','normal');doc.setTextColor(...DARK);
+      sortedPeople.slice(0,MAX_NAMES).forEach((p,pi)=>{
+        const ny=by+9+pi*NAME_H;
+        if(ny<by+cellH-1){
+          doc.setFontSize(4);doc.setFont('helvetica','normal');doc.setTextColor(...DARK);
           doc.text(p.nombre.length>38?p.nombre.slice(0,36)+'…':p.nombre,bx+3,ny);
         }
       });
-      if(people.length>12){
-        doc.setFontSize(4.2);doc.setFont('helvetica','italic');doc.setTextColor(...GRAY);
-        doc.text('+'+(people.length-12)+' más',bx+3,by+10+12*3);
+      if(people.length>MAX_NAMES){
+        doc.setFontSize(4);doc.setFont('helvetica','italic');doc.setTextColor(...GRAY);
+        doc.text('+'+(people.length-MAX_NAMES)+' más',bx+3,by+9+MAX_NAMES*NAME_H);
       }
     }
   });
 
-  y+=gridH*3+gap*2+14;
+  // Calculate total grid height
+  const totalGridH=rowHeights.reduce((a,b)=>a+b,0)+gap*2;
+  y+=totalGridH+14;
 
   // ─── SECTION: DETALLE ──────────────────────────────────────────
   checkY(30);
