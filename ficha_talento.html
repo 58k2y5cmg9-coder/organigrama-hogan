@@ -46,11 +46,11 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;}
 .chart-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;}
 .chart-card .chart-title{font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:12px;}
-.bar-chart{display:flex;align-items:flex-end;gap:12px;height:160px;justify-content:center;margin:12px 0;overflow-x:auto;}
-.bar-col{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;}
+.bar-chart{display:flex;align-items:flex-end;gap:12px;height:170px;justify-content:center;margin:12px 0;overflow:visible;}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;overflow:visible;}
 .bar{width:50px;border-radius:4px 4px 0 0;flex-shrink:0;}
 .bar-label{font-size:10px;color:var(--text-dim);text-align:center;word-wrap:break-word;max-width:80px;line-height:1.2;}
-.bar-value{font-size:13px;font-weight:700;}
+.bar-value{font-size:13px;font-weight:700;overflow:visible;white-space:nowrap;}
 .score-bar-row{display:flex;align-items:center;gap:10px;margin:6px 0;}
 .score-bar-label{font-size:12px;color:var(--text-dim);min-width:100px;text-align:right;}
 .score-bar-track{flex:1;height:18px;background:#e5e7eb;border-radius:100px;overflow:hidden;}
@@ -504,6 +504,7 @@ function renderClima(c){
     if(v>=40)return 'var(--orange)';
     return 'var(--red)';
   };
+  document.getElementById('climaGeneral').style.color=getClimaColor(avg);
   const shortNames={'Objetivos Y Procesos Organizacionales':'Obj. Procesos','Desarrollo Profesional Y Capacitacion':'Des. Profesional','Orientación Al Servicio':'Orient. Servicio','Satisfaccion Y Compromiso Organizacional':'Satisfacción','Orientación A Resultados Y Logro De Objetivos':'Orient. Resultados','Trabajo En Equipo':'Trabajo Equipo','Cultura, Equidad Y Código De Ética':'Cultura Y Ética','Comunicación Organizacional':'Comunicación','Administración De Recursos':'Adm. Recursos'};
   document.getElementById('barClima').innerHTML=entries.map((e,i)=>{
     const h=Math.round(e[1]*170);
