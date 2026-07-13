@@ -561,7 +561,8 @@ function downloadPDF(){
       srcY+=dh;
       page++;
     }
-    doc.save('Ficha_Talento.pdf');
+    const nombre=(document.getElementById('iNombre').textContent||'Persona').replace(/\s+/g,'_');
+    doc.save('Ficha_Talento_'+nombre+'.pdf');
     btn.textContent='Descargar PDF';
     btn.disabled=false;
   }).catch(function(){
