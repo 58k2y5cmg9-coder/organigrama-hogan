@@ -305,8 +305,8 @@ function loadFicha(p){
   const matchAntig=typeof rawAntig==='string'?rawAntig.match(/(\d+)/):null;
   document.getElementById('iAntiguedad').textContent=matchAntig?matchAntig[1]+' años':rawAntig;
 
-  // Personas a cargo (from PARTICIPANTES NINE BOX - Jefes sheet)
-  const CARGO_Equipo={"43983175":0,"80755651":0,"13870556":0,"72257140":0,"7317314":0,"80084586":0,"52433846":0,"80055832":0,"52997400":0,"79577896":0,"75145916":0,"98385917":0,"80188592":0,"37334180":0,"80021548":0,"79943837":0,"79897183":0,"52009864":0};
+  // Personas a cargo (Planta de Personal Mayo 2026 - columna AB)
+  const CARGO_Equipo={"43983175":16,"80755651":12,"13870556":5,"72257140":10,"7317314":8,"80084586":83,"52433846":7,"80055832":10,"52997400":97,"79577896":190,"75145916":13,"98385917":3,"80188592":10,"37334180":23,"80021548":3,"79943837":7,"79897183":4,"52009864":5};
   document.getElementById('iCargoEquipo').textContent=CARGO_Equipo[p.exp]!==undefined?CARGO_Equipo[p.exp]:'—';
 
   // Desempeño
