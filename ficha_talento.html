@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{--bg:#f4f5f7;--panel:#fff;--border:#e2e5ea;--text:#1a1d23;--text-dim:#6b7280;--red:#e21836;--orange:#e97b1a;--blue:#2563eb;--green:#16a34a;--cyan:#0891b2;--radius:12px;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -531,7 +533,46 @@ function renderHogan(h, exp){
 }
 
 function downloadPDF(){
-  window.print();
+  const el=document.getElementById('fichaContent');
+  const btn=event.target;
+  btn.textContent='Generando...';
+  btn.disabled=true;
+  html2canvas(el,{scale:2,useCORS:true,logging:false}).then(function(canvas){
+    const {jsPDF}=window.jspdf;
+    const doc=new jsPDF('p','mm','letter');
+    const pageW=doc.internal.pageSize.getWidth();
+    const pageH=doc.internal.pageSize.getHeight();
+    const margin=10;
+    const contentW=pageW-margin*2;
+    const imgH=canvas.height*contentW/canvas.width;
+    let y=margin;
+    if(imgH<=pageH-margin*2){
+      doc.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',margin,y,contentW,imgH);
+      doc.save('Ficha_Talento.pdf');
+    }else{
+      let srcY=0;
+      const sliceH=canvas.height*(pageH-margin*2)/canvas.height;
+      while(srcY<canvas.height){
+        const remaining=canvas.height-srcY;
+        const dh=Math.min(sliceH,remaining);
+        const sliceCanvas=document.createElement('canvas');
+        sliceCanvas.width=canvas.width;
+        sliceCanvas.height=dh;
+        sliceCanvas.getContext('2d').drawImage(canvas,0,srcY,canvas.width,dh,0,0,canvas.width,dh);
+        const sliceImgH=dh*contentW/canvas.width;
+        doc.addImage(sliceCanvas.toDataURL('image/jpeg',0.92),'JPEG',margin,margin,contentW,sliceImgH);
+        srcY+=dh;
+        if(srcY<canvas.height){doc.addPage();}
+      }
+      doc.save('Ficha_Talento.pdf');
+    }
+    btn.textContent='Descargar PDF';
+    btn.disabled=false;
+  }).catch(function(){
+    btn.textContent='Descargar PDF';
+    btn.disabled=false;
+    alert('Error al generar PDF');
+  });
 }
 
 // Auto-load: check URL param ?nombre=NAME
