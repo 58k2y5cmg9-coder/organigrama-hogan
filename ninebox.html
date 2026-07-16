@@ -1264,7 +1264,7 @@ renderStats();
 /* ── EXECUTIVE SUMMARY ──────────────────────────────────────────────── */
 function renderExecSummary(){
   const data = currentFiltered();
-  const total = data.length;
+  const total = data.filter(d=>d.caja>0).length;
   if(!total){ document.getElementById('execGrid').innerHTML=''; return; }
 
   // Cajas: col0=Profundidad(7,4,1), col1=Versatilidad media(8,5,2), col2=Alta versatilidad(9,6,3)
@@ -1687,7 +1687,7 @@ function exportPDF(){
 
   y=sectionTitle('01','Resumen por Versatilidad',y);
 
-  const total=data.length;
+  const total=data.filter(d=>d.caja>0).length;
   if(!total){
     doc.setFontSize(12);doc.setTextColor(...GRAY);
     doc.text('No hay participantes para los filtros seleccionados.',margin,y+10);
