@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --bg: #12080a;
@@ -948,6 +949,10 @@ footer{
     <div class="section-head">
       <h2><span class="idx">03</span> Detalle de participantes</h2>
       <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn-reset" id="btnExportChanges" style="background:#059669;border-color:#059669;color:#fff;display:none;align-items:center;gap:6px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Descargar Cambios
+        </button>
         <button class="btn-reset" id="btnPdf" style="background:var(--crimson);border-color:var(--crimson);color:#fff;display:flex;align-items:center;gap:6px">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Descargar PDF
@@ -1528,6 +1533,7 @@ function renderPager(totalPages){
 
 // ─── DRAG AND DROP ──────────────────────────────────────────────
 let dragData = null;
+const changeLog = [];
 
 function showConfirmDialog(nombre, oldCaja, newCaja, onConfirm){
   const oldMeta = BOX_META[oldCaja] || BOX_META[0];
@@ -1610,9 +1616,25 @@ function initDragDrop(){
       const rawPerson = RAW.find(d=>d.expediente===expediente);
       if(rawPerson) rawPerson.caja = newCaja;
 
+      // Log the change
+      changeLog.push({
+        fecha: new Date().toLocaleString('es-CO'),
+        usuario: loggedInUser,
+        nombre: nombre,
+        expediente: expediente,
+        direccion: rawPerson ? rawPerson.direccion : '',
+        gerencia: rawPerson ? rawPerson.gerencia : '',
+        jefe: rawPerson ? rawPerson.jefe : '',
+        cajaAnterior: oldCaja,
+        cajaNueva: newCaja,
+        nombreAnterior: BOX_META[oldCaja] ? BOX_META[oldCaja].short : '',
+        nombreNuevo: BOX_META[newCaja] ? BOX_META[newCaja].short : ''
+      });
+
       state.page = 1;
       renderAll();
       showToast(`${nombre}: caja ${oldCaja} → ${newCaja} · ${BOX_META[newCaja].short}`);
+      document.getElementById('btnExportChanges').style.display = changeLog.length > 0 ? 'flex' : 'none';
       dragData = null;
     });
   });
@@ -1631,6 +1653,31 @@ function showToast(msg){
   clearTimeout(toast._timer);
   toast._timer = setTimeout(()=>{ toast.style.opacity = '0'; }, 2500);
 }
+
+/* ── EXPORT CHANGE LOG TO EXCEL ──────────────────────────────────────── */
+document.getElementById('btnExportChanges').addEventListener('click', ()=>{
+  if(!changeLog.length){ showToast('No hay cambios registrados'); return; }
+  const rows = changeLog.map(c=>({
+    'Fecha': c.fecha,
+    'Usuario': c.usuario,
+    'Nombre': c.nombre,
+    'Expediente': c.expediente,
+    'Dirección': c.direccion,
+    'Gerencia': c.gerencia,
+    'Jefe': c.jefe,
+    'Caja Anterior': 'Caja ' + c.cajaAnterior + ' · ' + c.nombreAnterior,
+    'Caja Nueva': 'Caja ' + c.cajaNueva + ' · ' + c.nombreNuevo
+  }));
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [
+    {wch:18},{wch:28},{wch:32},{wch:14},
+    {wch:36},{wch:36},{wch:32},{wch:22},{wch:22}
+  ];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Cambios Nine Box');
+  XLSX.writeFile(wb, 'cambios_ninebox_' + new Date().toISOString().slice(0,10) + '.xlsx');
+  showToast('Excel descargado: ' + changeLog.length + ' cambio(s)');
+});
 
 const modalBg = document.getElementById('modalBg');
 function openModal(p){
@@ -2064,11 +2111,13 @@ initDragDrop();
 const AUTHORIZED_EMAILS = [
   'laura.amadop@claro.com.co',
   'edespitia@overlap.net.co',
-  'nicolas.santos@claro.com.co'
+  'nicolas.santos@claro.com.co',
+  'angie.rodriguez@claro.com.co'
 ];
 const AUTHORIZED_PASS = '1234';
 
 let isLoggedIn = false;
+let loggedInUser = '';
 
 function doLogin(){
   const email = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -2081,6 +2130,7 @@ function doLogin(){
   }
   
   isLoggedIn = true;
+  loggedInUser = email;
   document.getElementById('loginOverlay').classList.add('hidden');
   document.getElementById('mainWrap').style.display = '';
 }
