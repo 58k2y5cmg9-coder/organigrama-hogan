@@ -542,6 +542,22 @@ p.subtitle{
 .cell:hover{ transform: translateY(-4px) scale(1.015); box-shadow: 0 20px 40px rgba(0,0,0,.45); filter:brightness(1.08); }
 .cell.dimmed{ filter: saturate(.25) brightness(.55); }
 .cell.selected{ box-shadow: 0 0 0 2px #fff, 0 20px 40px rgba(0,0,0,.5); transform: translateY(-4px) scale(1.02); }
+.cell.drag-over{ box-shadow: 0 0 0 3px #fbbf24, 0 0 20px rgba(251,191,36,.4); transform: translateY(-4px) scale(1.03); filter:brightness(1.15); }
+.cell.drag-over::after{ content:"Soltar aquí"; position:absolute; bottom:8px; left:50%; transform:translateX(-50%); background:rgba(251,191,36,.9); color:#000; padding:3px 10px; border-radius:6px; font-size:11px; font-weight:700; z-index:10; }
+tr.dragging{ opacity:.4; }
+.name-cell-drag{ cursor:grab; }
+.name-cell-drag:active{ cursor:grabbing; }
+.confirm-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:10000; display:flex; align-items:center; justify-content:center; }
+.confirm-box{ background:#1a1d23; border:1px solid #333; border-radius:16px; padding:28px 32px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,.5); }
+.confirm-box h3{ font-family:'Space Grotesk',sans-serif; font-size:18px; color:#fff; margin-bottom:12px; }
+.confirm-box p{ font-size:14px; color:#9ca3af; margin-bottom:8px; line-height:1.5; }
+.confirm-box .highlight{ color:#fbbf24; font-weight:700; }
+.confirm-box .btn-row{ display:flex; gap:10px; margin-top:20px; justify-content:flex-end; }
+.confirm-box .btn{ padding:8px 20px; border-radius:8px; border:none; font-size:13px; font-weight:600; cursor:pointer; }
+.confirm-box .btn-cancel{ background:#374151; color:#fff; }
+.confirm-box .btn-cancel:hover{ background:#4b5563; }
+.confirm-box .btn-ok{ background:#059669; color:#fff; }
+.confirm-box .btn-ok:hover{ background:#047857; }
 
 .cell .badge{
   font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700;
@@ -1469,8 +1485,8 @@ function renderTable(){
       const fichaLink = (p.sucesor||'').toLowerCase()==='si'
         ? `<a href="ficha_talento.html?expediente=${p.expediente}" target="_blank" onclick="event.stopPropagation()" style="color:#fff;background:var(--crimson);padding:4px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">Ver Ficha</a>`
         : '—';
-      return `<tr data-name="${encodeURIComponent(p.nombre)}">
-        <td class="name">${p.nombre}</td>
+      return `<tr data-name="${encodeURIComponent(p.nombre)}" draggable="true">
+        <td class="name name-cell-drag">${p.nombre}</td>
         <td>${p.cargo || '—'}</td>
         <td><span class="chip" style="background:${meta.color}">${p.caja} · ${meta.short}</span></td>
         <td>${sucesorBadge}</td>
@@ -1508,6 +1524,119 @@ function renderPager(totalPages){
   const prev = document.getElementById('pPrev'); if(prev) prev.addEventListener('click', ()=>{ state.page--; renderTable(); });
   const next = document.getElementById('pNext'); if(next) next.addEventListener('click', ()=>{ state.page++; renderTable(); });
   pager.querySelectorAll('button[data-p]').forEach(b=> b.addEventListener('click', ()=>{ state.page = +b.dataset.p; renderTable(); }));
+}
+
+// ─── DRAG AND DROP ──────────────────────────────────────────────
+let dragData = null;
+
+function showConfirmDialog(nombre, oldCaja, newCaja, onConfirm){
+  const oldMeta = BOX_META[oldCaja] || BOX_META[0];
+  const newMeta = BOX_META[newCaja] || BOX_META[0];
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  overlay.innerHTML = `
+    <div class="confirm-box">
+      <h3>Confirmar cambio de posición</h3>
+      <p>¿Está seguro que desea mover a <span class="highlight">${nombre}</span>?</p>
+      <p>De <span class="highlight">Caja ${oldCaja} · ${oldMeta.short}</span> a <span class="highlight">Caja ${newCaja} · ${newMeta.short}</span></p>
+      <div class="btn-row">
+        <button class="btn btn-cancel" id="confirmCancel">Cancelar</button>
+        <button class="btn btn-ok" id="confirmOk">Aceptar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#confirmCancel').addEventListener('click', ()=>{
+    document.body.removeChild(overlay);
+    if(onConfirm) onConfirm(false);
+  });
+  overlay.querySelector('#confirmOk').addEventListener('click', ()=>{
+    document.body.removeChild(overlay);
+    if(onConfirm) onConfirm(true);
+  });
+}
+
+function initDragDrop(){
+  document.getElementById('tableBody').addEventListener('dragstart', e=>{
+    const tr = e.target.closest('tr');
+    if(!tr || !tr.dataset.name) return;
+    const nombre = decodeURIComponent(tr.dataset.name);
+    dragData = RAW.find(d=>d.nombre===nombre);
+    if(!dragData) return;
+    tr.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', nombre);
+  });
+
+  document.getElementById('tableBody').addEventListener('dragend', e=>{
+    const tr = e.target.closest('tr');
+    if(tr) tr.classList.remove('dragging');
+    document.querySelectorAll('.cell.drag-over').forEach(c=>c.classList.remove('drag-over'));
+    dragData = null;
+  });
+
+  const container = document.getElementById('matrixCells');
+  container.addEventListener('dragover', e=>{
+    e.preventDefault();
+    const cell = e.target.closest('.cell');
+    if(!cell) return;
+    e.dataTransfer.dropEffect = 'move';
+    document.querySelectorAll('.cell.drag-over').forEach(c=>{ if(c!==cell) c.classList.remove('drag-over'); });
+    cell.classList.add('drag-over');
+  });
+
+  container.addEventListener('dragleave', e=>{
+    const cell = e.target.closest('.cell');
+    if(cell) cell.classList.remove('drag-over');
+  });
+
+  container.addEventListener('drop', e=>{
+    e.preventDefault();
+    const cell = e.target.closest('.cell');
+    if(!cell || !dragData) return;
+    cell.classList.remove('drag-over');
+
+    const newCaja = parseInt(cell.dataset.caja);
+    if(isNaN(newCaja) || dragData.caja === newCaja) return;
+
+    const oldCaja = dragData.caja;
+    const nombre = dragData.nombre;
+
+    showConfirmDialog(nombre, oldCaja, newCaja, (confirmed)=>{
+      if(!confirmed) return;
+
+      dragData.caja = newCaja;
+
+      // Update dataStore JSON
+      const dataStoreEl = document.getElementById('dataStore');
+      const data = JSON.parse(dataStoreEl.textContent);
+      const person = data.find(d=>d.expediente===dragData.expediente);
+      if(person) person.caja = newCaja;
+      dataStoreEl.textContent = JSON.stringify(data);
+
+      // Update RAW
+      const rawPerson = RAW.find(d=>d.expediente===dragData.expediente);
+      if(rawPerson) rawPerson.caja = newCaja;
+
+      state.page = 1;
+      renderAll();
+      showToast(`${nombre}: caja ${oldCaja} → ${newCaja} · ${BOX_META[newCaja].short}`);
+      dragData = null;
+    });
+  });
+}
+
+function showToast(msg){
+  let toast = document.getElementById('dragToast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'dragToast';
+    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#059669;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;transition:opacity .3s;box-shadow:0 4px 12px rgba(0,0,0,.3);';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(()=>{ toast.style.opacity = '0'; }, 2500);
 }
 
 const modalBg = document.getElementById('modalBg');
@@ -1936,6 +2065,7 @@ function renderAll(){
 }
 renderTableHead();
 renderAll();
+initDragDrop();
 
 // Login system
 const AUTHORIZED_EMAILS = [
