@@ -402,24 +402,32 @@ function renderFicha(p){
 
   ${p.observaciones?('<div class="obs-box"><h4>📋 Observaciones del Jefe</h4><p>'+p.observaciones+'</p></div>'):''}
   ${p['exp_pract promedio']!==null?`
-  <div class="exp-box">
-    <h4>🎓 Autoevaluación del Practicante</h4>
-    <div style="display:flex;align-items:center;gap:20px;margin-bottom:16px;flex-wrap:wrap;">
-      <div style="text-align:center;">
-        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;">Promedio</div>
-        <div style="font-size:36px;font-weight:800;font-family:'Space Grotesk',sans-serif;color:${scoreColor(p['exp_pract promedio'])};">${p['exp_pract promedio']}</div>
+  <div class="info-box" style="margin-bottom:20px;">
+    <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Experiencia de Prácticas</h4>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:240px;">
+        <div style="text-align:center;margin-bottom:12px;">
+          <div style="font-size:11px;color:var(--text-dim);">Promedio del Practicante</div>
+          <div style="font-size:32px;font-weight:800;font-family:'Space Grotesk',sans-serif;color:${scoreColor(p['exp_pract promedio'])};">${p['exp_pract promedio']}</div>
+          <div style="font-size:12px;color:var(--text-dim);">Porcentaje de Rendimiento: <strong style="color:var(--text);">${Math.round((p['exp_pract promedio']/5)*100)} %</strong></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          ${Object.entries(p['exp_pract_scores']||{}).map(([k,v])=>{
+            const labels={apporte:'Aporte al desarrollo',satisfaccion:'Satisfacción',oportunidades:'Aprendizaje',aprovechamiento:'Habilidades',recomendaria:'Recomendaría'};
+            return '<div style="text-align:center;padding:8px;background:var(--bg-1);border-radius:8px;">'+
+              '<div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">'+(labels[k]||k)+'</div>'+
+              '<div style="font-size:22px;font-weight:800;font-family:Space Grotesk;color:'+scoreColor(v)+';">'+(v!==null?v:'—')+'</div>'+
+            '</div>';
+          }).join('')}
+        </div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;flex:1;">
-        ${Object.entries(p['exp_pract_scores']||{}).map(([k,v])=>{
-          const labels={apporte:'Aporte al desarrollo',satisfaccion:'Satisfacción',oportunidades:'Aprendizaje',aprovechamiento:'Habilidades',recomendaria:'Recomendaría'};
-          return '<div style="text-align:center;padding:8px;background:var(--bg);border-radius:8px;">'+
-            '<div style="font-size:9px;color:var(--text-dim);margin-bottom:4px;line-height:1.3;">'+(labels[k]||k)+'</div>'+
-            '<div style="font-size:20px;font-weight:800;font-family:Space Grotesk;color:'+scoreColor(v)+';">'+(v!==null?v:'—')+'</div>'+
-          '</div>';
-        }).join('')}
+      ${p.exp_pract_comentario?`
+      <div style="flex:1;min-width:240px;display:flex;flex-direction:column;justify-content:center;">
+        <div style="font-size:12px;font-weight:600;color:var(--accent2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;">Comentario del Practicante</div>
+        <div style="font-size:13px;color:var(--text-dim);line-height:1.7;padding:14px 16px;background:var(--bg);border-radius:8px;border-left:3px solid var(--accent2);">${p.exp_pract_comentario}</div>
       </div>
+      `:''}
     </div>
-    ${p.exp_pract_comentario?'<div style="font-size:13px;color:var(--text-dim);line-height:1.7;padding:12px 16px;background:var(--bg);border-radius:8px;border-left:3px solid var(--accent2);"><strong style="color:var(--text);">Recomendación:</strong> '+p.exp_pract_comentario+'</div>':''}
   </div>
   `:''}
   ${p.novedad?'<div class="info-box" style="margin-bottom:20px;"><h4>📌 Novedad</h4><p style="font-size:13px;color:var(--text-dim);">'+p.novedad+'</p></div>':''}
