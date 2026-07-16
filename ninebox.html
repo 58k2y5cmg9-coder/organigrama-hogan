@@ -542,6 +542,11 @@ p.subtitle{
 .cell:hover{ transform: translateY(-4px) scale(1.015); box-shadow: 0 20px 40px rgba(0,0,0,.45); filter:brightness(1.08); }
 .cell.dimmed{ filter: saturate(.25) brightness(.55); }
 .cell.selected{ box-shadow: 0 0 0 2px #fff, 0 20px 40px rgba(0,0,0,.5); transform: translateY(-4px) scale(1.02); }
+.cell.drag-over{ box-shadow: 0 0 0 3px #fbbf24, 0 0 20px rgba(251,191,36,.4); transform: translateY(-4px) scale(1.03); filter:brightness(1.15); }
+.cell.drag-over::after{ content:"Soltar aquí"; position:absolute; bottom:8px; left:50%; transform:translateX(-50%); background:rgba(251,191,36,.9); color:#000; padding:3px 10px; border-radius:6px; font-size:11px; font-weight:700; z-index:10; }
+tr.dragging{ opacity:.4; }
+.name-cell-drag{ cursor:grab; }
+.name-cell-drag:active{ cursor:grabbing; }
 
 .cell .badge{
   font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700;
@@ -1469,8 +1474,8 @@ function renderTable(){
       const fichaLink = (p.sucesor||'').toLowerCase()==='si'
         ? `<a href="ficha_talento.html?expediente=${p.expediente}" target="_blank" onclick="event.stopPropagation()" style="color:#fff;background:var(--crimson);padding:4px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">Ver Ficha</a>`
         : '—';
-      return `<tr data-name="${encodeURIComponent(p.nombre)}">
-        <td class="name">${p.nombre}</td>
+      return `<tr data-name="${encodeURIComponent(p.nombre)}" draggable="true">
+        <td class="name name-cell-drag">${p.nombre}</td>
         <td>${p.cargo || '—'}</td>
         <td><span class="chip" style="background:${meta.color}">${p.caja} · ${meta.short}</span></td>
         <td>${sucesorBadge}</td>
@@ -1508,6 +1513,93 @@ function renderPager(totalPages){
   const prev = document.getElementById('pPrev'); if(prev) prev.addEventListener('click', ()=>{ state.page--; renderTable(); });
   const next = document.getElementById('pNext'); if(next) next.addEventListener('click', ()=>{ state.page++; renderTable(); });
   pager.querySelectorAll('button[data-p]').forEach(b=> b.addEventListener('click', ()=>{ state.page = +b.dataset.p; renderTable(); }));
+}
+
+// ─── DRAG AND DROP ──────────────────────────────────────────────
+let dragData = null;
+
+function initDragDrop(){
+  // Make table rows draggable
+  document.getElementById('tableBody').addEventListener('dragstart', e=>{
+    const tr = e.target.closest('tr');
+    if(!tr || !tr.dataset.name) return;
+    const nombre = decodeURIComponent(tr.dataset.name);
+    dragData = RAW.find(d=>d.nombre===nombre);
+    if(!dragData) return;
+    tr.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', nombre);
+  });
+
+  document.getElementById('tableBody').addEventListener('dragend', e=>{
+    const tr = e.target.closest('tr');
+    if(tr) tr.classList.remove('dragging');
+    document.querySelectorAll('.cell.drag-over').forEach(c=>c.classList.remove('drag-over'));
+    dragData = null;
+  });
+
+  // Make grid cells droppable
+  const container = document.getElementById('matrixCells');
+  container.addEventListener('dragover', e=>{
+    e.preventDefault();
+    const cell = e.target.closest('.cell');
+    if(!cell) return;
+    e.dataTransfer.dropEffect = 'move';
+    document.querySelectorAll('.cell.drag-over').forEach(c=>{ if(c!==cell) c.classList.remove('drag-over'); });
+    cell.classList.add('drag-over');
+  });
+
+  container.addEventListener('dragleave', e=>{
+    const cell = e.target.closest('.cell');
+    if(cell) cell.classList.remove('drag-over');
+  });
+
+  container.addEventListener('drop', e=>{
+    e.preventDefault();
+    const cell = e.target.closest('.cell');
+    if(!cell || !dragData) return;
+    cell.classList.remove('drag-over');
+
+    const newCaja = parseInt(cell.dataset.caja);
+    if(isNaN(newCaja)) return;
+    if(dragData.caja === newCaja) return;
+
+    const oldCaja = dragData.caja;
+    dragData.caja = newCaja;
+
+    // Update the dataStore JSON and RAW array
+    const dataStoreEl = document.getElementById('dataStore');
+    const data = JSON.parse(dataStoreEl.textContent);
+    const person = data.find(d=>d.expediente===dragData.expediente);
+    if(person) person.caja = newCaja;
+    dataStoreEl.textContent = JSON.stringify(data);
+
+    // Update RAW array too
+    const rawPerson = RAW.find(d=>d.expediente===dragData.expediente);
+    if(rawPerson) rawPerson.caja = newCaja;
+
+    // Also update filtered view state
+    state.page = 1;
+    renderAll();
+
+    // Show toast notification
+    showToast(`${dragData.nombre}: caja ${oldCaja} → ${newCaja} · ${BOX_META[newCaja].short}`);
+    dragData = null;
+  });
+}
+
+function showToast(msg){
+  let toast = document.getElementById('dragToast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'dragToast';
+    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#059669;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;transition:opacity .3s;box-shadow:0 4px 12px rgba(0,0,0,.3);';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(()=>{ toast.style.opacity = '0'; }, 2500);
 }
 
 const modalBg = document.getElementById('modalBg');
@@ -1936,6 +2028,7 @@ function renderAll(){
 }
 renderTableHead();
 renderAll();
+initDragDrop();
 
 // Login system
 const AUTHORIZED_EMAILS = [
