@@ -1556,6 +1556,7 @@ function showConfirmDialog(nombre, oldCaja, newCaja, onConfirm){
 }
 
 function initDragDrop(){
+  // Drag from table rows
   document.getElementById('tableBody').addEventListener('dragstart', e=>{
     const tr = e.target.closest('tr');
     if(!tr || !tr.dataset.name) return;
@@ -1571,50 +1572,42 @@ function initDragDrop(){
     const tr = e.target.closest('tr');
     if(tr) tr.classList.remove('dragging');
     document.querySelectorAll('.cell.drag-over').forEach(c=>c.classList.remove('drag-over'));
-    dragData = null;
   });
 
+  // Drop targets on the grid container (allows dropping anywhere)
   const container = document.getElementById('matrixCells');
   container.addEventListener('dragover', e=>{
     e.preventDefault();
-    const cell = e.target.closest('.cell');
-    if(!cell) return;
     e.dataTransfer.dropEffect = 'move';
-    document.querySelectorAll('.cell.drag-over').forEach(c=>{ if(c!==cell) c.classList.remove('drag-over'); });
-    cell.classList.add('drag-over');
-  });
-
-  container.addEventListener('dragleave', e=>{
-    const cell = e.target.closest('.cell');
-    if(cell) cell.classList.remove('drag-over');
   });
 
   container.addEventListener('drop', e=>{
     e.preventDefault();
+    if(!dragData) return;
+
+    // Find which cell was dropped on
     const cell = e.target.closest('.cell');
-    if(!cell || !dragData) return;
-    cell.classList.remove('drag-over');
+    if(!cell) return;
 
     const newCaja = parseInt(cell.dataset.caja);
     if(isNaN(newCaja) || dragData.caja === newCaja) return;
 
     const oldCaja = dragData.caja;
     const nombre = dragData.nombre;
+    const expediente = dragData.expediente;
 
     showConfirmDialog(nombre, oldCaja, newCaja, (confirmed)=>{
-      if(!confirmed) return;
-
-      dragData.caja = newCaja;
+      if(!confirmed){ dragData = null; return; }
 
       // Update dataStore JSON
       const dataStoreEl = document.getElementById('dataStore');
       const data = JSON.parse(dataStoreEl.textContent);
-      const person = data.find(d=>d.expediente===dragData.expediente);
+      const person = data.find(d=>d.expediente===expediente);
       if(person) person.caja = newCaja;
       dataStoreEl.textContent = JSON.stringify(data);
 
       // Update RAW
-      const rawPerson = RAW.find(d=>d.expediente===dragData.expediente);
+      const rawPerson = RAW.find(d=>d.expediente===expediente);
       if(rawPerson) rawPerson.caja = newCaja;
 
       state.page = 1;
