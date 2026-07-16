@@ -402,29 +402,31 @@ function renderFicha(p){
 
   ${p.observaciones?('<div class="obs-box"><h4>📋 Observaciones del Jefe</h4><p>'+p.observaciones+'</p></div>'):''}
   ${p['exp_pract promedio']!==null?`
-  <div class="info-box" style="margin-bottom:12px;">
-    <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Experiencia de Prácticas</h4>
-    <div style="text-align:center;margin-bottom:12px;">
-      <div style="font-size:11px;color:var(--text-dim);">Promedio del Practicante</div>
-      <div style="font-size:32px;font-weight:800;font-family:'Space Grotesk',sans-serif;color:${scoreColor(p['exp_pract promedio'])};">${p['exp_pract promedio']}</div>
-      <div style="font-size:12px;color:var(--text-dim);">Porcentaje de Rendimiento: <strong style="color:var(--text);">${Math.round((p['exp_pract promedio']/5)*100)} %</strong></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+    <div class="info-box" style="margin-bottom:0;">
+      <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Experiencia de Prácticas</h4>
+      <div style="text-align:center;margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--text-dim);">Promedio del Practicante</div>
+        <div style="font-size:32px;font-weight:800;font-family:'Space Grotesk',sans-serif;color:${scoreColor(p['exp_pract promedio'])};">${p['exp_pract promedio']}</div>
+        <div style="font-size:12px;color:var(--text-dim);">Porcentaje de Rendimiento: <strong style="color:var(--text);">${Math.round((p['exp_pract promedio']/5)*100)} %</strong></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        ${Object.entries(p['exp_pract_scores']||{}).map(([k,v])=>{
+          const labels={apporte:'Aporte al desarrollo',satisfaccion:'Satisfacción',oportunidades:'Aprendizaje',aprovechamiento:'Habilidades',recomendaria:'Recomendaría'};
+          return '<div style="text-align:center;padding:8px;background:var(--bg-1);border-radius:8px;">'+
+            '<div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">'+(labels[k]||k)+'</div>'+
+            '<div style="font-size:22px;font-weight:800;font-family:Space Grotesk;color:'+scoreColor(v)+';">'+(v!==null?v:'—')+'</div>'+
+          '</div>';
+        }).join('')}
+      </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      ${Object.entries(p['exp_pract_scores']||{}).map(([k,v])=>{
-        const labels={apporte:'Aporte al desarrollo',satisfaccion:'Satisfacción',oportunidades:'Aprendizaje',aprovechamiento:'Habilidades',recomendaria:'Recomendaría'};
-        return '<div style="text-align:center;padding:8px;background:var(--bg-1);border-radius:8px;">'+
-          '<div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;">'+(labels[k]||k)+'</div>'+
-          '<div style="font-size:22px;font-weight:800;font-family:Space Grotesk;color:'+scoreColor(v)+';">'+(v!==null?v:'—')+'</div>'+
-        '</div>';
-      }).join('')}
+    ${p.exp_pract_comentario?`
+    <div class="obs-box" style="border-color:var(--accent2);margin-bottom:0;">
+      <h4 style="color:var(--accent2);">💬 Comentario del Practicante</h4>
+      <p>${p.exp_pract_comentario}</p>
     </div>
+    `:''}
   </div>
-  ${p.exp_pract_comentario?`
-  <div class="obs-box" style="border-color:var(--accent2);margin-bottom:20px;">
-    <h4 style="color:var(--accent2);">💬 Comentario del Practicante</h4>
-    <p>${p.exp_pract_comentario}</p>
-  </div>
-  `:''}
   `:''}
   ${p.novedad?'<div class="info-box" style="margin-bottom:20px;"><h4>📌 Novedad</h4><p style="font-size:13px;color:var(--text-dim);">'+p.novedad+'</p></div>':''}
   `;
