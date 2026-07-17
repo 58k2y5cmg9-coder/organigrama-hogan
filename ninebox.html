@@ -1177,6 +1177,7 @@ function updateAllCascading(){
   state.search=''; document.getElementById('fSearch').value='';
   updateAllCascading();
   renderAll();
+    renderOtrosTable();
   // Show/hide competency chart
   const compSection=document.getElementById('compDirSection');
   if(state.direccion){
@@ -1191,7 +1192,8 @@ document.getElementById('fGerencia').addEventListener('change', e=>{
   state.gerencia = e.target.value;
   state.jefe=''; state.page=1;
   state.search=''; document.getElementById('fSearch').value='';
-  updateJefeFilter();
+  updateJefe
+    Filter();
   renderAll();
 });
 
@@ -1204,24 +1206,28 @@ document.getElementById('fJefe').addEventListener('change', e=>{
   updateAllCascading();
   renderAll();
 });
+  renderOtrosTable();
 
 document.getElementById('fRegion').addEventListener('change', e=>{
   state.region = e.target.value;
   state.ciudad=''; state.page=1;
-  state.search=''; document.getElementById('fSearch').value='';
+  state.search=''; document.ge
+    tElementById('fSearch').value='';
   updateCiudadFilter();
   renderAll();
 });
 
 document.getElementById('fCiudad').addEventListener('change', e=>{
   state.ciudad = e.target.value;
-  state.page = 1;
+
+     state.page = 1;
   state.search=''; document.getElementById('fSearch').value='';
   renderAll();
 });
 
 document.getElementById('fSucesor').addEventListener('change', e=>{
-  state.sucesor = e.target.value;
+  state.su
+    cesor = e.target.value;
   state.page = 1;
   state.search=''; document.getElementById('fSearch').value='';
   renderAll();
@@ -1403,7 +1409,8 @@ function renderGrid(){
           <span class="count">${people.length}</span>
           <span class="count-lbl">persona${people.length===1?'':'s'}</span>
         </div>
-        ${namesHtml}
+    
+       ${namesHtml}
       </div>
     `;
     cell.addEventListener('click', ()=>{
@@ -1658,6 +1665,7 @@ function initDragDrop(){
         jefe: rawPerson ? rawPerson.jefe : '',
         cajaAnterior: oldCaja,
         cajaNueva: newCaja,
+   
         nombreAnterior: BOX_META[oldCaja] ? BOX_META[oldCaja].short : '',
         nombreNuevo: BOX_META[newCaja] ? BOX_META[newCaja].short : ''
       });
@@ -1761,6 +1769,7 @@ fSearch.addEventListener('input', ()=>{
   state.page = 1;
   if(state.search){
     state.direccion=''; state.gerencia=''; state.jefe='';
+   
     state.region=''; state.ciudad=''; state.sucesor='';
     ['fDireccion','fGerencia','fJefe','fRegion','fCiudad','fSucesor'].forEach(id=> document.getElementById(id).value='');
   }
@@ -1797,7 +1806,8 @@ function renderSuggestions(){
     item.addEventListener('click', ()=>{
       if(item.dataset.jefe){
         const jefe = decodeURIComponent(item.dataset.jefe);
-        fSearch.value = jefe;
+        fSearch.value 
+    = jefe;
         state.search = jefe;
       } else {
         const name = decodeURIComponent(item.dataset.name);
@@ -2135,10 +2145,10 @@ function renderAll(){
   renderTable();
 }
 const OTROS_SUCESORES = [
-  {exp:"1024519211",nombre:"DUARTE MENDEZ MONICA ANDREA",cargo:"Analista Sarlaf",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Direccion Gestion de Riesgo y Control Interno",gerencia:"Direccion Gestion de Riesgo y Control Interno",ciudad:"Bogotá, D.C.",jefe:"MARTHA LILIANA CASTILLO MARTINEZ",caja:0,sucesor:"Si",tiempo:""},
-  {exp:"37620782",nombre:"GRASS ARDILA GERALDINE",cargo:"Ingeniero(a) Aseguramiento Calidad y Mejora Continua E&N",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Cumplimiento y Continuidad Datacenter",gerencia:"Gerencia Cumplimiento y Continuidad Datacenter",ciudad:"Bogotá, D.C.",jefe:"LILIANA PATRICIA SANABRIA CARDOZO",caja:0,sucesor:"Si",tiempo:""},
-  {exp:"52733930",nombre:"MORENO AYURE YULI ZORAIDA",cargo:"Gestor(a) Interno y Aseguramiento Estrategico",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Direccion Gestion de Riesgo y Control Interno",gerencia:"Direccion Gestion de Riesgo y Control Interno",ciudad:"Bogotá, D.C.",jefe:"",caja:0,sucesor:"Si",tiempo:""},
-  {exp:"1057515055",nombre:"MOLINA GONZALEZ MARIA CRISTINA",cargo:"Coach Agile",region:"Transversal",direccion:"Direccion Corporativa Gestion Humana y Administrativo",direccion_area:"Direccion Corporativa Gestion Humana y Administrativo",gerencia:"Direccion Corporativa Gestion Humana y Administrativo",ciudad:"Bogotá, D.C.",jefe:"",caja:0,sucesor:"Si",tiempo:""}
+  {exp:"1024519211",nombre:"DUARTE MENDEZ MONICA ANDREA",cargo:"Analista Sarlaf",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Direccion Gestion de Riesgo y Control Interno",gerencia:"Direccion Gestion de Riesgo y Control Interno",ciudad:"Bogotá, D.C.",jefe:"CASTILLO MARTINEZ MARTHA LILIANA",caja:0,sucesor:"Si",tiempo:""},
+  {exp:"37620782",nombre:"GRASS ARDILA GERALDINE",cargo:"Ingeniero(a) Aseguramiento Calidad y Mejora Continua E&N",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Cumplimiento y Continuidad Datacenter",gerencia:"Gerencia Cumplimiento y Continuidad Datacenter",ciudad:"Bogotá, D.C.",jefe:"SANABRIA CARDOZO LILIANA PATRICIA",caja:0,sucesor:"Si",tiempo:"2 Años"},
+  {exp:"52733930",nombre:"MORENO AYURE YULI ZORAIDA",cargo:"Gestor(a) Interno y Aseguramiento Estrategico",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Direccion Gestion de Riesgo y Control Interno",gerencia:"Direccion Gestion de Riesgo y Control Interno",ciudad:"Bogotá, D.C.",jefe:"BUSTOS MANCERA CAMILO ANDRES",caja:0,sucesor:"Si",tiempo:"2 Años"},
+  {exp:"1057515055",nombre:"MOLINA GONZALEZ MARIA CRISTINA",cargo:"Coach Agile",region:"Transversal",direccion:"Direccion Corporativa Gestion Humana y Administrativo",direccion_area:"Direccion Corporativa Gestion Humana y Administrativo",gerencia:"Direccion Corporativa Gestion Humana y Administrativo",ciudad:"Bogotá, D.C.",jefe:"SARMIENTO GONZALEZ LUIS ALEJANDRO",caja:0,sucesor:"Si",tiempo:""}
 ];
 
 renderTableHead();
@@ -2225,13 +2235,25 @@ function renderCompDir(dirName){
 
 
 function renderOtrosTable(){
+  const section = document.getElementById('otrosSection');
   const tbody = document.getElementById('otrosTableBody');
+
+  // Only show when filtering by jefe
+  if(!state.jefe){
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = '';
+
+  // Filter OTROS_SUCESORES by the active jefe
+  const jefeNorm = norm(state.jefe);
+  let data = OTROS_SUCESORES.filter(p => norm(p.jefe) === jefeNorm);
+
   const search = (document.getElementById('otrosSearch')?.value || '').toLowerCase();
-  let data = OTROS_SUCESORES;
   if(search) data = data.filter(p => p.nombre.toLowerCase().includes(search) || p.exp.includes(search));
 
   if(data.length === 0){
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">No se encontraron otros sucesores.</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">No se encontraron otros sucesores para este jefe.</td></tr>`;
     return;
   }
 
@@ -2263,7 +2285,6 @@ function renderOtrosTable(){
     });
   });
 }
-
 function openOtrosModal(p){
   const caja = p.caja || 0;
   const meta = BOX_META[caja] || BOX_META[0];
