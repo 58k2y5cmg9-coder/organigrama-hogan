@@ -2301,15 +2301,19 @@ function renderOtrosTable(){
   const section = document.getElementById('otrosSection');
   const tbody = document.getElementById('otrosTableBody');
 
-  // Only show when filtering by jefe
-  if(!state.jefe){
+  // Only show when filtering by jefe (dropdown) or searching a jefe name
+  const searchQ = norm(state.search || '');
+  const hasJefeFilter = !!state.jefe;
+  const searchMatchesJefe = searchQ && OTROS_SUCESORES.some(p => norm(p.jefe).includes(searchQ));
+  
+  if(!hasJefeFilter && !searchMatchesJefe){
     section.style.display = 'none';
     return;
   }
   section.style.display = '';
 
-  // Filter OTROS_SUCESORES by the active jefe
-  const jefeNorm = norm(state.jefe);
+  // Filter OTROS_SUCESORES by the active jefe or search
+  const jefeNorm = hasJefeFilter ? norm(state.jefe) : searchQ;
   let data = OTROS_SUCESORES.filter(p => {
     const pJefe = norm(p.jefe);
     if(pJefe === jefeNorm) return true;
