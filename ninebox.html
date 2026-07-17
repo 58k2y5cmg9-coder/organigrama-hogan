@@ -2132,8 +2132,16 @@ function renderAll(){
   renderDist();
   renderTable();
 }
+const OTROS_SUCESORES = [
+  {exp:"1024519211",nombre:"DUARTE MENDEZ MONICA ANDREA",cargo:"Analista Sarlaf",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Direccion Gestion de Riesgo y Control Interno",gerencia:"Direccion Gestion de Riesgo y Control Interno",ciudad:"Bogotá, D.C.",jefe:"MARTHA LILIANA CASTILLO MARTINEZ",caja:0,sucesor:"Si",tiempo:""},
+  {exp:"37620782",nombre:"GRASS ARDILA GERALDINE",cargo:"Ingeniero(a) Aseguramiento Calidad y Mejora Continua E&N",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Cumplimiento y Continuidad Datacenter",gerencia:"Gerencia Cumplimiento y Continuidad Datacenter",ciudad:"Bogotá, D.C.",jefe:"LILIANA PATRICIA SANABRIA CARDOZO",caja:0,sucesor:"Si",tiempo:""},
+  {exp:"52733930",nombre:"MORENO AYURE YULI ZORAIDA",cargo:"Gestor(a) Interno y Aseguramiento Estrategico",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Direccion Gestion de Riesgo y Control Interno",gerencia:"Direccion Gestion de Riesgo y Control Interno",ciudad:"Bogotá, D.C.",jefe:"",caja:0,sucesor:"Si",tiempo:""},
+  {exp:"1057515055",nombre:"MOLINA GONZALEZ MARIA CRISTINA",cargo:"Coach Agile",region:"Transversal",direccion:"Direccion Corporativa Gestion Humana y Administrativo",direccion_area:"Direccion Corporativa Gestion Humana y Administrativo",gerencia:"Direccion Corporativa Gestion Humana y Administrativo",ciudad:"Bogotá, D.C.",jefe:"",caja:0,sucesor:"Si",tiempo:""}
+];
+
 renderTableHead();
 renderAll();
+renderOtrosTable();
 initDragDrop();
 
 // Login system
@@ -2216,12 +2224,7 @@ function renderCompDir(dirName){
 
 
 
-const OTROS_SUCESORES = [
-  {exp:"1024519211",nombre:"DUARTE MENDEZ MONICA ANDREA",cargo:"Analista Sarlaf",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Direccion Gestion de Riesgo y Control Interno",gerencia:"Direccion Gestion de Riesgo y Control Interno",ciudad:"Bogotá, D.C.",jefe:"MARTHA LILIANA CASTILLO MARTINEZ",caja:0,sucesor:"Si",tiempo:""},
-  {exp:"37620782",nombre:"GRASS ARDILA GERALDINE",cargo:"Ingeniero(a) Aseguramiento Calidad y Mejora Continua E&N",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Cumplimiento y Continuidad Datacenter",gerencia:"Gerencia Cumplimiento y Continuidad Datacenter",ciudad:"Bogotá, D.C.",jefe:"LILIANA PATRICIA SANABRIA CARDOZO",caja:0,sucesor:"Si",tiempo:""},
-  {exp:"52733930",nombre:"MORENO AYURE YULI ZORAIDA",cargo:"Gestor(a) Interno y Aseguramiento Estrategico",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Direccion Gestion de Riesgo y Control Interno",gerencia:"Direccion Gestion de Riesgo y Control Interno",ciudad:"Bogotá, D.C.",jefe:"",caja:0,sucesor:"Si",tiempo:""},
-  {exp:"1057515055",nombre:"MOLINA GONZALEZ MARIA CRISTINA",cargo:"Coach Agile",region:"Transversal",direccion:"Direccion Corporativa Gestion Humana y Administrativo",direccion_area:"Direccion Corporativa Gestion Humana y Administrativo",gerencia:"Direccion Corporativa Gestion Humana y Administrativo",ciudad:"Bogotá, D.C.",jefe:"",caja:0,sucesor:"Si",tiempo:""}
-];
+
 
 
 function renderOtrosTable(){
