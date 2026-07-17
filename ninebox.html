@@ -1005,7 +1005,7 @@ footer{
 
   <div id="compDirSection" style="display:none;margin-top:28px;opacity:0;animation:rise .7s var(--ease) forwards;">
     <div class="section-head">
-      <h2><span class="idx">02</span> Competencias HOGAN</h2>
+      <h2><span class="idx">05</span> Competencias HOGAN</h2>
       <p>Promedio de las 10 competencias para la dirección seleccionada.</p>
     </div>
     <div class="panel" style="margin-top:12px;">
@@ -2202,12 +2202,7 @@ const COMPETENCIAS_POR_DIRECCION={"Direccion Auditoria": {"Toma de Decisiones": 
 
 function renderCompDir(dirName){
   const container=document.getElementById('compDirChart');
-  const data=COMPETENCIAS_POR_DIRECCION[dirName
-  ,{expediente:"1024519211",nombre:"DUARTE MENDEZ MONICA ANDREA",cargo:"Analista Sarlaf",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Direccion Gestion de Riesgo y Control Interno",gerencia:"Direccion Gestion de Riesgo y Control Interno",ciudad:"Bogotá, D.C.",jefe:"MARTHA LILIANA CASTILLO MARTINEZ",email:"",bp:"",nivel_reporte:"",desempeno:null,potencial:null,caja:0,sucesor:"Si",tiempo:"",genero:"Femenino"}
-  ,{expediente:"37620782",nombre:"GRASS ARDILA GERALDINE",cargo:"Ingeniero(a) Aseguramiento Calidad y Mejora Continua E&N",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Cumplimiento y Continuidad Datacenter",gerencia:"Gerencia Cumplimiento y Continuidad Datacenter",ciudad:"Bogotá, D.C.",jefe:"LILIANA PATRICIA SANABRIA CARDOZO",email:"",bp:"",nivel_reporte:"",desempeno:null,potencial:null,caja:0,sucesor:"Si",tiempo:"",genero:"Femenino"}
-  ,{expediente:"52733930",nombre:"MORENO AYURE YULI ZORAIDA",cargo:"Gestor(a) Interno y Aseguramiento Estrategico",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Direccion Gestion de Riesgo y Control Interno",gerencia:"Direccion Gestion de Riesgo y Control Interno",ciudad:"Bogotá, D.C.",jefe:"",email:"",bp:"",nivel_reporte:"",desempeno:null,potencial:null,caja:0,sucesor:"Si",tiempo:"",genero:"Femenino"}
-  ,{expediente:"1057515055",nombre:"MOLINA GONZALEZ MARIA CRISTINA",cargo:"Coach Agile",region:"Transversal",direccion:"Direccion Corporativa Gestion Humana y Administrativo",direccion_area:"Direccion Corporativa Gestion Humana y Administrativo",gerencia:"Direccion Corporativa Gestion Humana y Administrativo",ciudad:"Bogotá, D.C.",jefe:"",email:"",bp:"",nivel_reporte:"",desempeno:null,potencial:null,caja:0,sucesor:"Si",tiempo:"",genero:"Femenino"}
-];
+  const data=COMPETENCIAS_POR_DIRECCION[dirName];
   if(!data){container.innerHTML='<div style="color:var(--text-faint);font-size:13px;text-align:center;padding:20px;">Sin datos de competencias para esta dirección</div>';return;}
   const entries=Object.entries(data);
   const getBarColor=(v)=>{if(v>=70)return 'var(--c9)';if(v>=40)return 'var(--c5)';return 'var(--crimson)';};
@@ -2232,25 +2227,80 @@ function renderOtrosTable(){
   const search = (document.getElementById('otrosSearch')?.value || '').toLowerCase();
   let data = OTROS_SUCESORES;
   if(search) data = data.filter(p => p.nombre.toLowerCase().includes(search) || p.exp.includes(search));
-  const BOX_LABELS = {0:'Sin ubicación',1:'Bajo potencial',2:'Bajo desempeño',3:'Desempeño inconsistente',4:'Desempeño aceptable',5:'Sólido en desarrollo',6:'Alto potencial en desarrollo',7:'Experto',8:'Sólido',9:'Estrella'};
-  const BOX_COLORS = {0:'#6b7280',1:'#ef4444',2:'#f97316',3:'#eab308',4:'#a3a3a3',5:'#d97706',6:'#84cc16',7:'#0ea5e9',8:'#10b981',9:'#6366f1'};
+
+  if(data.length === 0){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">No se encontraron otros sucesores.</td></tr>`;
+    return;
+  }
+
   tbody.innerHTML = data.map(p => {
     const caja = p.caja || 0;
-    const sucesor = p.sucesor && p.sucesor.toLowerCase() === 'si';
-    const cajaLabel = BOX_LABELS[caja] || 'Sin ubicación';
-    const cajaColor = BOX_COLORS[caja] || '#6b7280';
-    return `<tr>
-      <td style="font-weight:700;white-space:nowrap">${p.nombre}</td>
-      <td>${p.cargo}</td>
-      <td><span class="caja-pill" style="background:${cajaColor}22;color:${cajaColor};border:1px solid ${cajaColor}44">${caja} · ${cajaLabel}</span></td>
-      <td>${sucesor ? '<span class="badge-si">Sí</span>' : '<span class="badge-no">No</span>'}</td>
+    const meta = BOX_META[caja] || BOX_META[0];
+    const sucesorVal = (p.sucesor || '').toLowerCase();
+    const sucesorBadge = sucesorVal === 'si'
+      ? `<span class="chip" style="background:#059669;color:#fff">Sí</span>`
+      : `<span style="color:#9ca3af">No</span>`;
+    const fichaLink = sucesorVal === 'si'
+      ? `<a href="ficha_talento.html?expediente=${p.exp}" target="_blank" onclick="event.stopPropagation()" style="color:#fff;background:var(--crimson);padding:4px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">Ver Ficha</a>`
+      : '—';
+    return `<tr data-exp="${p.exp}">
+      <td class="name">${p.nombre}</td>
+      <td>${p.cargo || '—'}</td>
+      <td><span class="chip" style="background:${meta.color}">${caja} · ${meta.short}</span></td>
+      <td>${sucesorBadge}</td>
       <td>${p.tiempo || '—'}</td>
-      <td><a href="ficha_talento.html?expediente=${p.exp}" target="_blank" class="btn-ficha">Ver Ficha</a></td>
+      <td>${fichaLink}</td>
     </tr>`;
   }).join('');
-}
-document.getElementById('otrosSearch')?.addEventListener('input', renderOtrosTable);
 
+  tbody.querySelectorAll('tr').forEach(tr=>{
+    tr.addEventListener('click', ()=>{
+      const exp = tr.dataset.exp;
+      const person = OTROS_SUCESORES.find(d=>d.exp===exp);
+      if(person) openOtrosModal(person);
+    });
+  });
+}
+
+function openOtrosModal(p){
+  const caja = p.caja || 0;
+  const meta = BOX_META[caja] || BOX_META[0];
+  document.getElementById('modalName').textContent = p.nombre;
+  document.getElementById('modalCargo').textContent = p.cargo;
+  const badge = document.getElementById('modalBoxBadge');
+  badge.style.background = meta.color;
+  badge.textContent = `Caja ${caja} · ${meta.name}`;
+
+  const fields = [
+    ['Región', p.region], ['Ciudad', p.ciudad],
+    ['Dirección', p.direccion], ['Dir. Área', p.direccion_area],
+    ['Jefe directo', p.jefe],
+  ];
+  let gridHtml = fields.map(([l,v])=>`
+    <div class="modal-field"><label>${l}</label><span>${v || '—'}</span></div>
+  `).join('');
+
+  if(p.sucesor && p.sucesor.toLowerCase() !== 'no'){
+    gridHtml += `
+      <div style="grid-column:1/-1;margin-top:8px;">
+        <a href="ficha_talento.html?expediente=${p.exp}" target="_blank"
+           style="display:inline-flex;align-items:center;gap:8px;background:var(--crimson);color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;transition:opacity .2s;"
+           onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Ver Ficha de Talento
+        </a>
+      </div>`;
+  }
+
+  document.getElementById('modalGrid').innerHTML = gridHtml;
+  document.getElementById('modalBg').classList.add('show');
+}
+
+document.getElementById('otrosSearch')?.addEventListener('input', renderOtrosTable);
 </script>
 </body>
-</html>
+</html,
+  {expediente:"1024519211",nombre:"DUARTE MENDEZ MONICA ANDREA",cargo:"Analista Sarlaf",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Direccion Gestion de Riesgo y Control Interno",gerencia:"Direccion Gestion de Riesgo y Control Interno",ciudad:"Bogotá, D.C.",jefe:"MARTHA LILIANA CASTILLO MARTINEZ",email:"monica.duarte@claro.com.co",bp:"",nivel_reporte:"",desempeno:null,potencial:null,caja:0,sucesor:"Si",tiempo:"",genero:"Femenino"},
+  {expediente:"37620782",nombre:"GRASS ARDILA GERALDINE",cargo:"Ingeniero(a) Aseguramiento Calidad y Mejora Continua E&N",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Cumplimiento y Continuidad Datacenter",gerencia:"Gerencia Cumplimiento y Continuidad Datacenter",ciudad:"Bogotá, D.C.",jefe:"LILIANA PATRICIA SANABRIA CARDOZO",email:"geraldine.grassar@claro.com.co",bp:"",nivel_reporte:"",desempeno:null,potencial:null,caja:0,sucesor:"Si",tiempo:"",genero:"Femenino"},
+  {expediente:"52733930",nombre:"MORENO AYURE YULI ZORAIDA",cargo:"Gestor(a) Interno y Aseguramiento Estrategico",region:"Transversal",direccion:"Direccion Gestion de Riesgo y Control Interno",direccion_area:"Direccion Gestion de Riesgo y Control Interno",gerencia:"Direccion Gestion de Riesgo y Control Interno",ciudad:"Bogotá, D.C.",jefe:"DIEGO MIGUEL GONZALEZ CHAVES",email:"",bp:"",nivel_reporte:"",desempeno:null,potencial:null,caja:0,sucesor:"Si",tiempo:"",genero:"Femenino"},
+  {expediente:"1057515055",nombre:"MOLINA GONZALEZ MARIA CRISTINA",cargo:"Coach Agile",region:"Transversal",direccion:"Direccion Corporativa Gestion Humana y Administrativo",direccion_area:"Direccion Corporativa Gestion Humana y Administrativo",gerencia:"Direccion Corporativa Gestion Humana y Administrativo",ciudad:"Bogotá, D.C.",jefe:"SEBASTIAN VELASQUEZ RAMIREZ",email:"",bp:"",nivel_reporte:"",desempeno:null,potencial:null,caja:0,sucesor:"Si",tiempo:"",genero:"Femenino"}>
