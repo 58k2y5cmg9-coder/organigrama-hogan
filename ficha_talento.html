@@ -208,9 +208,9 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
 
   <div class="section-title">Valoraciones</div>
   <div class="grid-3">
-    <div class="chart-card"><div class="chart-title">Resultados de desempeño</div><div class="bar-chart" id="barDesempeno"></div></div>
-    <div class="chart-card" style="display:flex;flex-direction:column;"><div class="chart-title">Valoración de comportamientos 2026</div><div id="barComportamientos" style="flex:1;display:flex;flex-direction:column;justify-content:center;"></div></div>
-    <div class="chart-card"><div class="chart-title">Objetivos de desarrollo 2026</div><div id="objDesarrollo"><div class="empty-msg">Sin datos</div></div></div>
+    <div class="chart-card" id="cardDesempeno"><div class="chart-title">Resultados de desempeño</div><div class="bar-chart" id="barDesempeno"></div></div>
+    <div class="chart-card" id="cardComportamientos" style="display:flex;flex-direction:column;"><div class="chart-title">Valoración de comportamientos 2026</div><div id="barComportamientos" style="flex:1;display:flex;flex-direction:column;justify-content:center;"></div></div>
+    <div class="chart-card" id="cardObjetivos"><div class="chart-title">Objetivos de desarrollo 2026</div><div id="objDesarrollo"><div class="empty-msg">Sin datos</div></div></div>
   </div>
 
   <div id="section360">
@@ -231,7 +231,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
   <div class="chart-card"><div class="bar-chart" id="barClima" style="height:260px;flex-wrap:wrap;"></div></div>
   </div>
 
-  <div class="grid-2" style="margin-top:12px;">
+  <div class="grid-2" id="hoganGrid" style="margin-top:12px;">
     <div class="chart-card" id="hoganFortalezas" style="text-align:left;"></div>
     <div class="chart-card" id="hoganMejora" style="text-align:left;"></div>
   </div>
@@ -24889,7 +24889,9 @@ function loadFicha(p){
 
 function renderDesempeno(d){
   const el=document.getElementById('barDesempeno');
-  if(!d){el.innerHTML='<div class="empty-msg">Sin datos</div>';return;}
+  const card=document.getElementById('cardDesempeno');
+  if(!d||(!d.y2024&&!d.y2025&&!d.y2026)){card.style.display='none';return;}
+  card.style.display='';
   const vals=[d.y2024||0,d.y2025||0,d.y2026||0];
   const max=Math.max(...vals,1);
   const colors=['var(--red)','var(--green)','var(--orange)'];
@@ -24902,7 +24904,9 @@ function renderDesempeno(d){
 
 function renderComportamientos(t){
   const el=document.getElementById('barComportamientos');
-  if(!t.length){el.innerHTML='<div class="empty-msg">Sin datos</div>';return;}
+  const card=document.getElementById('cardComportamientos');
+  if(!t||!t.length){card.style.display='none';return;}
+  card.style.display='';
   const groups={};
   t.forEach(x=>{
     const name=x.talento||'Sin nombre';
@@ -24921,7 +24925,9 @@ function renderComportamientos(t){
 
 function renderObjetivos(objs){
   const el=document.getElementById('objDesarrollo');
-  if(!objs.length){el.innerHTML='<div class="empty-msg">Sin datos</div>';return;}
+  const card=document.getElementById('cardObjetivos');
+  if(!objs||!objs.length){card.style.display='none';return;}
+  card.style.display='';
   el.style.display='flex';el.style.flexDirection='column';el.style.alignItems='center';
   const items=objs.slice(0,4);
   el.innerHTML=items.map(o=>'<div class="talent-obj" style="width:100%;max-width:500px;'+(items.length===1?'margin-left:auto;margin-right:auto;':'')+'"><div class="to-talent">'+(o.talento||'—')+'</div><div class="to-obj" style="text-align:center;">'+(o.obj||'—')+'</div></div>').join('');
@@ -25066,9 +25072,12 @@ function renderClima(c){
 function renderHogan(h, exp){
   const fortEl=document.getElementById('hoganFortalezas');
   const mejEl=document.getElementById('hoganMejora');
+  const grid=document.getElementById('hoganGrid');
 
   // Fortalezas y oportunidades desde observaciones
   const obs=DATA.observaciones[exp];
+  if(!obs||(!obs.fortalezas&&!obs.oportunidades)){grid.style.display='none';return;}
+  grid.style.display='';
   if(obs){
     fortEl.innerHTML=obs.fortalezas?'<div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px;">Fortalezas</div>'+
       '<div style="margin:6px 0;padding:10px 12px;background:#ecfdf5;border-radius:6px;border-left:3px solid var(--green);font-size:12px;color:var(--text);line-height:1.6;white-space:pre-line;">'+obs.fortalezas+'</div>':'';
