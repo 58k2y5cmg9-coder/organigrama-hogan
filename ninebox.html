@@ -2138,7 +2138,14 @@ function exportPDF(){
   
   // ─── SECTION: OTROS POSIBLES SUCESORES ──────────────────────────
   if(state.jefe){
-    const otrosData = OTROS_SUCESORES.filter(p => norm(p.jefe) === norm(state.jefe));
+    const otrosData = OTROS_SUCESORES.filter(p => {
+      const pJefe = norm(p.jefe);
+      const sJefe = norm(state.jefe);
+      if(pJefe === sJefe) return true;
+      const jefeWords = sJefe.split(/\s+/).filter(Boolean);
+      const pWords = pJefe.split(/\s+/).filter(Boolean);
+      return jefeWords.length > 0 && jefeWords.every(w => pWords.includes(w));
+    });
     if(otrosData.length > 0){
       checkY(20);
       y=sectionTitle('04','Otros posibles sucesores',y);
@@ -2303,7 +2310,14 @@ function renderOtrosTable(){
 
   // Filter OTROS_SUCESORES by the active jefe
   const jefeNorm = norm(state.jefe);
-  let data = OTROS_SUCESORES.filter(p => norm(p.jefe) === jefeNorm);
+  let data = OTROS_SUCESORES.filter(p => {
+    const pJefe = norm(p.jefe);
+    if(pJefe === jefeNorm) return true;
+    // Match regardless of word order (e.g. "CASTRO CARDOZO CARLOS ANDRES" vs "CARLOS ANDRES CASTRO CARDOZO")
+    const jefeWords = jefeNorm.split(/\s+/).filter(Boolean);
+    const pWords = pJefe.split(/\s+/).filter(Boolean);
+    return jefeWords.length > 0 && jefeWords.every(w => pWords.includes(w));
+  });
 
   const search = (document.getElementById('otrosSearch')?.value || '').toLowerCase();
   if(search) data = data.filter(p => p.nombre.toLowerCase().includes(search) || p.exp.includes(search));
