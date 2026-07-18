@@ -1154,12 +1154,15 @@ function updateJefeFilter(){
   if(dir) filters.direccion = dir;
   if(ger) filters.gerencia = ger;
   const jefesRAW = uniqueFiltered('jefe', filters);
+  // Normalize name for dedup: sort words alphabetically to match same person in different order
+  const normName = n => n.split(/\s+/).filter(Boolean).sort((a,b)=>a.localeCompare(b,'es')).join(' ');
+  const rawNormSet = new Set(jefesRAW.map(normName));
   const otrosJefes = [...new Set(
     OTROS_SUCESORES.filter(p=>{
       if(dir && p.direccion !== dir) return false;
       return p.jefe;
     }).map(p=>p.jefe)
-  )];
+  )].filter(j => !rawNormSet.has(normName(j)));
   const jefes = [...new Set([...jefesRAW, ...otrosJefes])].sort((a,b)=>a.localeCompare(b,'es'));
   rebuildSelect('fJefe', jefes);
   if(state.jefe && !jefes.includes(state.jefe)){ state.jefe=''; document.getElementById('fJefe').value=''; }
@@ -1822,8 +1825,16 @@ function renderSuggestions(){
     jefeTeams[d.jefe].push(d);
   });
   OTROS_SUCESORES.filter(p=> norm(p.jefe).includes(q)).forEach(d=>{
-    if(!jefeTeams[d.jefe]) jefeTeams[d.jefe] = [];
-    if(!jefeTeams[d.jefe].some(x=>x.exp===d.exp)) jefeTeams[d.jefe].push(d);
+    // Find matching RAW jefe key (same person, different word order)
+    const normKey = n => n.split(/\s+/).filter(Boolean).sort((a,b)=>a.localeCompare(b,'es')).join(' ');
+    const otrosNorm = normKey(d.jefe);
+    let targetKey = null;
+    for(const k of Object.keys(jefeTeams)){
+      if(normKey(k) === otrosNorm){ targetKey = k; break; }
+    }
+    const key = targetKey || d.jefe;
+    if(!jefeTeams[key]) jefeTeams[key] = [];
+    if(!jefeTeams[key].some(x=>x.exp===d.exp)) jefeTeams[key].push(d);
   });
   const items = [];
   for(const [jefe, team] of Object.entries(jefeTeams)){
