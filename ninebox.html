@@ -1154,16 +1154,20 @@ function updateJefeFilter(){
   if(dir) filters.direccion = dir;
   if(ger) filters.gerencia = ger;
   const jefesRAW = uniqueFiltered('jefe', filters);
-  // Normalize name for dedup: sort words alphabetically to match same person in different order
+  // Normalize: sort words alphabetically to match same person in different order
   const normName = n => n.split(/\s+/).filter(Boolean).sort((a,b)=>a.localeCompare(b,'es')).join(' ');
-  const rawNormSet = new Set(jefesRAW.map(normName));
-  const otrosJefes = [...new Set(
-    OTROS_SUCESORES.filter(p=>{
-      if(dir && p.direccion !== dir) return false;
-      return p.jefe;
-    }).map(p=>p.jefe)
-  )].filter(j => !rawNormSet.has(normName(j)));
-  const jefes = [...new Set([...jefesRAW, ...otrosJefes])].sort((a,b)=>a.localeCompare(b,'es'));
+  // Build map: sortedKey -> best display name (prefer RAW format: APELLIDO NOMBRE)
+  const byNorm = new Map();
+  jefesRAW.forEach(j => byNorm.set(normName(j), j));
+  // Add OTROS jefes, but only if not already present (by sorted key)
+  OTROS_SUCESORES.filter(p=>{
+    if(dir && p.direccion !== dir) return false;
+    return p.jefe;
+  }).forEach(p => {
+    const key = normName(p.jefe);
+    if(!byNorm.has(key)) byNorm.set(key, p.jefe);
+  });
+  const jefes = [...byNorm.values()].sort((a,b)=>a.localeCompare(b,'es'));
   rebuildSelect('fJefe', jefes);
   if(state.jefe && !jefes.includes(state.jefe)){ state.jefe=''; document.getElementById('fJefe').value=''; }
 }
