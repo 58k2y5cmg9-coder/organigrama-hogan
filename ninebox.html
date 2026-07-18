@@ -1199,9 +1199,9 @@ document.getElementById('fGerencia').addEventListener('change', e=>{
   state.gerencia = e.target.value;
   state.jefe=''; state.page=1;
   state.search=''; document.getElementById('fSearch').value='';
-  updateJefe
-    Filter();
+  updateJefeFilter();
   renderAll();
+  document.getElementById('compDirSection').style.display='none';
 });
 
 document.getElementById('fJefe').addEventListener('change', e=>{
@@ -1213,6 +1213,7 @@ document.getElementById('fJefe').addEventListener('change', e=>{
   renderOtrosTable();
   updateAllCascading();
   renderAll();
+  document.getElementById('compDirSection').style.display='none';
 });
 
 document.getElementById('fRegion').addEventListener('change', e=>{
@@ -1275,6 +1276,7 @@ document.getElementById('btnReset').addEventListener('click', ()=>{
   document.getElementById('nivelReporteText').textContent='Todos';
   updateAllCascading();
   renderAll();
+  document.getElementById('compDirSection').style.display='none';
 });
 
 function applyFilters(list){
