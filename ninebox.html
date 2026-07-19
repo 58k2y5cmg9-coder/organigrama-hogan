@@ -2331,26 +2331,28 @@ function renderOtrosTable(){
   const section = document.getElementById('otrosSection');
   const tbody = document.getElementById('otrosTableBody');
 
-  // Only show when filtering by jefe (dropdown) or searching a jefe name
+  // Build set of jefes that exist in OTROS_SUCESORES (normalized)
+  const normJ = n => n.split(/\s+/).filter(Boolean).sort((a,b)=>a.localeCompare(b,'es')).join(' ');
+  const otrosJefesSet = new Set(OTROS_SUCESORES.filter(p=>p.jefe).map(p=>normJ(p.jefe)));
+
+  // Only show when filtering by a jefe that has OTROS successors, or searching one
   const searchQ = norm(state.search || '');
   const hasJefeFilter = !!state.jefe;
-  const searchMatchesJefe = searchQ && OTROS_SUCESORES.some(p => norm(p.jefe).includes(searchQ));
-  
-  if(!hasJefeFilter && !searchMatchesJefe){
+  const jefeNorm = hasJefeFilter ? normJ(state.jefe) : '';
+  const searchMatchesJefe = searchQ && otrosJefesSet.has(normJ(searchQ));
+  const jefeHasOtros = hasJefeFilter && otrosJefesSet.has(jefeNorm);
+
+  if(!jefeHasOtros && !searchMatchesJefe){
     section.style.display = 'none';
     return;
   }
   section.style.display = '';
 
   // Filter OTROS_SUCESORES by the active jefe or search
-  const jefeNorm = hasJefeFilter ? norm(state.jefe) : searchQ;
+  const filterKey = jefeHasOtros ? jefeNorm : normJ(searchQ);
   let data = OTROS_SUCESORES.filter(p => {
-    const pJefe = norm(p.jefe);
-    if(pJefe === jefeNorm) return true;
-    // Match regardless of word order (e.g. "CASTRO CARDOZO CARLOS ANDRES" vs "CARLOS ANDRES CASTRO CARDOZO")
-    const jefeWords = jefeNorm.split(/\s+/).filter(Boolean);
-    const pWords = pJefe.split(/\s+/).filter(Boolean);
-    return jefeWords.length > 0 && jefeWords.every(w => pWords.includes(w));
+    const pJefeNorm = normJ(p.jefe);
+    return pJefeNorm === filterKey;
   });
 
   const search = (document.getElementById('otrosSearch')?.value || '').toLowerCase();
