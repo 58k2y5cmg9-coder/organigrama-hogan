@@ -25366,7 +25366,7 @@ function renderHogan(h, exp){
       renderBarSection('MVPI – MOTIVADORES & VALORES', h.mvpi, 'mvpi');
 
     // Top HDS risks
-    const topHds=Object.entries(h.hds).sort((a,b)=>b[1]-a[1]).slice(0,4);
+    const topHds=Object.entries(h.hds).sort((a,b)=>b[1]-a[1]).slice(0,3);
     const hdsLine=topHds.map(([n,v])=>'<b>'+n+'</b> '+v).join(' · ');
     // Top MVPI motivators
     const topMvpi=Object.entries(h.mvpi).sort((a,b)=>b[1]-a[1]).slice(0,3);
@@ -25382,7 +25382,7 @@ function renderHogan(h, exp){
       '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+h.motivadores+'</div>';
 
     if(h.foco){
-      const topHpi=Object.entries(h.hpi).sort((a,b)=>b[1]-a[1]).slice(0,4);
+      const topHpi=Object.entries(h.hpi).sort((a,b)=>b[1]-a[1]).slice(0,3);
       const hpiLine=topHpi.map(([n,v])=>'<b>'+n+'</b> '+v).join(' · ');
       focoEl.style.display='block';
       focoEl.innerHTML=
