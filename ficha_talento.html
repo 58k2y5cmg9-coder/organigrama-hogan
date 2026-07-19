@@ -194,23 +194,29 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
     </div>
   </div>
 
+  <div id="sectionExperiencia">
   <div class="section-title orange">Experiencia laboral y educación</div>
   <div class="grid-2">
     <div><div class="sub-title">Experiencia interna</div><table class="data-table"><thead><tr><th>Historial de cargos</th></tr></thead><tbody id="tInterna"><tr><td class="empty-msg">Sin datos</td></tr></tbody></table></div>
     <div><div class="sub-title">Experiencia externa</div><table class="data-table"><thead><tr><th>Historial de cargos</th></tr></thead><tbody id="tExterna"><tr><td class="empty-msg">Sin datos</td></tr></tbody></table></div>
   </div>
+  </div>
 
+  <div id="sectionFormacion">
   <div class="section-title blue">Formación</div>
   <div class="formation-grid" style="grid-template-columns:repeat(2,1fr);">
     <div class="formation-card"><div class="fc-title" style="background:#1e40af;">Formación profesional</div><div class="fc-content" id="fProfesional">Sin datos</div></div>
     <div class="formation-card"><div class="fc-title" style="background:var(--orange);">Formación complementaria</div><div class="fc-content" id="fMedida">Sin datos</div></div>
   </div>
+  </div>
 
+  <div id="sectionValoraciones">
   <div class="section-title">Valoraciones</div>
   <div class="grid-3">
     <div class="chart-card" id="cardDesempeno"><div class="chart-title">Resultados de desempeño</div><div class="bar-chart" id="barDesempeno"></div></div>
     <div class="chart-card" id="cardComportamientos" style="display:flex;flex-direction:column;"><div class="chart-title">Valoración de comportamientos 2026</div><div id="barComportamientos" style="flex:1;display:flex;flex-direction:column;justify-content:center;"></div></div>
     <div class="chart-card" id="cardObjetivos"><div class="chart-title">Objetivos de desarrollo 2026</div><div id="objDesarrollo"><div class="empty-msg">Sin datos</div></div></div>
+  </div>
   </div>
 
   <div id="section360">
@@ -25100,6 +25106,12 @@ function loadFicha(p){
   const c=DATA.clima[p.exp]||[];
   renderClima(c);
 
+  // Comité Directivo: ocultar Experiencia, Formación y Valoraciones
+  const isCD=['52185300','79947402','80425417','1128466768','85467103','32781111','79516122'].includes(p.exp);
+  document.getElementById('sectionExperiencia').style.display=isCD?'none':'';
+  document.getElementById('sectionFormacion').style.display=isCD?'none':'';
+  document.getElementById('sectionValoraciones').style.display=isCD?'none':'';
+
   // HOGAN
   const h=DATA.hogan[p.exp];
   renderHogan(h, p.exp);
@@ -25331,6 +25343,7 @@ function renderHogan(h, exp){
       return html;
     }
     barsSection.innerHTML=
+      '<div style="grid-column:1/-1;text-align:center;font-family:\'Space Grotesk\',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;padding:10px 0;border-bottom:2px solid var(--border);">Valoración de Comportamientos Hogan</div>'+
       renderBarSection('HPI – FORTALEZAS & ESTILO', h.hpi, 'hpi')+
       renderBarSection('HDS – RIESGOS BAJO PRESIÓN', h.hds, 'hds')+
       renderBarSection('MVPI – MOTIVADORES & VALORES', h.mvpi, 'mvpi');
@@ -25354,7 +25367,7 @@ function renderHogan(h, exp){
     if(h.foco){
       focoEl.style.display='block';
       focoEl.innerHTML='<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:16px 20px;">'+
-        '<div style="font-size:12px;font-weight:700;color:#2563eb;padding:6px 16px;background:#dbeafe;border-radius:8px;margin-bottom:8px;display:inline-block;">⚽ FOCO DE TRABAJO</div>'+
+        '<div style="font-size:12px;font-weight:700;color:#2563eb;padding:6px 16px;background:#dbeafe;border-radius:8px;margin-bottom:8px;display:inline-block;">🎯 FOCO DE DESARROLLO</div>'+
         '<div style="font-size:11px;color:#dc2626;margin-bottom:8px;">HDS Riesgo: '+hdsLine+'</div>'+
         '<div style="font-size:11px;color:#2563eb;margin-bottom:10px;">Motivadores: '+mvpiLine+'</div>'+
         '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+h.foco+'</div>'+
