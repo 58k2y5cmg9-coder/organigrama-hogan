@@ -1216,6 +1216,13 @@ const SUCESORES=[
   {"userId":"CD6","exp":"79516122","nombre":"BUSTOS SUAREZ GERMAN LEONARDO","direccion":"Comité Directivo","cargo":"Director(a) Corporativo Gestion Humana y Administrativo","email":""}];
 const DATA={
   "informacion": {
+    "52185300": {"direccion_comite":"Direccion Auditoria","direccion_area":"Auditoria Interna","gerencia":"Direccion Auditoria","jefe":"DE GUSMAO RIBEIRO RODRIGO","fecha_nacimiento":"1975-12-01","antiguedad":"1 años"},
+    "79947402": {"direccion_comite":"Direccion Corporativa Financiera","direccion_area":"Financiera","gerencia":"Direccion Corporativa Financiera","jefe":"DE GUSMAO RIBEIRO RODRIGO","fecha_nacimiento":"1978-04-18","antiguedad":"22 años"},
+    "80425417": {"direccion_comite":"Direccion Corporativa Juridica y Sostenibilidad","direccion_area":"Direccion Corporativa Juridica y Sostenibilidad","gerencia":"Direccion Corporativa Juridica y Sostenibilidad","jefe":"DE GUSMAO RIBEIRO RODRIGO","fecha_nacimiento":"1971-05-05","antiguedad":"13 años"},
+    "1128466768": {"direccion_comite":"Direccion Corporativa Planeacion Estrategica e Innovacion","direccion_area":"Direccion Corporativa Planeacion Estrategica e Innovacion","gerencia":"Direccion Corporativa Planeacion Estrategica e Innovacion","jefe":"DE GUSMAO RIBEIRO RODRIGO","fecha_nacimiento":"1987-12-01","antiguedad":"1 años"},
+    "85467103": {"direccion_comite":"Direccion Corporativa Tecnologia","direccion_area":"Direccion Corporativa Tecnologia","gerencia":"Direccion Corporativa Tecnologia","jefe":"DE GUSMAO RIBEIRO RODRIGO","fecha_nacimiento":"1973-11-03","antiguedad":"26 años"},
+    "32781111": {"direccion_comite":"Unidad Mercado Corporativo","direccion_area":"Unidad Mercado Corporativo","gerencia":"Unidad Negocio Empresas","jefe":"DE GUSMAO RIBEIRO RODRIGO","fecha_nacimiento":"1975-04-16","antiguedad":"11 años"},
+    "79516122": {"direccion_comite":"Direccion Corporativa Gestion Humana y Administrativo","direccion_area":"Direccion Corporativa Gestion Humana y Administrativo","gerencia":"Direccion Corporativa Gestion Humana y Administrativo","jefe":"DE GUSMAO RIBEIRO RODRIGO","fecha_nacimiento":"1969-08-25","antiguedad":"22 años"},
     "80098521": {
       "direccion_comite": "(PEI) Direccion Corporativa Planeacion Estrategica e Innovacion",
       "direccion_area": "Planeacion Estrategica",
@@ -25319,18 +25326,28 @@ function renderHogan(h, exp){
     textSection.style.marginTop='12px';
     focoEl.style.display=h.foco?'block':'none';
 
-    function barColor(type, val){
-      if(type==='hpi') return '#d97706';
+    function barColor(type){
+      if(type==='hpi') return '#eab308';
       if(type==='hds') return '#dc2626';
-      return '#6b7280';
+      return '#2563eb';
+    }
+    function titleBg(type){
+      if(type==='hpi') return '#fef9c3';
+      if(type==='hds') return '#fee2e2';
+      return '#dbeafe';
+    }
+    function titleColor(type){
+      if(type==='hpi') return '#a16207';
+      if(type==='hds') return '#b91c1c';
+      return '#1d4ed8';
     }
     function renderBarSection(title, data, type){
       const items=Object.entries(data);
       let html='<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:16px 20px;">';
-      html+='<div style="font-family:\'Space Grotesk\',sans-serif;font-size:13px;font-weight:700;color:var(--text);padding:6px 16px;background:var(--surface);border-radius:8px;margin-bottom:12px;text-align:center;">'+title+'</div>';
+      html+='<div style="font-family:\'Space Grotesk\',sans-serif;font-size:13px;font-weight:700;color:'+titleColor(type)+';padding:6px 16px;background:'+titleBg(type)+';border-radius:8px;margin-bottom:12px;text-align:center;">'+title+'</div>';
       items.forEach(([name,val])=>{
         const pct=val;
-        const color=barColor(type, val);
+        const color=barColor(type);
         html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">';
         html+='<div style="width:140px;text-align:right;font-size:11px;color:var(--text-dim);flex-shrink:0;">'+name+'</div>';
         html+='<div style="flex:1;height:14px;background:var(--border);border-radius:4px;overflow:hidden;">';
@@ -25343,7 +25360,7 @@ function renderHogan(h, exp){
       return html;
     }
     barsSection.innerHTML=
-      '<div style="grid-column:1/-1;text-align:center;font-family:\'Space Grotesk\',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;padding:10px 0;border-bottom:2px solid var(--border);">Valoración de Comportamientos Hogan</div>'+
+      '<div style="grid-column:1/-1;text-align:center;font-family:\'Space Grotesk\',sans-serif;font-size:16px;font-weight:700;color:#fff;background:#dc2626;padding:10px 0;border-radius:8px;">Valoración de Comportamientos Hogan</div>'+
       renderBarSection('HPI – FORTALEZAS & ESTILO', h.hpi, 'hpi')+
       renderBarSection('HDS – RIESGOS BAJO PRESIÓN', h.hds, 'hds')+
       renderBarSection('MVPI – MOTIVADORES & VALORES', h.mvpi, 'mvpi');
@@ -25355,19 +25372,20 @@ function renderHogan(h, exp){
     const topMvpi=Object.entries(h.mvpi).sort((a,b)=>b[1]-a[1]).slice(0,3);
     const mvpiLine=topMvpi.map(([n,v])=>'<b>'+n+'</b> '+v).join(' · ');
 
-    fortEl.innerHTML='<div style="font-size:12px;font-weight:700;color:#d97706;padding:6px 16px;background:#fef3c7;border-radius:8px;margin-bottom:10px;">⭐ FORTALEZAS (HPI)</div>'+
+    fortEl.innerHTML='<div style="font-size:12px;font-weight:700;color:#a16207;padding:6px 16px;background:#fef9c3;border-radius:8px;margin-bottom:10px;">⭐ FORTALEZAS (HPI)</div>'+
       '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+h.fortalezas+'</div>';
 
-    mejEl.innerHTML='<div style="font-size:12px;font-weight:700;color:#dc2626;padding:6px 16px;background:#fee2e2;border-radius:8px;margin-bottom:10px;">⚠️ DESCARRILADORES (HDS)</div>'+
+    mejEl.innerHTML='<div style="font-size:12px;font-weight:700;color:#b91c1c;padding:6px 16px;background:#fee2e2;border-radius:8px;margin-bottom:10px;">⚠️ DESCARRILADORES (HDS)</div>'+
       '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+h.descarriladores+'</div>';
 
-    movEl.innerHTML='<div style="font-size:12px;font-weight:700;color:#2563eb;padding:6px 16px;background:#dbeafe;border-radius:8px;margin-bottom:10px;">🎯 MOTIVADORES (MVPI)</div>'+
+    movEl.innerHTML='<div style="font-size:12px;font-weight:700;color:#1d4ed8;padding:6px 16px;background:#dbeafe;border-radius:8px;margin-bottom:10px;">🎯 MOTIVADORES (MVPI)</div>'+
       '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+h.motivadores+'</div>';
 
     if(h.foco){
       focoEl.style.display='block';
-      focoEl.innerHTML='<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:16px 20px;">'+
-        '<div style="font-size:12px;font-weight:700;color:#2563eb;padding:6px 16px;background:#dbeafe;border-radius:8px;margin-bottom:8px;display:inline-block;">🎯 FOCO DE DESARROLLO</div>'+
+      focoEl.innerHTML=
+        '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:14px;font-weight:700;color:#1d4ed8;margin-bottom:8px;">FOCO DE DESARROLLO</div>'+
+        '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:16px 20px;">'+
         '<div style="font-size:11px;color:#dc2626;margin-bottom:8px;">HDS Riesgo: '+hdsLine+'</div>'+
         '<div style="font-size:11px;color:#2563eb;margin-bottom:10px;">Motivadores: '+mvpiLine+'</div>'+
         '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+h.foco+'</div>'+
