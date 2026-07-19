@@ -2356,9 +2356,9 @@ function renderOtrosTable(){
     return pJefeNorm === filterKey;
   });
 
-  // Dedup: remove people already in the main table (RAW filtered by current filters)
-  const mainNames = new Set(getFilteredData().map(p => norm(p.nombre)));
-  data = data.filter(p => !mainNames.has(norm(p.nombre)));
+  // Dedup: remove people who are already successors in the main table
+  const mainSuccessors = new Set(getFilteredData().filter(p => (p.sucesor||'').toLowerCase()==='si').map(p => norm(p.nombre)));
+  data = data.filter(p => !mainSuccessors.has(norm(p.nombre)));
 
   const search = (document.getElementById('otrosSearch')?.value || '').toLowerCase();
   if(search) data = data.filter(p => p.nombre.toLowerCase().includes(search) || p.exp.includes(search));
