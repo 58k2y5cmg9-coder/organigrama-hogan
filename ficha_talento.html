@@ -25382,12 +25382,15 @@ function renderHogan(h, exp){
       '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+h.motivadores+'</div>';
 
     if(h.foco){
+      const topHpi=Object.entries(h.hpi).sort((a,b)=>b[1]-a[1]).slice(0,4);
+      const hpiLine=topHpi.map(([n,v])=>'<b>'+n+'</b> '+v).join(' · ');
       focoEl.style.display='block';
       focoEl.innerHTML=
         '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:14px;font-weight:700;color:#15803d;margin-bottom:8px;">FOCO DE DESARROLLO</div>'+
         '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px 20px;">'+
+        '<div style="font-size:11px;color:#a16207;margin-bottom:8px;">HPI Fortalezas: '+hpiLine+'</div>'+
         '<div style="font-size:11px;color:#dc2626;margin-bottom:8px;">HDS Riesgo: '+hdsLine+'</div>'+
-        '<div style="font-size:11px;color:#2563eb;margin-bottom:10px;">Motivadores: '+mvpiLine+'</div>'+
+        '<div style="font-size:11px;color:#2563eb;margin-bottom:10px;">MVPI Motivadores: '+mvpiLine+'</div>'+
         '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+h.foco+'</div>'+
         '</div>';
     }
