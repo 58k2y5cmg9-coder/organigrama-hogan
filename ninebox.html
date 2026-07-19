@@ -2357,7 +2357,7 @@ function renderOtrosTable(){
   });
 
   // Dedup: remove people who are already successors in the main table
-  const mainSuccessors = new Set(getFilteredData().filter(p => (p.sucesor||'').toLowerCase()==='si').map(p => norm(p.nombre)));
+  const mainSuccessors = new Set(currentFiltered().filter(p => (p.sucesor||'').toLowerCase()==='si').map(p => norm(p.nombre)));
   data = data.filter(p => !mainSuccessors.has(norm(p.nombre)));
 
   const search = (document.getElementById('otrosSearch')?.value || '').toLowerCase();
