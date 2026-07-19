@@ -1565,9 +1565,7 @@ function renderTable(){
       const sucesorBadge = sucesorVal === 'si' 
         ? `<span class="chip" style="background:#059669;color:#fff">Sí</span>` 
         : `<span style="color:#9ca3af">No</span>`;
-      const fichaLink = (p.sucesor||'').toLowerCase()==='si'
-        ? `<a href="ficha_talento.html?expediente=${p.expediente}" target="_blank" onclick="event.stopPropagation()" style="color:#fff;background:var(--crimson);padding:4px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">Ver Ficha</a>`
-        : '—';
+      const fichaLink = `<a href="ficha_talento.html?expediente=${p.expediente}" target="_blank" onclick="event.stopPropagation()" style="color:#fff;background:var(--crimson);padding:4px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">Ver Ficha</a>`;
       return `<tr data-name="${encodeURIComponent(p.nombre)}" draggable="true">
         <td class="name name-cell-drag">${p.nombre}</td>
         <td>${p.cargo || '—'}</td>
