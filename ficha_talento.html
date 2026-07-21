@@ -219,6 +219,19 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
   </div>
   </div>
 
+  <div id="sectionDesempenoDesarrollo" style="display:none;">
+  <div class="section-title orange">Desempeño de Desarrollo 1Q</div>
+  <div class="grid-2" style="margin-bottom:12px;">
+    <div class="chart-card"><div class="chart-title">Cursos de Desarrollo Q</div><div id="cdCursos" style="font-size:20px;font-weight:bold;text-align:center;padding:10px;">—</div></div>
+    <div class="chart-card"><div class="chart-title">PDI</div><div id="cdPdi" style="font-size:20px;font-weight:bold;text-align:center;padding:10px;">—</div></div>
+  </div>
+  <div class="grid-2" style="margin-bottom:12px;">
+    <div class="chart-card"><div class="chart-title">Resultados de Productividad</div><div id="cdProductividad" style="font-size:20px;font-weight:bold;text-align:center;padding:10px;">—</div></div>
+    <div class="chart-card"><div class="chart-title">Resultado de Desempeño 1Q</div><div id="cdDesempeno1q" style="font-size:20px;font-weight:bold;text-align:center;padding:10px;">—</div></div>
+  </div>
+  <div class="chart-card"><div class="chart-title">Objetivo PDI</div><div id="cdObjetivoPdi" style="font-size:12px;line-height:1.6;padding:10px;white-space:pre-wrap;">—</div></div>
+  </div>
+
   <div id="section360">
   <div class="section-title blue">Valoración 360°</div>
   <div class="scores-row">
@@ -20165,6 +20178,17 @@ const DATA={
         "1016053644": {"fortalezas":"Se destaca por su alta capacidad analítica, amplio conocimiento técnico y calidad en sus entregables. Mantiene un buen relacionamiento con las diferentes áreas y cumple de manera consistente con los objetivos del rol.","oportunidades":"Requiere fortalecer una actitud más proactiva en la identificación y liderazgo de iniciativas, así como mejorar la organización y priorización de sus actividades para incrementar la eficiencia e impacto de su gestión."},
         "39582818": {"fortalezas":"Se destaca por su proactividad, alto nivel de ownership y autonomía, logrando una ejecución consistente sin requerir seguimiento permanente. Cuenta con un sólido conocimiento técnico, trabaja de manera colaborativa, recibe muy buenos comentarios de sus clientes y ha asumido con éxito el liderazgo de auditorías nuevas, entregando resultados de alta calidad.","oportunidades":"Puede fortalecer la calidad de algunos entregables y continuar desarrollando un estilo de comunicación más conciliador y asertivo. Asimismo, es importante seguir consolidando comportamientos que reflejen un mayor seniority e incrementen su impacto e influencia en el rol."}
   },
+  "comite": {
+    "52185300": {"cursos":6,"pdi":14,"productividad":"81.23","desempeno_1q":101,"objetivo_pdi":"No se visualiza PDI en SSFF"},
+    "79947402": {"cursos":6,"pdi":14,"productividad":"80.00","desempeno_1q":100,"objetivo_pdi":"1. Desarrollar un dominio sólido de los estándares NIIF y su aplicación práctica al negocio, integrando la gestión financiera con operaciones y supply chain, para mejorar la calidad de las decisiones, maximizar el flujo de caja y fortalecer la sostenibilidad financiera de la compañía.\n2. Fortalecer las capacidades del equipo para traducir iniciativas de automatización e inteligencia artificial en beneficios financieros concretos, asegurando una gestión disciplinada de casos de negocio, captura de valor y sostenibilidad operativa.\n3. Desarrollar un liderazgo más consciente y formador, potenciando el crecimiento de personas clave del equipo y fortaleciendo mi capacidad de autocontrol, escucha y claridad en escenarios de alta presión y complejidad."},
+    "79516122": {"cursos":6,"pdi":14,"productividad":"82.28","desempeno_1q":102,"objetivo_pdi":"1. Diseñar, implementar y hacer seguimiento y asegurar la estrategia integral de la Dirección con foco en: Ciclo de Talento, Ownership y confianza, Impulso IA, Marca Empleadora, Diseño Organizacional.\n2. Llevar a los integrantes del CEC a ser desarrolladores de talento, con su liderazgo asegurar el cumplimiento de todos los compromisos del ciclo de talento"},
+    "80425417": {"cursos":6,"pdi":14,"productividad":"81.78","desempeno_1q":102,"objetivo_pdi":"1. Solución de problemas de principio a fin.\n2. Mejorar comunicación a todo nivel, con el líder, pares y equipo"},
+    "85467103": {"cursos":6,"pdi":14,"productividad":"80.16","desempeno_1q":100,"objetivo_pdi":"1. Mantener la orientación al cliente de forma efectiva promoviendo la innovación\n2. Gestiona de forma adecuada los recursos de su área de trabajo\n3. Promueve el desarrollo de sus colaboradores"},
+    "80150353": {"cursos":0,"pdi":14,"productividad":"88.00","desempeno_1q":102,"objetivo_pdi":"No se visualiza PDI en SSFF"},
+    "32781111": {"cursos":6,"pdi":14,"productividad":"74.05","desempeno_1q":94,"objetivo_pdi":"No se visualiza PDI en SSFF"},
+    "1138186": {"cursos":6,"pdi":14,"productividad":"80.18","desempeno_1q":100,"objetivo_pdi":"No se visualiza PDI en SSFF"},
+    "1128466768": {"cursos":0,"pdi":0,"productividad":"","desempeno_1q":0,"objetivo_pdi":""}
+  },
   "hogan": {
     "80098521": {"tipo": "LÍDER ESTRATÉGICO", "fortalezas": "Impulsar la Estrategia, Impulsar la Innovación, Comunicación de Impacto", "oportunidades": "Toma de Decisiones, Liderar a otros, Desarrollo de Otros, Escuchar a Otros", "competencias": [{"nombre": "Toma de Decisiones", "score": 37}, {"nombre": "Liderar a otros", "score": 48}, {"nombre": "Impulsar el Cambio", "score": 69}, {"nombre": "Impulsar la Estrategia", "score": 71}, {"nombre": "Desarrollo de Otros", "score": 44}, {"nombre": "Impulsar la Innovación", "score": 86}, {"nombre": "Escuchar a Otros", "score": 49}, {"nombre": "Influenciar a otros", "score": 67}, {"nombre": "Responsabilidad", "score": 56}, {"nombre": "Comunicación de Impacto", "score": 70}]},
     "1144033575": {"tipo": "LÍDER DE OPERACIÓN", "fortalezas": "Toma de Decisiones", "oportunidades": "Construcción de Equipos, Delegación, Resolución de Problemas, Impulsar la Diversidad", "competencias": [{"nombre": "Toma de Decisiones", "score": 74}, {"nombre": "Construcción de Equipos", "score": 43}, {"nombre": "Impulsar la Ejecución", "score": 52}, {"nombre": "Delegación", "score": 30}, {"nombre": "Visión del Negocio", "score": 54}, {"nombre": "Resolución de Problemas", "score": 44}, {"nombre": "Impulsar la Diversidad", "score": 48}, {"nombre": "Trabajo en Equipo", "score": 54}, {"nombre": "Responsabilidad", "score": 57}, {"nombre": "Manejo de la Ambigüedad", "score": 59}]},
@@ -25044,7 +25068,7 @@ function searchPerson(){
 
 function loadFicha(p){
   document.getElementById('iNombre').textContent=p.nombre;
-  const isCDName=['52185300','79947402','80425417','1128466768','85467103','32781111','79516122'].includes(p.exp);
+  const isCDName=['52185300','79947402','80425417','1128466768','85467103','32781111','79516122','80150353','1138186'].includes(p.exp);
   const nameEl=document.getElementById('iNombre');
   nameEl.style.borderBottom=isCDName?'3px solid #dc2626':'none';
   nameEl.style.paddingBottom=isCDName?'6px':'0';
@@ -25152,10 +25176,26 @@ function loadFicha(p){
   renderClima(c);
 
   // Comité Directivo: ocultar Experiencia, Formación y Valoraciones
-  const isCD=['52185300','79947402','80425417','1128466768','85467103','32781111','79516122'].includes(p.exp);
+  const isCD=['52185300','79947402','80425417','1128466768','85467103','32781111','79516122','80150353','1138186'].includes(p.exp);
   document.getElementById('sectionExperiencia').style.display=isCD?'none':'';
   document.getElementById('sectionFormacion').style.display=isCD?'none':'';
   document.getElementById('sectionValoraciones').style.display=isCD?'none':'';
+
+  // Comité Directivo: Desempeño de Desarrollo
+  const comiteSection = document.getElementById('sectionDesempenoDesarrollo');
+  if(isCD){
+    comiteSection.style.display='';
+    const cd = DATA.comite && DATA.comite[p.exp];
+    if(cd){
+      document.getElementById('cdCursos').textContent = cd.cursos || '—';
+      document.getElementById('cdPdi').textContent = cd.pdi || '—';
+      document.getElementById('cdProductividad').textContent = cd.productividad || '—';
+      document.getElementById('cdDesempeno1q').textContent = cd.desempeno_1q || '—';
+      document.getElementById('cdObjetivoPdi').textContent = cd.objetivo_pdi || '—';
+    }
+  } else {
+    comiteSection.style.display='none';
+  }
 
   // HOGAN
   const h=DATA.hogan[p.exp];
