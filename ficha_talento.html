@@ -19716,7 +19716,16 @@ const DATA={
     "37620782": {"cargos_int":[], "cargos_ext":[], "titulos":[], "formaciones":[], "certificaciones":[]},
     "52733930": {"cargos_int":[], "cargos_ext":[], "titulos":[], "formaciones":[], "certificaciones":[]},
     "1057515055": {"cargos_int":[], "cargos_ext":[], "titulos":[], "formaciones":[], "certificaciones":[]},
-  },
+  ,
+    "52185300": {"cargos_int":[],"cargos_ext":[],"titulos":[],"formaciones":[],"certificaciones":[]},
+    "79947402": {"cargos_int":["DIRECTOR FINANCIERO","GERENTE PLANEACIÓN FINANCIERA","DIRECTOR CORPORATIVO DE PLANEACIÓN ESTRATÉGICA Y COMPRAS","ANALISTA PLANEACIÓN FINANCIERA","JEFE PLANEACIÓN FINANCIERA","DIRECTOR CORPORATIVO DE COMPRAS Y OPERACIONES COMERCIALES"],"cargos_ext":["CIIANNINICOMERCIALIZADORADEMUEBLES — DIRECTOR FINANCIERO Y ADMINISTRATIVO"],"titulos":["Maestría en Administración MBA","Especialista en Finanzas","Ingeniero Industrial"],"formaciones":["Digital Marketing Program"],"certificaciones":[]},
+    "79516122": {"cargos_int":["DIRECTOR DE GESTION HUMANA"],"cargos_ext":["ACERIAS PAZ DEL RIO S.A — Director de Servicios Al Personal","UPAC COLPATRIA — Director Servicios Generales","DELTA BOLIVAR  Compañía de Financiamiento Comercial — Director Administrativo","SHELL COLOMBIA S.A — Asistente de Compras y  Mantenimiento","ALMAGRARIO S.A. — Director de Recursos Humanos y Administración"],"titulos":["en curso","coach","TERAPEUTA EN GESTAL","Programa de Desarrollo Directivo PDD","Administrador de Empresas"],"formaciones":["Instituto Internacional OlaCoach de España"],"certificaciones":[]},
+    "80425417": {"cargos_int":["GERENTE JURIDICO","GERENTE DE RELACION CON OPERADORES"],"cargos_ext":["BRITISHAMERICANTOBACCOCOLOMBIA — GERENTE JURIDICO","CLAROARGENTINA — GERENTE JURIDICO"],"titulos":["INTERNATIONAL BUSINESS LAW","MAESTRIA EN DERECHO Y ADMINISTRACION DE NEGOCIOS","ABOGADO"],"formaciones":[],"certificaciones":[]},
+    "1128466768": {"cargos_int":[],"cargos_ext":[],"titulos":[],"formaciones":[],"certificaciones":[]},
+    "85467103": {"cargos_int":[],"cargos_ext":["CREDIBANCOVISA — DIRECTOR DE TELECOMUNICACIONES","AT&TLATINAMERICA-COLOMBIA — DIRECTOR DE TELECOMUNICACIONES","ALCATELBELLTELEPHONE — DIRECTOR DE TELECOMUNICACIONES"],"titulos":["Tecnólogo en electrónica y comunicaciones","Ingeniero electrónico"],"formaciones":[],"certificaciones":[]},
+    "32781111": {"cargos_int":["Director Comercial Empresas Estrategicas y Gobierno"],"cargos_ext":["COMPAÑÍANACIONALDEVIDRIOS — JEFE FACTRUACIÓN Y CARTERA","REDCOLOMBIAHOYSONDA — JEFE FACTRUACIÓN Y CARTERA"],"titulos":[],"formaciones":[],"certificaciones":[]},
+    "80150353": {"cargos_int":[],"cargos_ext":["KPMG Advisory & Tax Legal — DIRECTOR"],"titulos":[],"formaciones":[],"certificaciones":[]},
+    "1138186": {"cargos_int":[],"cargos_ext":[],"titulos":[],"formaciones":[],"certificaciones":[]}},
   "observaciones": {
     "80098521": {"fortalezas": "", "oportunidades": ""},
     "1144033575": {"fortalezas": "Profesional con sólido conocimiento jurídico y experiencia como referente en la organización en temas legales. Se destaca por su buen relacionamiento, capacidad técnica y manejo de asuntos jurídicos complejos. Cuenta con potencial para asumir mayores responsabilidades y es identificado como posible sucesor.", "oportunidades": "Requiere fortalecer sus habilidades en el manejo de equipos. Asimismo, debe trabajar en la gestión de su carácter y la forma de abordar diferentes situaciones, buscando una comunicación más efectiva e influyente para potenciar su impacto como líder."},
@@ -25190,8 +25199,8 @@ function loadFicha(p){
 
   // Comité Directivo: ocultar Experiencia, Formación y Valoraciones
   const isCD=['52185300','79947402','80425417','1128466768','85467103','32781111','79516122','80150353','1138186'].includes(p.exp);
-  document.getElementById('sectionExperiencia').style.display=isCD?'none':'';
-  document.getElementById('sectionFormacion').style.display=isCD?'none':'';
+  document.getElementById('sectionExperiencia').style.display='';
+  document.getElementById('sectionFormacion').style.display='';
   document.getElementById('sectionValoraciones').style.display=isCD?'none':'';
 
   // Comité Directivo: Desempeño de Desarrollo
