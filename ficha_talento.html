@@ -222,10 +222,6 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
   <div id="sectionDesempenoDesarrollo" style="display:none;">
   <div class="section-title orange">Desempeño de Desarrollo 1Q</div>
   <div class="grid-2" style="margin-bottom:12px;">
-    <div class="chart-card"><div class="chart-title">Cursos de Desarrollo Q</div><div id="cdCursos" style="font-size:20px;font-weight:bold;text-align:center;padding:10px;">—</div></div>
-    <div class="chart-card"><div class="chart-title">PDI</div><div id="cdPdi" style="font-size:20px;font-weight:bold;text-align:center;padding:10px;">—</div></div>
-  </div>
-  <div class="grid-2" style="margin-bottom:12px;">
     <div class="chart-card"><div class="chart-title">Resultados de Productividad</div><div id="cdProductividad" style="font-size:20px;font-weight:bold;text-align:center;padding:10px;">—</div></div>
     <div class="chart-card"><div class="chart-title">Resultado de Desempeño 1Q</div><div id="cdDesempeno1q" style="font-size:20px;font-weight:bold;text-align:center;padding:10px;">—</div></div>
   </div>
@@ -25187,8 +25183,6 @@ function loadFicha(p){
     comiteSection.style.display='';
     const cd = DATA.comite && DATA.comite[p.exp];
     if(cd){
-      document.getElementById('cdCursos').textContent = cd.cursos || '—';
-      document.getElementById('cdPdi').textContent = cd.pdi || '—';
       document.getElementById('cdProductividad').textContent = cd.productividad || '—';
       document.getElementById('cdDesempeno1q').textContent = cd.desempeno_1q || '—';
       document.getElementById('cdObjetivoPdi').textContent = cd.objetivo_pdi || '—';
