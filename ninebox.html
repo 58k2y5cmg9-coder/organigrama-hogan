@@ -1579,7 +1579,7 @@ function renderTable(){
     tbody.innerHTML = pageData.map(p=>{
       const meta = BOX_META[p.caja];
       const sucesorVal = (p.sucesor || '').toLowerCase();
-      const isCD=['52185300','79947402','80425417','1128466768','85467103','32781111','79516122','80150353','1138186','79577126','79695754','1020751309'].includes(p.expediente);
+      const isCD=['52185300','79947402','80425417','1128466768','85467103','32781111','79516122','80150353','1138186'].includes(p.expediente);
       const fichaLink = (sucesorVal==='si'||isCD)
         ? `<a href="ficha_talento.html?expediente=${p.expediente}" target="_blank" onclick="event.stopPropagation()" style="color:#fff;background:var(--crimson);padding:4px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">Ver Ficha</a>`
         : '—';
