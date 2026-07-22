@@ -643,6 +643,25 @@ tbody td.name{ color:var(--text); font-weight:600; }
   display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:100px;
   font-size:12px; font-weight:700; color:#fff;
 }
+.edit-caja{
+  appearance:none; -webkit-appearance:none; border:none; outline:none; cursor:pointer;
+  padding:4px 24px 4px 10px; border-radius:100px; font-size:12px; font-weight:700; color:#fff;
+  background-repeat:no-repeat; background-position:right 8px center; background-size:10px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23fff'/%3E%3C/svg%3E");
+  background-color:inherit; transition: opacity .15s;
+}
+.edit-caja:hover{ opacity:.85; }
+.edit-caja option{ background:#1a1d23; color:#e5e7eb; padding:6px 10px; }
+:root.light .edit-caja option{ background:#fff; color:#1a1d23; }
+.edit-sucesor{
+  display:inline-flex; align-items:center; gap:0; padding:3px 4px; border-radius:100px;
+  font-size:12px; font-weight:700; cursor:pointer; border:2px solid transparent;
+  transition: all .2s; user-select:none; min-width:52px; justify-content:center;
+}
+.edit-sucesor.si{ background:#059669; color:#fff; }
+.edit-sucesor.no{ background:transparent; color:#9ca3af; border-color:#374151; }
+.edit-sucesor:hover{ transform:scale(1.05); }
+.edit-caja:focus, .edit-sucesor:focus{ box-shadow:0 0 0 2px var(--crimson); }
 .empty-row td{ text-align:center; padding:48px 14px; color: var(--text-faint); }
 
 .table-foot{
@@ -9343,27 +9362,83 @@ function renderTable(){
     tbody.innerHTML = pageData.map(p=>{
       const meta = BOX_META[p.caja];
       const sucesorVal = (p.sucesor || '').toLowerCase();
-      const sucesorBadge = sucesorVal === 'si' 
-        ? `<span class="chip" style="background:#059669;color:#fff">Sí</span>` 
-        : `<span style="color:#9ca3af">No</span>`;
       const isCD=['52185300','79947402','80425417','1128466768','85467103','32781111','79516122','80150353','1138186','79577126','79695754','1020751309'].includes(p.expediente);
       const fichaLink = (sucesorVal==='si'||isCD)
         ? `<a href="ficha_talento.html?expediente=${p.expediente}" target="_blank" onclick="event.stopPropagation()" style="color:#fff;background:var(--crimson);padding:4px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">Ver Ficha</a>`
         : '—';
-      return `<tr data-name="${encodeURIComponent(p.nombre)}" draggable="true">
+      const cajaOptions = Object.entries(BOX_META).map(([k,v])=>`<option value="${k}" ${parseInt(k)===p.caja?'selected':''}>${k} · ${v.short}</option>`).join('');
+      return `<tr data-exp="${p.expediente}" data-name="${encodeURIComponent(p.nombre)}" draggable="true">
         <td class="name name-cell-drag">${p.nombre}</td>
         <td>${p.cargo || '—'}</td>
-        <td><span class="chip" style="background:${meta.color}">${p.caja} · ${meta.short}</span></td>
-        <td>${sucesorBadge}</td>
+        <td><select class="edit-caja" style="background:${meta.color}" data-exp="${p.expediente}" onclick="event.stopPropagation()">${cajaOptions}</select></td>
+        <td><span class="edit-sucesor ${sucesorVal==='si'?'si':'no'}" data-exp="${p.expediente}" onclick="event.stopPropagation()">${sucesorVal==='si'?'Sí':'No'}</span></td>
         <td>${p.tiempo && p.tiempo !== 'N/A' ? p.tiempo : '—'}</td>
         <td>${fichaLink}</td>
       </tr>`;
     }).join('');
-    tbody.querySelectorAll('tr').forEach(tr=>{
-      tr.addEventListener('click', ()=>{
-        const name = decodeURIComponent(tr.dataset.name);
-        const person = RAW.find(d=>d.nombre===name);
-        openModal(person);
+
+    tbody.querySelectorAll('.edit-caja').forEach(sel=>{
+      sel.addEventListener('change', function(){
+        const exp = this.dataset.exp;
+        const newCaja = parseInt(this.value);
+        const rawPerson = RAW.find(d=>d.expediente===exp);
+        if(!rawPerson || rawPerson.caja === newCaja) return;
+        const oldCaja = rawPerson.caja;
+        const oldName = BOX_META[oldCaja] ? BOX_META[oldCaja].short : '';
+        const newName = BOX_META[newCaja] ? BOX_META[newCaja].short : '';
+        if(!confirm(`¿Mover a ${rawPerson.nombre} de caja ${oldCaja} (${oldName}) a caja ${newCaja} (${newName})?`)){
+          this.value = oldCaja;
+          return;
+        }
+        rawPerson.caja = newCaja;
+        const dataStoreEl = document.getElementById('dataStore');
+        const ds = JSON.parse(dataStoreEl.textContent);
+        const dsp = ds.find(d=>d.expediente===exp);
+        if(dsp) dsp.caja = newCaja;
+        dataStoreEl.textContent = JSON.stringify(ds);
+        changeLog.push({
+          fecha: new Date().toLocaleString('es-CO'), usuario: loggedInUser,
+          nombre: rawPerson.nombre, expediente: exp,
+          direccion: rawPerson.direccion, gerencia: rawPerson.gerencia, jefe: rawPerson.jefe,
+          cajaAnterior: oldCaja, cajaNueva: newCaja,
+          nombreAnterior: oldName, nombreNuevo: newName
+        });
+        const newMeta = BOX_META[newCaja];
+        this.style.background = newMeta.color;
+        state.page = 1;
+        renderAll();
+        showToast(`${rawPerson.nombre}: caja ${oldCaja} → ${newCaja} · ${newName}`);
+        document.getElementById('btnExportChanges').style.display = changeLog.length > 0 ? 'flex' : 'none';
+      });
+    });
+
+    tbody.querySelectorAll('.edit-sucesor').forEach(btn=>{
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        const exp = this.dataset.exp;
+        const rawPerson = RAW.find(d=>d.expediente===exp);
+        if(!rawPerson) return;
+        const wasSi = (rawPerson.sucesor||'').toLowerCase() === 'si';
+        const newSi = !wasSi;
+        if(!confirm(`${rawPerson.nombre}: ¿Cambiar posible sucesor de "${wasSi?'Sí':'No'}" a "${newSi?'Sí':'No'}"?`)) return;
+        rawPerson.sucesor = newSi ? 'Si' : 'No';
+        const dataStoreEl = document.getElementById('dataStore');
+        const ds = JSON.parse(dataStoreEl.textContent);
+        const dsp = ds.find(d=>d.expediente===exp);
+        if(dsp) dsp.sucesor = rawPerson.sucesor;
+        dataStoreEl.textContent = JSON.stringify(ds);
+        changeLog.push({
+          fecha: new Date().toLocaleString('es-CO'), usuario: loggedInUser,
+          nombre: rawPerson.nombre, expediente: exp,
+          direccion: rawPerson.direccion, gerencia: rawPerson.gerencia, jefe: rawPerson.jefe,
+          cajaAnterior: rawPerson.caja, cajaNueva: rawPerson.caja,
+          nombreAnterior: wasSi ? 'Sí' : 'No', nombreNuevo: newSi ? 'Sí' : 'No',
+          campo: 'sucesor'
+        });
+        state.page = 1;
+        renderAll();
+        showToast(`${rawPerson.nombre}: sucesor → ${newSi?'Sí':'No'}`);
+        document.getElementById('btnExportChanges').style.display = changeLog.length > 0 ? 'flex' : 'none';
       });
     });
   }
