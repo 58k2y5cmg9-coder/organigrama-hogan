@@ -23283,7 +23283,6 @@ const DATA={
       "clasificacion": "",
       "promedio": 0
     },
-    "79516122":{"tipo":"Sólido","competencias":[{"nombre":"Toma de Decisiones","score":47},{"nombre":"Liderar a otros","score":66},{"nombre":"Impulsar el Cambio","score":65},{"nombre":"Impulsar la Estrategia","score":68},{"nombre":"Desarrollo de Otros","score":76},{"nombre":"Impulsar la Innovación","score":88},{"nombre":"Escuchar a Otros","score":40},{"nombre":"Influenciar a otros","score":59},{"nombre":"Responsabilidad","score":61},{"nombre":"Presentar Información","score":69}],"fortalezas":"\"• Se muestra calmado incluso cuando otros están bajo presión, lo que puede transmitir baja sensibilidad hacia las preocupaciones ajenas. • No suele buscar retroalimentación.                                         • Energía y disposición al trabajo; toma la iniciativa cuando corresponde, pero también cede el liderazgo si puede seguir aportando. • Accesible y conversador, cómodo conociendo gente nueva; prefiere no trabajar en solitario. • Directo y franco, capaz de confrontar el bajo desempeño sin intimidarse; ese estilo puede generar fricción si no se dosifica. • Flexible y cómodo con la ambigüedad, cambia de rumbo con facilidad, aunque puede ser impulsivo. • Abierto, tolerante e interesado en la innovación, con tendencia a distraerse. • Su interés por aprender se activa solo cuando el contenido es directamente aplicable a su trabajo; prefiere el aprendizaje práctico en el puesto.\"","oportunidades":"• Autoconfianza muy elevada que puede dificultar admitir errores o pedir retroalimentación. • Visto como inteligente, cautivador y tomador de riesgos, con cierta tendencia a comprometerse más de lo que puede cumplir. • Bajo presión tiende a mostrarse menos accesible y a distanciarse emocionalmente de su entorno de trabajo. • Tiene una confianza en sí mismo tan alta que puede dificultarle admitir errores o aceptar retroalimentación cuando más se necesita. .","hpi":{"Estabilidad Emocional":55,"Ambición":51,"Sociabilidad":62,"Sensibilidad Interpersonal":28,"Prudencia":26,"Curiosidad":73,"Estilo de Aprendizaje":36},"hds":{"Volátil":0,"Escéptico":69,"Cauteloso":45,"Reservado":30,"Pasivo-Agresivo":76,"Arrogante":65,"Arriesgado":75,"Melodramático":76,"Imaginativo":48,"Perfeccionista":63,"Complaciente":18},"mvpi":{"Reconocimiento":0,"Poder":38,"Hedonismo":34,"Altruismo":60,"Afiliación":71,"Tradición":51,"Seguridad":90,"Comercio":32,"Estética":29,"Ciencia":57},"foco":"• Aprovechar su comodidad con la ambigüedad y el cambio de rumbo pero, cuidando dotarlo de la disciplina de seguimiento que el propio perfil reconoce como punto débil. • Buscar feedback de forma activa.                                                                                                                                                                                                                                                            • Canalizar su estilo directo y su comodidad para confrontar el bajo desempeño hacia conversaciones de desarrollo estructuradas. • Usar su interés genuino por las personas y el servicio para fortalecer la cohesión de equipos multidisciplinarios (producto, ingeniería, comercial), un rol donde su cercanía natural puede ser diferencial."},
     "79553598": {
       "tipo": "Estratégico",
       "competencias": [
@@ -25174,18 +25173,10 @@ function loadFicha(p){
 
   // Talentos/Comportamientos
   const t=DATA.talentos[p.exp]||[];
-  const hoganData=DATA.hogan[p.exp];
   if(t.length){
     renderComportamientos(t);
-  } else if(hoganData && hoganData.tipo){
-    const el=document.getElementById('barComportamientos');
-    const card=document.getElementById('cardComportamientos');
-    card.style.display='';
-    const tipo=hoganData.tipo;
-    const tipoColors={'Alta Versatilidad':'#059669','Sólido':'#2563eb','Experto':'#e97b1a','Alto potencial':'#7c3aed'};
-    el.innerHTML='<div style="text-align:center;padding:20px 0;"><div style="font-size:28px;font-weight:800;color:'+(tipoColors[tipo]||'var(--text)')+';">'+tipo+'</div><div style="font-size:12px;color:var(--text-dim);">Clasificación Hogan 2026</div></div>';
   } else {
-    renderComportamientos(t);
+    document.getElementById('cardComportamientos').style.display='none';
   }
 
   // Objetivos
