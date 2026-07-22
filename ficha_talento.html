@@ -214,7 +214,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
   <div class="section-title">Valoraciones</div>
   <div class="grid-3">
     <div class="chart-card" id="cardDesempeno"><div class="chart-title">Resultados de desempeño</div><div class="bar-chart" id="barDesempeno"></div></div>
-    <div class="chart-card" id="cardComportamientos" style="display:flex;flex-direction:column;"><div class="chart-title" style="display:flex;align-items:center;gap:8px;">Valoración de comportamientos 2026<span id="tipoBadge" style="display:none;padding:2px 10px;border-radius:100px;font-size:11px;font-weight:700;color:#fff;"></span></div><div id="barComportamientos" style="flex:1;display:flex;flex-direction:column;justify-content:center;"></div></div>
+    <div class="chart-card" id="cardComportamientos" style="display:flex;flex-direction:column;"><div class="chart-title">Valoración de comportamientos 2026</div><div id="barComportamientos" style="flex:1;display:flex;flex-direction:column;justify-content:center;"></div></div>
     <div class="chart-card" id="cardObjetivos"><div class="chart-title">Objetivos de desarrollo 2026</div><div id="objDesarrollo"><div class="empty-msg">Sin datos</div></div></div>
   </div>
   </div>
@@ -25175,20 +25175,15 @@ function loadFicha(p){
   // Talentos/Comportamientos
   const t=DATA.talentos[p.exp]||[];
   const hoganData=DATA.hogan[p.exp];
-  const tipoBadge=document.getElementById('tipoBadge');
-  tipoBadge.style.display='none';
   if(t.length){
     renderComportamientos(t);
   } else if(hoganData && hoganData.tipo){
     const el=document.getElementById('barComportamientos');
     const card=document.getElementById('cardComportamientos');
     card.style.display='';
-    el.innerHTML='<div class="empty-msg">Sin datos de talentos</div>';
     const tipo=hoganData.tipo;
     const tipoColors={'Alta Versatilidad':'#059669','Sólido':'#2563eb','Experto':'#e97b1a','Alto potencial':'#7c3aed'};
-    tipoBadge.textContent=tipo;
-    tipoBadge.style.background=tipoColors[tipo]||'var(--text)';
-    tipoBadge.style.display='inline-block';
+    el.innerHTML='<div style="text-align:center;padding:20px 0;"><div style="font-size:28px;font-weight:800;color:'+(tipoColors[tipo]||'var(--text)')+';">'+tipo+'</div><div style="font-size:12px;color:var(--text-dim);">Clasificación Hogan 2026</div></div>';
   } else {
     renderComportamientos(t);
   }
@@ -25476,7 +25471,7 @@ function renderHogan(h, exp){
       return html;
     }
     barsSection.innerHTML=
-      '<div style="grid-column:1/-1;text-align:center;font-family:\'Space Grotesk\',sans-serif;font-size:16px;font-weight:700;color:#fff;background:#dc2626;padding:10px 0;border-radius:8px;">Valoración de Comportamientos Hogan</div>'+
+      '<div style="grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:10px;font-family:\'Space Grotesk\',sans-serif;font-size:16px;font-weight:700;color:#fff;background:#dc2626;padding:10px 0;border-radius:8px;">Valoración de Comportamientos Hogan'+(h.tipo?'<span style="padding:2px 12px;border-radius:100px;font-size:11px;font-weight:700;color:#fff;background:'+({'Alta Versatilidad':'#059669','Sólido':'#2563eb','Experto':'#e97b1a','Alto potencial':'#7c3aed'}[h.tipo]||'rgba(255,255,255,0.25)')+';">'+h.tipo+'</span>':'')+'</div>'+
       renderBarSection('HPI – FORTALEZAS & ESTILO', h.hpi, 'hpi')+
       renderBarSection('HDS – RIESGOS BAJO PRESIÓN', h.hds, 'hds')+
       renderBarSection('MVPI – MOTIVADORES & VALORES', h.mvpi, 'mvpi');
