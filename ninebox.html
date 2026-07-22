@@ -9080,12 +9080,10 @@ function applyFilters(list){
       if(matchName && !matchJefe && jefeSet.has(d.nombre)) return false;
     }
     if(state.jefe){
-      // When filtering by jefe, ignore direccion/gerencia filters
       if(d.jefe !== state.jefe) return false;
-    }else{
-      if(state.direccion && norm(d.direccion) !== norm(state.direccion)) return false;
-      if(state.gerencia && norm(d.gerencia) !== norm(state.gerencia)) return false;
     }
+    if(state.direccion && norm(d.direccion) !== norm(state.direccion)) return false;
+    if(state.gerencia && norm(d.gerencia) !== norm(state.gerencia)) return false;
     if(state.region && d.region !== state.region) return false;
     if(state.ciudad && d.ciudad !== state.ciudad) return false;
     if(state.sucesor){
