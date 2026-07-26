@@ -24542,6 +24542,13 @@ function render360(data){
   document.getElementById('v360equipo').textContent=equipoVal||'—';
   document.getElementById('v360pares').textContent=paresVal||'—';
 
+  const row=document.querySelector('.scores-row');
+  const visible=[pillTotal,pillAuto,pillLider,pillEquipo,pillPares].filter(p=>p.style.display!=='none');
+  row.style.display='flex';
+  row.style.justifyContent='center';
+  row.style.gap='8px';
+  row.style.flexWrap='wrap';
+
   drawRadar360(data);
 }
 
