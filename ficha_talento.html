@@ -626,29 +626,29 @@ function drawRadar360(data){
 
 function renderFormacion(p){
   const f=DATA.formacion[p.exp]||null;
-  if(!f){['tInterna','tExterna','fProfesional','fMedida'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<tr><td class="empty-msg">Sin datos</td></tr>';});return;}
+  if(!f){['tInterna','tExterna','fProfesional','fMedida'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='';});return;}
   // Experiencia interna
   const ti=document.getElementById('tInterna');
   if(f.cargos_int&&f.cargos_int.length)ti.innerHTML=f.cargos_int.map(c=>'<tr><td>'+c+'</td></tr>').join('');
-  else ti.innerHTML='<tr><td class="empty-msg">Sin datos</td></tr>';
+  else ti.innerHTML='';
   // Experiencia externa
   const te=document.getElementById('tExterna');
   if(f.cargos_ext&&f.cargos_ext.length)te.innerHTML=f.cargos_ext.map(c=>'<tr><td>'+c+'</td></tr>').join('');
-  else te.innerHTML='<tr><td class="empty-msg">Sin datos</td></tr>';
+  else te.innerHTML='';
   // Títulos (formación profesional)
   const fp=document.getElementById('fProfesional');
   if(f.titulos&&f.titulos.length){
     const filtered=f.titulos.filter(t=>!(/^\d+$/.test(String(t).trim())));
     if(filtered.length) fp.innerHTML=filtered.map(t=>'<div style="margin:4px 0;padding:6px 10px;background:#f0f4ff;border-radius:6px;font-size:12px;">'+t+'</div>').join('');
-    else fp.textContent='Sin datos';
-  } else fp.textContent='Sin datos';
+    else fp.textContent='';
+  } else fp.textContent='';
   // Formaciones (a la medida)
   const fm=document.getElementById('fMedida');
   if(f.formaciones&&f.formaciones.length){
     const filtered=f.formaciones.filter(t=>!(/^\d+$/.test(String(t).trim())));
     if(filtered.length) fm.innerHTML=filtered.map(t=>'<div style="margin:4px 0;padding:6px 10px;background:#fff7ed;border-radius:6px;font-size:12px;">'+t+'</div>').join('');
-    else fm.textContent='Sin datos';
-  } else fm.textContent='Sin datos';
+    else fm.textContent='';
+  } else fm.textContent='';
 }
 
 function renderClima(c){
