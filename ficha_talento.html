@@ -23448,6 +23448,23 @@ function loadFicha(p){
   const o=DATA.objetivos[p.exp]||[];
   renderObjetivos(o);
 
+  // Center valoraciones grid when only 1 card visible
+  const grid3=document.querySelector('.grid-3');
+  if(grid3){
+    const visibleCards=[...grid3.children].filter(c=>c.style.display!=='none');
+    if(visibleCards.length<=1){
+      grid3.style.display='flex';
+      grid3.style.justifyContent='center';
+      grid3.style.gap='12px';
+      visibleCards.forEach(c=>{c.style.flex='0 0 420px';c.style.maxWidth='100%';});
+    } else {
+      grid3.style.display='';
+      grid3.style.justifyContent='';
+      grid3.style.gap='';
+      visibleCards.forEach(c=>{c.style.flex='';c.style.maxWidth='';});
+    }
+  }
+
   // 360
   const t360=DATA.tres60[p.exp]||[];
   render360(t360);
@@ -23675,12 +23692,18 @@ function renderFormacion(p){
   else te.innerHTML='<tr><td class="empty-msg">Sin datos</td></tr>';
   // Títulos (formación profesional)
   const fp=document.getElementById('fProfesional');
-  if(f.titulos&&f.titulos.length)fp.innerHTML=f.titulos.map(t=>'<div style="margin:4px 0;padding:6px 10px;background:#f0f4ff;border-radius:6px;font-size:12px;">'+t+'</div>').join('');
-  else fp.textContent='Sin datos';
+  if(f.titulos&&f.titulos.length){
+    const filtered=f.titulos.filter(t=>!(/^\d+$/.test(String(t).trim())));
+    if(filtered.length) fp.innerHTML=filtered.map(t=>'<div style="margin:4px 0;padding:6px 10px;background:#f0f4ff;border-radius:6px;font-size:12px;">'+t+'</div>').join('');
+    else fp.textContent='Sin datos';
+  } else fp.textContent='Sin datos';
   // Formaciones (a la medida)
   const fm=document.getElementById('fMedida');
-  if(f.formaciones&&f.formaciones.length)fm.innerHTML=f.formaciones.map(t=>'<div style="margin:4px 0;padding:6px 10px;background:#fff7ed;border-radius:6px;font-size:12px;">'+t+'</div>').join('');
-  else fm.textContent='Sin datos';
+  if(f.formaciones&&f.formaciones.length){
+    const filtered=f.formaciones.filter(t=>!(/^\d+$/.test(String(t).trim())));
+    if(filtered.length) fm.innerHTML=filtered.map(t=>'<div style="margin:4px 0;padding:6px 10px;background:#fff7ed;border-radius:6px;font-size:12px;">'+t+'</div>').join('');
+    else fm.textContent='Sin datos';
+  } else fm.textContent='Sin datos';
 }
 
 function renderClima(c){
