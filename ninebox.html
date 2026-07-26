@@ -1549,7 +1549,7 @@ function renderTableHead(){
 }
 
 function renderTable(){
-  let data = currentFiltered();
+  let data = currentFiltered().filter(p => !['79577126','79695754','1020751309'].includes(p.expediente));
   const key = state.sortKey;
   const BOX_SORT={9:0,8:1,7:2,6:3,5:4,4:5,3:6,2:7,1:8};
   data = [...data].sort((a,b)=>{
@@ -1994,7 +1994,7 @@ function exportPDF(){
   const doc = new jsPDF('p','mm','letter');
   const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight();
   const margin=20;
-  const data=currentFiltered();
+  const data=currentFiltered().filter(p => !['79577126','79695754','1020751309'].includes(p.expediente));
 
   const BLUE=[30,41,59], BLUE2=[51,65,85], DARK=[17,24,39], GRAY=[107,114,128];
   const GREEN=[5,150,105], GREEN_BG=[209,250,229];
