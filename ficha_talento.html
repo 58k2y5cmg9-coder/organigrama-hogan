@@ -24755,14 +24755,21 @@ function renderHogan(h, exp){
     const topMvpi=Object.entries(h.mvpi).sort((a,b)=>b[1]-a[1]).slice(0,3);
     const mvpiLine=topMvpi.map(([n,v])=>'<b>'+n+'</b> '+v).join(' · ');
 
+    function formatBullets(text){
+      if(!text) return '';
+      let t=text.replace(/\n+/g,' ').replace(/•\s*/g,'•').trim();
+      let parts=t.split('•').map(s=>s.trim()).filter(Boolean);
+      return parts.map(p=>'• '+p).join('\n');
+    }
+
     fortEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#a16207;padding:6px 16px;background:#fef9c3;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>FORTALEZAS (HPI)</div>'+
-      '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+h.fortalezas+'</div>';
+      '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+formatBullets(h.fortalezas)+'</div>';
 
     mejEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#b91c1c;padding:6px 16px;background:#fee2e2;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>DESCARRILADORES (HDS)</div>'+
-      '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+h.descarriladores+'</div>';
+      '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+formatBullets(h.descarriladores)+'</div>';
 
     movEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#1d4ed8;padding:6px 16px;background:#dbeafe;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>MOTIVADORES (MVPI)</div>'+
-      '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+h.motivadores+'</div>';
+      '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+formatBullets(h.motivadores)+'</div>';
 
     if(h.foco){
       const topHpi=Object.entries(h.hpi).sort((a,b)=>b[1]-a[1]).slice(0,3);
