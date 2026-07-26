@@ -24511,18 +24511,19 @@ function render360(data){
     return;
   }
   section.style.display='';
-  const avg=(arr)=>{const v=arr.filter(x=>x!==null&&x!==undefined);return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(2):null;};
-  const leaders=data.map(d=>d.lider).filter(x=>x!==null);
-  const selves=data.map(d=>d.propio).filter(x=>x!==null);
-  const reports=data.map(d=>d.reporte).filter(x=>x!==null);
-  const pars=data.map(d=>d.par).filter(x=>x!==null);
+  const toNum=(v)=>{const n=parseFloat(v);return isNaN(n)?null:n;};
+  const avg=(arr)=>{const v=arr.map(toNum).filter(x=>x!==null);return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(2):null;};
+  const leaders=data.map(d=>toNum(d.lider)).filter(x=>x!==null);
+  const selves=data.map(d=>toNum(d.propio)).filter(x=>x!==null);
+  const reports=data.map(d=>toNum(d.reporte)).filter(x=>x!==null);
+  const pars=data.map(d=>toNum(d.par)).filter(x=>x!==null);
   const all=[...leaders,...selves,...reports,...pars];
 
   const totalVal=all.length?(all.reduce((a,b)=>a+b,0)/all.length).toFixed(2):null;
-  const autoVal=avg(selves);
-  const liderVal=avg(leaders);
-  const equipoVal=avg(reports);
-  const paresVal=avg(pars);
+  const autoVal=avg(data.map(d=>d.propio));
+  const liderVal=avg(data.map(d=>d.lider));
+  const equipoVal=avg(data.map(d=>d.reporte));
+  const paresVal=avg(data.map(d=>d.par));
 
   const pillTotal=document.querySelector('.score-pill.total');
   const pillAuto=document.querySelector('.score-pill.auto');
