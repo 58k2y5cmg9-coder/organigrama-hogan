@@ -1126,7 +1126,7 @@ function setupMultiSelect(){
     cb.addEventListener('change', ()=>{
       state.nivelReporte = Array.from(checkboxes).filter(c=>c.checked).map(c=>parseInt(c.value));
       const count = state.nivelReporte.length;
-      textEl.textContent = count === 0 ? 'Todos' : count === 1 ? `Nivel ${state.nivelReporte[0]}` : `${count} niveles`;
+      textEl.textContent = count === 0 ? 'Todos' : count === 1 ? `Excluir Nivel ${state.nivelReporte[0]}` : `Excluir ${count} niveles`;
       state.page = 1;
       renderAll();
   renderOtrosTable();
@@ -1327,7 +1327,7 @@ function applyFilters(list){
       const sVal = state.sucesor.toUpperCase();
       if(dVal !== sVal) return false;
     }
-    if(state.nivelReporte.length > 0 && !state.nivelReporte.includes(d.nivel_reporte)) return false;
+    if(state.nivelReporte.length > 0 && state.nivelReporte.includes(d.nivel_reporte)) return false;
     if(state.caja && d.caja !== state.caja) return false;
     return true;
   });
