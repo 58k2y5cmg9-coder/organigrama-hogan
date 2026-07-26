@@ -158,7 +158,11 @@ window.DATA={
     "80070923": {"direccion_comite":"Direccion Corporativa Financiera","direccion_area":"Supply Chain","gerencia":"Gerencia Supply Chain Aliados y Proveedores","jefe":"TRUJILLO REHBEIN PABLO","fecha_nacimiento":"1981-10-31","antiguedad":11.180555555555555},
     "52704630": {"direccion_comite":"Direccion Corporativa Financiera","direccion_area":"Supply Chain","gerencia":"Gerencia Value Chain Mercado Masivo","jefe":"TRUJILLO REHBEIN PABLO","fecha_nacimiento":"1979-09-25","antiguedad":22.694444444444443},
     "80070878": {"direccion_comite":"Direccion Corporativa Planeacion Estrategica e Innovacion","direccion_area":"Direccion Experiencia del Cliente","gerencia":"Gerencia Experiencia Pospago y Hogar","jefe":"CHACON GOMEZ MYRIAM YOLANDA","fecha_nacimiento":"1981-10-05","antiguedad":13.858333333333333},
-    "72273597": {"direccion_comite":"Direccion Corporativa Planeacion Estrategica e Innovacion","direccion_area":"Direccion Experiencia del Cliente","gerencia":"Gerencia Digital Proyectos","jefe":"CHACON GOMEZ MYRIAM YOLANDA","fecha_nacimiento":"1982-05-19","antiguedad":4.622222222222222}},
+    "72273597": {"direccion_comite":"Direccion Corporativa Planeacion Estrategica e Innovacion","direccion_area":"Direccion Experiencia del Cliente","gerencia":"Gerencia Digital Proyectos","jefe":"CHACON GOMEZ MYRIAM YOLANDA","fecha_nacimiento":"1982-05-19","antiguedad":4.622222222222222},
+    "8126425": {"direccion_comite":"Unidad Mercado Masivo","direccion_area":"Unidad Mercado Masivo Regiones","gerencia":"Direccion Region 2","jefe":"DOMINGUEZ DANIEL ARNALDO","ciudad":"Medellin","fecha_nacimiento":"1984-04-09","antiguedad":2.4972222222222222},
+    "52709691": {"direccion_comite":"Direccion Corporativa Juridica y Sostenibilidad","direccion_area":"Regulacion Y Relacion Con Operadores","gerencia":"Gerencia Regulacion y Relacion con Operadores","jefe":"PARDO FAJARDO SANTIAGO","ciudad":"Bogota, D.C.","fecha_nacimiento":"1980-06-28","antiguedad":17.211111111111112},
+    "1085273858": {"direccion_comite":"Direccion Corporativa Juridica y Sostenibilidad","direccion_area":"Asuntos Contenciosos","gerencia":"Gerencia Asuntos Contenciosos","jefe":"PARDO FAJARDO SANTIAGO","ciudad":"Bogota, D.C.","fecha_nacimiento":"1989-05-06","antiguedad":1.0388888888888888}
+  },
 "8126425": {"direccion_comite":"Unidad Mercado Masivo","direccion_area":"Unidad Mercado Masivo Regiones","gerencia":"Direccion Region 2","jefe":"DOMINGUEZ DANIEL ARNALDO","fecha_nacimiento":"1984-04-09","antiguedad":"2 años"},
 "52153221": {"direccion_comite":"Unidad Mercado Corporativo","direccion_area":"Servicio A Cliente Corporativo","gerencia":"Direccion Servicio A Clientes Corporativos","jefe":"ESCOLAR SUNDHEIM MARIA LUISA","fecha_nacimiento":"1975-06-09","antiguedad":"26 años"},
 "1032365189": {"direccion_comite":"Unidad Mercado Corporativo","direccion_area":"Direccion Marketing Corporativo y Producto","gerencia":"Direccion Marketing Corporativo y Producto","jefe":"ESCOLAR SUNDHEIM MARIA LUISA","fecha_nacimiento":"1986-01-18","antiguedad":"13 años"},
@@ -710,7 +714,19 @@ window.DATA={
     "80070923": {"y2024":99.65,"y2025":103.975,"y2026":101},
     "52704630": {"y2024":103.45,"y2025":102.955,"y2026":104},
     "80070878": {"y2024":104.7,"y2025":96.1845,"y2026":98},
-    "72273597": {"y2024":104.08,"y2025":102.9965,"y2026":99}},
+    "72273597": {"y2024":104.08,"y2025":102.9965,"y2026":99},
+    "1138186": {"y2024":32.37,"y2025":101.442,"y2026":100},
+    "8126425": {"y2024":93.77,"y2025":87.83,"y2026":88},
+    "32781111": {"y2024":97.66,"y2025":100.062,"y2026":94},
+    "52185300": {"y2024":100.58,"y2025":102.984,"y2026":101},
+    "52709691": {"y2024":98.48,"y2025":100.525,"y2026":94},
+    "79947402": {"y2024":94.4,"y2025":97.976,"y2026":100},
+    "80150353": {"y2024":104.35,"y2025":97.973,"y2026":102},
+    "80425417": {"y2024":91.05,"y2025":93.83,"y2026":102},
+    "85467103": {"y2024":102.71,"y2025":96.618,"y2026":100},
+    "1085273858": {"y2024":101.55,"y2025":99.43333333333334,"y2026":101},
+    "1128466768": {"y2024":0,"y2025":0,"y2026":0}
+  },
   "talentos": {
     "80098521": [
       {"talento": "Soy Digital", "score": 102.5, "year": "2026"},
@@ -2389,6 +2405,18 @@ window.DATA={
     "1010198378": [{"talento":"Soy Digital","score":90,"year":"2026"},{"talento":"Soy Dueño","score":93.75,"year":"2026"},{"talento":"Soy Lider","score":100,"year":"2026"}],
     "1016053644": [{"talento":"Soy Digital","score":93.75,"year":"2026"},{"talento":"Soy Dueño","score":102.5,"year":"2026"},{"talento":"Soy Lider","score":97.5,"year":"2026"}],
     "39582818": [{"talento":"Soy Digital","score":93.75,"year":"2026"},{"talento":"Soy Dueño","score":100,"year":"2026"},{"talento":"Soy Lider","score":100,"year":"2026"}]
+  ,
+    "1138186": [],
+    "8126425": [{"talento":"Soy Digital","score":103.75,"year":"2026"},{"talento":"Soy Dueño","score":103.75,"year":"2026"},{"talento":"Soy Lider","score":105,"year":"2026"}],
+    "32781111": [],
+    "52185300": [],
+    "52709691": [{"talento":"Soy Digital","score":100,"year":"2026"},{"talento":"Soy Dueño","score":102.5,"year":"2026"},{"talento":"Soy Lider","score":102.5,"year":"2026"}],
+    "79947402": [],
+    "80150353": [],
+    "80425417": [],
+    "85467103": [],
+    "1085273858": [{"talento":"Soy Digital","score":101.25,"year":"2026"},{"talento":"Soy Dueño","score":103.75,"year":"2026"},{"talento":"Soy Lider","score":102.5,"year":"2026"}],
+    "1128466768": []
   },
   "objetivos": {
     "80098521": [
@@ -3642,6 +3670,18 @@ window.DATA={
         "39582818": [{"obj":"Fortalecer mi capacidad de usar datos y herramientas digitales para tomar mejores decisiones y mejorar mis resultados.","talento":"Soy Digital","sub":"Decido con datos y uso IA"}],
     "79577126": [{"obj":"Fortalecer mi mentalidad de dueño, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.","talento":"Soy Dueño","sub":"Actúo con Ownership"}],
     "79695754": [{"obj":"Fortalecer mi mentalidad de dueño, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.","talento":"Soy Dueño","sub":"Actúo con Ownership"}]
+  ,
+    "1138186": [{"obj":"Fortalecer mi mentalidad de dueño, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.","year":"2026","talento":"Soy Dueño"}],
+    "8126425": [{"obj":"Fortalecer mi mentalidad de dueño, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.","year":"2026","talento":"Soy Dueño"},{"obj":"Ejercer un management sólido y coherente de las dos direcciones a cargo, desarrollando equipos de alto desempeño con claridad estratégica, accountability efectiva y capacidad comprobada de entregar resultados.","year":"2026","talento":"Soy Lider"},{"obj":"Liderar la adopción de Inteligencia Artificial en los ciclos estratégicos del negocio, asegurando su aplicación efectiva en análisis, diseño de estrategias, ejecución y medición de resultados, con impacto tangible en crecimiento y rentabilidad.","year":"2026","talento":"Soy Digital"}],
+    "32781111": [{"obj":"Fortalecer mi mentalidad de dueño, haciéndome cargo de los retos de mi rol, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia.","year":"2026","talento":"Soy Dueño"},{"obj":"Fortalecer mi mentalidad de dueño, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.","year":"2026","talento":"Soy Dueño"}],
+    "52185300": [{"obj":"Fortalecer mi mentalidad de dueño, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.","year":"2026","talento":"Soy Dueño"}],
+    "52709691": [{"obj":"Fortalecer mi mentalidad de dueño, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.","year":"2026","talento":"Soy Dueño"}],
+    "79947402": [{"obj":"Fortalecer mi mentalidad de dueño, haciéndome cargo de los retos de mi rol, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia.","year":"2026","talento":"Soy Dueño"},{"obj":"Fortalecer mi mentalidad de dueño, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.","year":"2026","talento":"Soy Dueño"}],
+    "80150353": [{"obj":"Fortalecer mi mentalidad de dueño, haciéndome cargo de los retos de mi rol, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia.","year":"2026","talento":"Soy Dueño"},{"obj":"Fortalecer mi mentalidad de dueño, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.","year":"2026","talento":"Soy Dueño"}],
+    "80425417": [{"obj":"Fortalecer mi mentalidad de dueño, haciéndome cargo de los retos de mi rol, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia.","year":"2026","talento":"Soy Dueño"},{"obj":"Fortalecer mi mentalidad de dueño, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.","year":"2026","talento":"Soy Dueño"}],
+    "85467103": [{"obj":"Fortalecer mi mentalidad de dueño, haciéndome cargo de los retos de mi rol, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia.","year":"2026","talento":"Soy Dueño"},{"obj":"Fortalecer mi mentalidad de dueño, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.","year":"2026","talento":"Soy Dueño"}],
+    "1085273858": [{"obj":"Fortalecer mi mentalidad de dueño, asumiendo los retos como propios, cumpliendo mis compromisos y tomando decisiones alineadas a la estrategia para generar valor sostenible.","year":"2026","talento":"Soy Dueño"},{"obj":"Aprendizaje y perfeccionamiento en uso de IA, haciendo cursos externos y aprovechando los que brinda la compañía","year":"2026","talento":"Soy Digital"}],
+    "1128466768": []
   },
       "8126425": [{"calificacion":103.75,"talento":"Soy Digital","anio":2026},{"calificacion":103.75,"talento":"Soy Dueño","anio":2026},{"calificacion":105,"talento":"Soy Lider","anio":2026}],
       "52709691": [{"calificacion":100,"talento":"Soy Digital","anio":2026},{"calificacion":102.5,"talento":"Soy Dueño","anio":2026},{"calificacion":102.5,"talento":"Soy Lider","anio":2026}],
