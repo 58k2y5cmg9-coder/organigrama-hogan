@@ -1549,7 +1549,7 @@ function renderTableHead(){
 }
 
 function renderTable(){
-  let data = currentFiltered().filter(p => !['79577126','79695754','1020751309'].includes(p.expediente));
+  let data = currentFiltered();
   const key = state.sortKey;
   const BOX_SORT={9:0,8:1,7:2,6:3,5:4,4:5,3:6,2:7,1:8};
   data = [...data].sort((a,b)=>{
@@ -1580,7 +1580,9 @@ function renderTable(){
       const meta = BOX_META[p.caja];
       const sucesorVal = (p.sucesor || '').toLowerCase();
       const isCD=['52185300','79947402','80425417','1128466768','85467103','32781111','79516122','80150353','1138186'].includes(p.expediente);
-      const fichaLink = (sucesorVal==='si'||isCD)
+      const isPresidencia=['79577126','79695754','1020751309'].includes(p.expediente);
+      const showNo = isCD || isPresidencia;
+      const fichaLink = (sucesorVal==='si'||isCD||isPresidencia)
         ? `<a href="ficha_talento.html?expediente=${p.expediente}" target="_blank" onclick="event.stopPropagation()" style="color:#fff;background:var(--crimson);padding:4px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">Ver Ficha</a>`
         : '—';
       const cajaOptions = Object.entries(BOX_META).map(([k,v])=>`<option value="${k}" ${parseInt(k)===p.caja?'selected':''}>${k} · ${v.short}</option>`).join('');
@@ -1588,7 +1590,7 @@ function renderTable(){
         <td class="name name-cell-drag" draggable="true">${p.nombre}</td>
         <td>${p.cargo || '—'}</td>
         <td><select class="edit-caja" style="background:${meta.color}" data-exp="${p.expediente}">${cajaOptions}</select></td>
-        <td><span class="edit-sucesor ${sucesorVal==='si'?'si':'no'}" data-exp="${p.expediente}">${sucesorVal==='si'?'Sí':'No'}</span></td>
+        <td><span class="edit-sucesor ${showNo?'no':' ' + (sucesorVal==='si'?'si':'no')}" data-exp="${p.expediente}">${showNo?'No':(sucesorVal==='si'?'Sí':'No')}</span></td>
         <td><select class="edit-tiempo" data-exp="${p.expediente}" style="background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:11px;cursor:pointer;">
           ${['N/A','Listo ya','1 Año','2 Años','3 Años','4 Años'].map(opt => `<option value="${opt}" ${(p.tiempo||'N/A')===opt?'selected':''}>${opt}</option>`).join('')}
         </select></td>
@@ -2271,8 +2273,12 @@ function exportPDF(){
     doc.text(chipText,margin+nameW+cargoW+3.5,y+1.2);
 
     // Sucesor
+    const isCDPdf=['52185300','79947402','80425417','1128466768','85467103','32781111','79516122','80150353','1138186'].includes(p.expediente);
+    const isPresPdf=['79577126','79695754','1020751309'].includes(p.expediente);
     doc.setFontSize(4.5);doc.setFont('helvetica','normal');
-    if(p.sucesor && p.sucesor.toLowerCase()==='si'){
+    if(isCDPdf||isPresPdf){
+      doc.setTextColor(160,160,160);doc.text('No',margin+nameW+cargoW+boxW+4,y+0.5);
+    } else if(p.sucesor && p.sucesor.toLowerCase()==='si'){
       doc.setTextColor(...GREEN);doc.text('Sí',margin+nameW+cargoW+boxW+4,y+0.5);
     } else {
       doc.setTextColor(160,160,160);doc.text('No',margin+nameW+cargoW+boxW+4,y+0.5);
