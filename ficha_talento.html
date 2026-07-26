@@ -24511,18 +24511,36 @@ function render360(data){
     return;
   }
   section.style.display='';
-  const avg=(arr)=>{const v=arr.filter(x=>x!==null&&x!==undefined);return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(2):'—';};
+  const avg=(arr)=>{const v=arr.filter(x=>x!==null&&x!==undefined);return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(2):null;};
   const leaders=data.map(d=>d.lider).filter(x=>x!==null);
   const selves=data.map(d=>d.propio).filter(x=>x!==null);
   const reports=data.map(d=>d.reporte).filter(x=>x!==null);
   const pars=data.map(d=>d.par).filter(x=>x!==null);
   const all=[...leaders,...selves,...reports,...pars];
 
-  document.getElementById('v360total').textContent=all.length?(all.reduce((a,b)=>a+b,0)/all.length).toFixed(2):'—';
-  document.getElementById('v360auto').textContent=avg(selves);
-  document.getElementById('v360lider').textContent=avg(leaders);
-  document.getElementById('v360equipo').textContent=avg(reports);
-  document.getElementById('v360pares').textContent=avg(pars);
+  const totalVal=all.length?(all.reduce((a,b)=>a+b,0)/all.length).toFixed(2):null;
+  const autoVal=avg(selves);
+  const liderVal=avg(leaders);
+  const equipoVal=avg(reports);
+  const paresVal=avg(pars);
+
+  const pillTotal=document.querySelector('.score-pill.total');
+  const pillAuto=document.querySelector('.score-pill.auto');
+  const pillLider=document.querySelector('.score-pill.lider');
+  const pillEquipo=document.querySelector('.score-pill.equipo');
+  const pillPares=document.querySelector('.score-pill.pares');
+
+  pillTotal.style.display=totalVal?'':'none';
+  pillAuto.style.display=autoVal?'':'none';
+  pillLider.style.display=liderVal?'':'none';
+  pillEquipo.style.display=equipoVal?'':'none';
+  pillPares.style.display=paresVal?'':'none';
+
+  document.getElementById('v360total').textContent=totalVal||'—';
+  document.getElementById('v360auto').textContent=autoVal||'—';
+  document.getElementById('v360lider').textContent=liderVal||'—';
+  document.getElementById('v360equipo').textContent=equipoVal||'—';
+  document.getElementById('v360pares').textContent=paresVal||'—';
 
   drawRadar360(data);
 }
