@@ -189,7 +189,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
         <span class="ih-sep">|</span>
         <span><strong>Antigüedad:</strong> <span id="iAntiguedad">—</span></span>
         <span class="ih-sep">|</span>
-        <span><strong>Personas a cargo:</strong> <span id="iCargoEquipo">—</span></span>
+        <span id="personasACargoWrap" style="display:none;"><strong>Personas a cargo:</strong> <span id="iCargoEquipo">—</span></span>
       </div>
     </div>
   </div>
@@ -23378,7 +23378,7 @@ function loadFicha(p){
       '<span class="ih-sep">|</span>'+
       '<span><svg viewBox="0 0 24 24" fill="#dc2626" style="width:14px;height:14px;flex-shrink:0;"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg><strong>Antigüedad:</strong> <span id="iAntiguedad">—</span></span>'+
       '<span class="ih-sep">|</span>'+
-      '<span><svg viewBox="0 0 24 24" fill="#dc2626" style="width:14px;height:14px;flex-shrink:0;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><strong>Personas a cargo:</strong> <span id="iCargoEquipo">—</span></span>';
+      '<span id="personasACargoWrapCD" style="display:none;"><svg viewBox="0 0 24 24" fill="#dc2626" style="width:14px;height:14px;flex-shrink:0;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><strong>Personas a cargo:</strong> <span id="iCargoEquipo">—</span></span>';
   }
 
   document.getElementById('iCargo').textContent=p.cargo;
@@ -23430,7 +23430,17 @@ function loadFicha(p){
 
   // Personas a cargo (Planta de Personal Mayo 2026 - columna AB)
   const CARGO_Equipo={"4520642":5,"4617732":4,"7317314":7,"8358192":6,"9396968":3,"13276383":7,"16071612":3,"36306108":5,"37334180":6,"39783211":4,"40079874":1,"43109835":9,"43684915":6,"52093668":6,"52110121":9,"52185300":13,"52236050":3,"52433846":3,"52492548":2,"52560948":3,"52750890":11,"52807479":3,"52809026":9,"52824581":5,"52879980":3,"52882931":5,"52912096":5,"52960631":5,"52997400":8,"55230423":6,"60333937":8,"74359373":8,"75145916":5,"76333059":2,"79432588":7,"79539397":6,"79618973":4,"79621141":3,"79686033":7,"79687541":5,"79687677":4,"79792570":4,"79795948":9,"79861675":14,"79955163":7,"79963185":4,"80021548":8,"80065277":5,"80070878":6,"80070923":6,"80153086":4,"80418091":11,"80512772":2,"80844584":5,"86074466":8,"91478865":6,"93368761":7,"94317564":3,"98385917":5,"1013667889":2,"1014246406":1,"1015415329":2,"1018417641":9,"1020721308":2,"1024531733":2,"1026593032":2,"1032464118":5,"1032483844":11,"1069713595":4,"1069765749":2,"1072643036":4,"1098687767":3,"1110468886":4,"1233695609":1};
-  document.getElementById('iCargoEquipo').textContent=CARGO_Equipo[p.exp]!==undefined?CARGO_Equipo[p.exp]:'—';
+  const cargoEq=CARGO_Equipo[p.exp];
+  const wrapEq=document.getElementById('personasACargoWrap');
+  const wrapEqCD=document.getElementById('personasACargoWrapCD');
+  if(cargoEq!==undefined){
+    document.getElementById('iCargoEquipo').textContent=cargoEq;
+    if(wrapEq) wrapEq.style.display='';
+    if(wrapEqCD) wrapEqCD.style.display='';
+  } else {
+    if(wrapEq) wrapEq.style.display='none';
+    if(wrapEqCD) wrapEqCD.style.display='none';
+  }
 
   // Desempeño
   const d=DATA.desempeno[p.exp];
@@ -23740,8 +23750,17 @@ function renderHogan(h, exp){
   const movEl=document.getElementById('hoganMotivadores');
   const focoEl=document.getElementById('hoganFoco');
 
+  grid.style.display='none';
+  barsSection.innerHTML='';
+  textSection.style.display='none';
+  textSection.style.gridTemplateColumns='1fr 1fr 1fr';
+  fortEl.innerHTML='';fortEl.style.display='';
+  mejEl.innerHTML='';mejEl.style.display='';
+  movEl.innerHTML='';movEl.style.display='';
+  focoEl.style.display='none';
+
   // New format: HPI/HDS/MVPI bar charts + text cards
-  if(h && h.hpi && h.hds && h.mvpi){
+  if(h && h.hpi && h.hds && h.mvpi && (Object.keys(h.hpi).length||Object.keys(h.hds).length||Object.keys(h.mvpi).length)){
     grid.style.display='';
     barsSection.style.display='grid';
     barsSection.style.gridTemplateColumns='1fr 1fr 1fr';
@@ -23749,7 +23768,7 @@ function renderHogan(h, exp){
     textSection.style.display='grid';
     textSection.style.gridTemplateColumns='1fr 1fr 1fr';
     textSection.style.marginTop='12px';
-    focoEl.style.display=h.foco?'block':'none';
+    focoEl.style.display=(h.foco&&h.foco.trim())?'block':'none';
 
     function barColor(type){
       if(type==='hpi') return '#eab308';
@@ -23813,14 +23832,17 @@ function renderHogan(h, exp){
 
     fortEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#a16207;padding:6px 16px;background:#fef9c3;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>FORTALEZAS (HPI)</div>'+
       '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+formatBullets(h.fortalezas)+'</div>';
+    fortEl.style.display=(h.fortalezas&&h.fortalezas.trim())?'':'none';
 
     mejEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#b91c1c;padding:6px 16px;background:#fee2e2;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>DESCARRILADORES (HDS)</div>'+
       '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+formatBullets(h.descarriladores)+'</div>';
+    mejEl.style.display=(h.descarriladores&&h.descarriladores.trim())?'':'none';
 
     movEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#1d4ed8;padding:6px 16px;background:#dbeafe;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>MOTIVADORES (MVPI)</div>'+
       '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+formatBullets(h.motivadores)+'</div>';
+    movEl.style.display=(h.motivadores&&h.motivadores.trim())?'':'none';
 
-    if(h.foco){
+    if(h.foco&&h.foco.trim()){
       const topHpi=Object.entries(h.hpi).sort((a,b)=>b[1]-a[1]).slice(0,3);
       const hpiLine=topHpi.map(([n,v])=>'<b>'+n+'</b> '+v).join(' · ');
       focoEl.style.display='block';
@@ -23838,24 +23860,22 @@ function renderHogan(h, exp){
 
   // Fallback: old format from observaciones
   const obs=DATA.observaciones[exp];
-  if(!obs||(!obs.fortalezas&&!obs.oportunidades)){grid.style.display='none';return;}
+  if(!obs||(!obs.fortalezas&&!obs.oportunidades)){return;}
   grid.style.display='';
   barsSection.style.display='none';
   textSection.style.display='grid';
-  textSection.style.gridTemplateColumns='1fr 1fr';
   textSection.style.marginTop='0';
   focoEl.style.display='none';
-  if(obs){
-    fortEl.innerHTML=obs.fortalezas?'<div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px;">Fortalezas</div>'+
+  const hasFort=!!obs.fortalezas, hasOport=!!obs.oportunidades;
+  textSection.style.gridTemplateColumns=hasFort&&hasOport?'1fr 1fr':'1fr';
+  fortEl.innerHTML=hasFort?'<div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px;">Fortalezas</div>'+
       '<div style="margin:6px 0;padding:10px 12px;background:#ecfdf5;border-radius:6px;border-left:3px solid var(--green);font-size:12px;color:var(--text);line-height:1.6;white-space:pre-line;">'+obs.fortalezas+'</div>':'';
-    mejEl.innerHTML=obs.oportunidades?'<div style="font-size:13px;font-weight:700;color:var(--orange);margin-bottom:8px;">Oportunidades de desarrollo</div>'+
+  fortEl.style.display=hasFort?'':'none';
+  mejEl.innerHTML=hasOport?'<div style="font-size:13px;font-weight:700;color:var(--orange);margin-bottom:8px;">Oportunidades de desarrollo</div>'+
       '<div style="margin:6px 0;padding:10px 12px;background:#fff7ed;border-radius:6px;border-left:3px solid var(--orange);font-size:12px;color:var(--text);line-height:1.6;white-space:pre-line;">'+obs.oportunidades+'</div>':'';
-    movEl.innerHTML='';
-  }else{
-    fortEl.innerHTML='';
-    mejEl.innerHTML='';
-    movEl.innerHTML='';
-  }
+  mejEl.style.display=hasOport?'':'none';
+  movEl.innerHTML='';
+  movEl.style.display='none';
 }
 
 function downloadPDF(){
