@@ -24530,11 +24530,7 @@ function render360(data){
   const pillEquipo=document.querySelector('.score-pill.equipo');
   const pillPares=document.querySelector('.score-pill.pares');
 
-  pillTotal.style.display=totalVal?'':'none';
-  pillAuto.style.display=autoVal?'':'none';
-  pillLider.style.display=liderVal?'':'none';
-  pillEquipo.style.display=equipoVal?'':'none';
-  pillPares.style.display=paresVal?'':'none';
+  const allHaveData=autoVal!==null&&liderVal!==null&&equipoVal!==null&&paresVal!==null;
 
   document.getElementById('v360total').textContent=totalVal||'—';
   document.getElementById('v360auto').textContent=autoVal||'—';
@@ -24542,12 +24538,32 @@ function render360(data){
   document.getElementById('v360equipo').textContent=equipoVal||'—';
   document.getElementById('v360pares').textContent=paresVal||'—';
 
-  const row=document.querySelector('.scores-row');
-  const visible=[pillTotal,pillAuto,pillLider,pillEquipo,pillPares].filter(p=>p.style.display!=='none');
-  row.style.display='flex';
-  row.style.justifyContent='center';
-  row.style.gap='8px';
-  row.style.flexWrap='wrap';
+  if(allHaveData){
+    pillTotal.style.display='';
+    pillAuto.style.display='';
+    pillLider.style.display='';
+    pillEquipo.style.display='';
+    pillPares.style.display='';
+    const row=document.querySelector('.scores-row');
+    row.style.display='grid';
+    row.style.gridTemplateColumns='repeat(5, 1fr)';
+    row.style.justifyContent='';
+    row.style.gap='8px';
+    row.style.flexWrap='';
+    [pillTotal,pillAuto,pillLider,pillEquipo,pillPares].forEach(p=>{p.style.flex='';});
+  } else {
+    pillTotal.style.display=totalVal?'':'none';
+    pillAuto.style.display='none';
+    pillLider.style.display='none';
+    pillEquipo.style.display='none';
+    pillPares.style.display='none';
+    const row=document.querySelector('.scores-row');
+    row.style.display='flex';
+    row.style.justifyContent='center';
+    row.style.gap='8px';
+    row.style.flexWrap='wrap';
+    pillTotal.style.flex='0 0 260px';
+  }
 
   drawRadar360(data);
 }
