@@ -23487,7 +23487,8 @@ function loadFicha(p){
   renderClima(c);
 
   // Comité Directivo: ocultar Experiencia, Formación y Valoraciones
-  const isCD=['52185300','79947402','80425417','1128466768','85467103','32781111','79516122','80150353','1138186','79577126','79695754','1020751309'].includes(p.exp);
+  const isCD=['52185300','79947402','80425417','1128466768','85467103','32781111','79516122','80150353','1138186'].includes(p.exp);
+  const isPresidencia=['79577126','79695754','1020751309'].includes(p.exp);
   document.getElementById('sectionExperiencia').style.display='';
   document.getElementById('sectionFormacion').style.display='';
   document.getElementById('sectionValoraciones').style.display='';
