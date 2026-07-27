@@ -15763,19 +15763,7 @@ window.DATA={
       "formaciones": [],
       "certificaciones": []
     },
-    "79297860": {
-      "cargos_int": [],
-      "cargos_ext": [
-        "Dir Talento Humano — AUTECO"
-      ],
-      "titulos": [
-        "Especialista en Administración de Empresas",
-        "Especialista en Finanzas",
-        "ingeniero de sistemas"
-      ],
-      "formaciones": [],
-      "certificaciones": []
-    },
+    "79297860": {"cargos_int":[],"cargos_ext":["Director de Talento Humano — AUTECO SAS (2014–actual)","Gerente General y Partner — Heat Marketing Emocional CR (2009–2014)","Gerente de Desarrollo Organizacional — Coca Cola FEMSA Latincentro (2007–2010)","Gerente de Planeación de Recursos Humanos — Corporativo Colombia (2003–2007)","Gerente de Proyectos RH — Corporativo Colombia (2003)","Gerente Regional de RH — Región Sur/Colombia (2000–2003)","Gerente de Unidad de Negocio — Franquicia Comercial y Productora (1999–2000)","Gerente de Recursos Humanos Embotelladora (1998–1999)","Director de Desarrollo Humano — SOFASA Renault/Toyota (1995–1998)","Jefe de Personal — Planta Ensambladora (1993–1995)","Analista de Sistemas — Dirección de Tecnología (1987–1992)"],"titulos":["Ingeniero de Sistemas — Universidad de los Andes (1986)","Especialista en Administración de Empresas — Universidad del Rosario (1991)","Especialista en Finanzas — Universidad EAFIT (1998)","PDD (Programa Desarrollo Gerencial) — INALDE (2006)"],"formaciones":[],"certificaciones":[]},
     "72256037": {
       "cargos_int": [],
       "cargos_ext": [
@@ -17780,7 +17768,7 @@ window.DATA={
       "52709691": {"cargos_int":[],"cargos_ext":["Gerente de Regulación y Relación con Operadores"],"titulos":[],"formaciones":[],"certificaciones":[]},
       "52804512": {"cargos_int":[],"cargos_ext":["GERENTE DE CAMBIO Y CULTURA"],"titulos":["SEGURIDAD SOCIAL Y DRECHO LABORAL"],"formaciones":[],"certificaciones":[]},
       "53120673": {"cargos_int":[],"cargos_ext":["ANALISTA SENIOR PLANEACION FINANCIERA — PNUDPROGRAMADELASNACIONESUNIDASPARAELDESARROLLO-DEPARTAMENTONACIONALDEPLANEACION"],"titulos":["Especializacion en FInanzas"],"formaciones":["Liderazgo y Habilidades Estratégicas"],"certificaciones":[]},
-      "79297860": {"cargos_int":[],"cargos_ext":["Gerente Gestión Humana Negocio y Transversales — AUTECO"],"titulos":["Especialista en Administración de Empresas"],"formaciones":[],"certificaciones":[]},
+      "79297860": {"cargos_int":[],"cargos_ext":["Director de Talento Humano — AUTECO SAS (2014–actual)","Gerente General y Partner — Heat Marketing Emocional CR (2009–2014)","Gerente de Desarrollo Organizacional — Coca Cola FEMSA Latincentro (2007–2010)","Gerente de Planeación de Recursos Humanos — Corporativo Colombia (2003–2007)","Gerente de Proyectos RH — Corporativo Colombia (2003)","Gerente Regional de RH — Región Sur/Colombia (2000–2003)","Gerente de Unidad de Negocio — Franquicia Comercial y Productora (1999–2000)","Gerente de Recursos Humanos Embotelladora (1998–1999)","Director de Desarrollo Humano — SOFASA Renault/Toyota (1995–1998)","Jefe de Personal — Planta Ensambladora (1993–1995)","Analista de Sistemas — Dirección de Tecnología (1987–1992)"],"titulos":["Ingeniero de Sistemas — Universidad de los Andes (1986)","Especialista en Administración de Empresas — Universidad del Rosario (1991)","Especialista en Finanzas — Universidad EAFIT (1998)","PDD (Programa Desarrollo Gerencial) — INALDE (2006)"],"formaciones":[],"certificaciones":[]},
       "79686499": {"cargos_int":[],"cargos_ext":["Coordinador Inteligencia comercial — BANCOINDUSTRIALCOLOMBIANO"],"titulos":["ADMINITRADOR DE EMPRESAS"],"formaciones":["AWS BUSINESS  PROFESIONAL"],"certificaciones":[]},
       "80099040": {"cargos_int":[],"cargos_ext":[],"titulos":["Master en Gerencia de la innovación Empresarial"],"formaciones":[],"certificaciones":[]},
       "1010198378": {"cargos_int":[],"cargos_ext":["Auditor Regulatorio — Fiscalía General de la Nación"],"titulos":["Especialista en Auditoria Forense"],"formaciones":[],"certificaciones":[]},
