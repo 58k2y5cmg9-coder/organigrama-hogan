@@ -17529,26 +17529,7 @@ window.DATA={
         "SAFe: (Curso interno Claro)"
       ]
     },
-    "1032365189": {
-      "cargos_int": [],
-      "cargos_ext": [
-        "EJECUTIVO DE ENTRENAMIENTO COMERCIAL — GRUPOSPIRA",
-        "INGENIERO DE PROYECTOS — IPTCOMERCIALIZADORAINTERNACIONAL"
-      ],
-      "titulos": [
-        "Master of Business Administration - MBA",
-        "Programa especializado en Digital business",
-        "Ingeniero electrónico"
-      ],
-      "formaciones": [
-        "Seminario Transformación Digital",
-        "Scrum Expert",
-        "Internet of Things: Roadmap to a Connected World"
-      ],
-      "certificaciones": [
-        "Project Management Fundamentals (21 PDUs)"
-      ]
-    },
+    "1032365189": {"cargos_int":[],"cargos_ext":["Director de Marketing y Producto Corporativo — Claro Colombia (mar. 2026–actual)","Gerente Marketing Corporativo — Claro Colombia (dic. 2024–mar. 2026)","Gerente Producto Soluciones Digitales — Claro Colombia (nov. 2019–dic. 2024)","Coordinador Investigación y Desarrollo segmento empresas y negocios — Claro Colombia (nov. 2016–nov. 2019)","Coordinador de Producto Banca Móvil y Transfer — Claro Colombia (nov. 2013–nov. 2016)","Consultor de Entrenamiento Comercial — Claro Colombia (oct. 2012–oct. 2013)","Ejecutivo de Entrenamiento Valor Agregado — Comcel (dic. 2009–nov. 2012)"],"titulos":[],"formaciones":[],"certificaciones":[]},
     "30335904": {
       "cargos_int": [],
       "cargos_ext": [
