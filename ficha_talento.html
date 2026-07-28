@@ -260,7 +260,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
   <span>Planeación de Talento · Ficha de Talento — Claro Colombia 2026</span>
 </footer>
 
-<script src="ficha_data.js"></script>
+<script src="ficha_data.js?v=7908a2ff"></script>
 <script>
 
 // Populate datalist
@@ -338,6 +338,7 @@ function loadFicha(p){
 
   // Get info from INFORMACION
   const info=DATA.informacion[p.exp];
+  console.log('DEBUG ficha:', p.exp, 'info found:', !!info, info);
   document.getElementById('iCargo').textContent=info&&info.cargo?info.cargo:'—';
   document.getElementById('iDirComite').textContent=info?info.direccion_comite:'—';
   document.getElementById('iGerencia').textContent=info?info.gerencia:p.direccion;
