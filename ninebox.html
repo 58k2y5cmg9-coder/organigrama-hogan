@@ -1081,7 +1081,7 @@ const BOX_META = {
   1:{ name:'En riesgo',                   short:'En riesgo',              color:'var(--c1)', row:2, col:0 },
   0:{ name:'Sin ubicación',              short:'Sin ubicación',          color:'#6b7280',  row:2, col:2 },
 };
-const RENDER_ORDER = [7,8,9,4,5,6,1,2,3];
+const RENDER_ORDER = [7,8,9,4,5,6,1,2,3,0];
 
 const state = {
   search:'', direccion:'', gerencia:'', jefe:'', region:'', ciudad:'', sucesor:'',
@@ -1345,11 +1345,28 @@ function applyFilters(list){
   });
 }
 
-function currentFiltered(){ return applyFilters(RAW); }
+function currentFiltered(){
+  const res = applyFilters(RAW);
+  // Also include OTROS_SUCESORES people that match current jefe filter but aren't in RAW results
+  if(state.jefe){
+    const resExps = new Set(res.map(d=>d.expediente));
+    OTROS_SUCESORES.filter(o => o.jefe === state.jefe && !resExps.has(o.exp)).forEach(o => {
+      res.push({expediente:o.exp, nombre:o.nombre, cargo:o.cargo, region:o.region, direccion:o.direccion, direccion_area:o.direccion_area, gerencia:o.gerencia, ciudad:o.ciudad, jefe:o.jefe, caja:o.caja, sucesor:o.sucesor, nivel_reporte:''});
+    });
+  }
+  return res;
+}
 function filteredExcludingCaja(){
   const saved = state.caja; state.caja = null;
   const res = applyFilters(RAW);
   state.caja = saved;
+  // Also include OTROS_SUCESORES people that match current jefe filter but aren't in RAW results
+  if(state.jefe){
+    const resExps = new Set(res.map(d=>d.expediente));
+    OTROS_SUCESORES.filter(o => o.jefe === state.jefe && !resExps.has(o.exp)).forEach(o => {
+      res.push({expediente:o.exp, nombre:o.nombre, cargo:o.cargo, region:o.region, direccion:o.direccion, direccion_area:o.direccion_area, gerencia:o.gerencia, ciudad:o.ciudad, jefe:o.jefe, caja:o.caja, sucesor:o.sucesor, nivel_reporte:''});
+    });
+  }
   return res;
 }
 
@@ -2481,6 +2498,10 @@ function renderOtrosTable(){
     const pJefeNorm = normJ(p.jefe);
     return pJefeNorm === filterKey;
   });
+
+  // Dedup: remove people already shown in main table (they're now included via currentFiltered)
+  const mainExps = new Set(currentFiltered().map(p => p.expediente));
+  data = data.filter(p => !mainExps.has(p.exp));
 
   const search = (document.getElementById('otrosSearch')?.value || '').toLowerCase();
   if(search) data = data.filter(p => p.nombre.toLowerCase().includes(search) || p.exp.includes(search));
