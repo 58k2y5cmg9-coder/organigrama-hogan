@@ -1324,7 +1324,11 @@ function applyFilters(list){
       if(matchName && !matchJefe && jefeSet.has(d.nombre)) return false;
     }
     if(state.jefe){
-      if(d.jefe !== state.jefe) return false;
+      if(d.jefe !== state.jefe){
+        // Also check OTROS_SUCESORES: include if this person is listed as successor for the filtered jefe
+        const otrosMatch = OTROS_SUCESORES.find(o => o.exp === d.expediente && o.jefe === state.jefe);
+        if(!otrosMatch) return false;
+      }
     }
     if(state.direccion && norm(d.direccion) !== norm(state.direccion)) return false;
     if(state.gerencia && norm(d.gerencia) !== norm(state.gerencia)) return false;
