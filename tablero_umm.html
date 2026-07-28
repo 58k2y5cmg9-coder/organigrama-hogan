@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tablero Unidad Mercado Masivo — Claro Colombia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f5f7;--panel:#fff;--border:#e2e5ea;--text:#1a1d23;--text-dim:#6b7280;--red:#e21836;--orange:#e97b1a;--blue:#2563eb;--green:#16a34a;--cyan:#0891b2;--radius:12px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-height:100vh;}
+.header{background:var(--red);color:#fff;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;}
+.header h1{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;}
+.header-stats{display:flex;gap:20px;font-size:13px;}
+.header-stats .stat{background:rgba(255,255,255,.15);padding:6px 14px;border-radius:8px;}
+.header-stats .stat strong{font-size:18px;margin-left:4px;}
+.main{max-width:1400px;margin:0 auto;padding:24px 32px 60px;}
+.ninebox-section{margin-bottom:32px;}
+.ninebox-title{background:var(--red);color:#fff;padding:10px 18px;border-radius:8px;font-weight:700;font-size:15px;margin-bottom:16px;text-align:center;}
+.ninebox-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto auto;gap:3px;max-width:900px;margin:0 auto;}
+.nb-cell{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px;min-height:100px;position:relative;}
+.nb-cell .nb-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;color:var(--text-dim);}
+.nb-cell .nb-count{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;margin-bottom:6px;}
+.nb-cell .nb-names{font-size:11px;color:var(--text-dim);line-height:1.6;max-height:120px;overflow-y:auto;}
+.nb-cell .nb-name{cursor:pointer;padding:2px 4px;border-radius:3px;display:block;}
+.nb-cell .nb-name:hover{background:var(--red);color:#fff;}
+.nb-axis-y{writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-size:11px;font-weight:700;color:var(--text-dim);display:flex;align-items:center;justify-content:center;padding:0 8px;}
+.nb-axis-x{font-size:11px;font-weight:700;color:var(--text-dim);text-align:center;padding:8px 0;}
+.nb-grid-wrapper{display:grid;grid-template-columns:30px 1fr;grid-template-rows:1fr 30px;gap:0;}
+.nb-cell.experto{border-left:3px solid var(--green);}
+.nb-cell.solido{border-left:3px solid var(--cyan);}
+.nb-cell.alto-pot{border-left:3px solid var(--orange);}
+.nb-cell.gestionar{border-left:3px solid var(--red);}
+.nb-cell.revision{border-left:3px solid #9333ea;}
+
+.table-section{margin-top:32px;}
+.table-title{background:var(--cyan);color:#fff;padding:10px 18px;border-radius:8px;font-weight:700;font-size:15px;margin-bottom:16px;text-align:center;}
+.table-wrap{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:var(--text);color:#fff;padding:10px 12px;text-align:left;font-weight:600;font-size:12px;white-space:nowrap;}
+td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text-dim);}
+tr:hover td{background:#f9fafb;}
+tr:hover{cursor:pointer;}
+.nb-badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;color:#fff;white-space:nowrap;}
+.nb-1{background:#dc2626;}
+.nb-2{background:#9333ea;}
+.nb-3{background:#e97b1a;}
+.nb-4{background:#16a34a;}
+.nb-5{background:#0891b2;}
+.nb-6{background:#2563eb;}
+.nb-7{background:#16a34a;}
+.nb-8{background:#0891b2;}
+.nb-9{background:#2563eb;}
+.score-pill{display:inline-block;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600;}
+.score-high{background:#dcfce7;color:#166534;}
+.score-mid{background:#fef3c7;color:#92400e;}
+.score-low{background:#fee2e2;color:#991b1b;}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--red);font-weight:600;font-size:13px;text-decoration:none;margin-bottom:16px;}
+.back-link:hover{text-decoration:underline;}
+.ficha-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:20px;}
+.ficha-modal.active{display:block;}
+.ficha-modal-inner{background:var(--bg);max-width:1000px;margin:0 auto;border-radius:var(--radius);overflow:hidden;}
+.ficha-close{position:fixed;top:20px;right:30px;background:var(--red);color:#fff;border:none;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer;z-index:1001;}
+@media(max-width:900px){.ninebox-grid{grid-template-columns:1fr;}.nb-grid-wrapper{grid-template-columns:1fr;}.header{flex-direction:column;gap:10px;}.header-stats{flex-wrap:wrap;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Unidad Mercado Masivo — Tablero de Talento</h1>
+  <div class="header-stats" id="headerStats"></div>
+</div>
+
+<div class="main">
+  <a href="ficha_talento.html" class="back-link">← Volver a Fichas</a>
+
+  <div class="ninebox-section">
+    <div class="ninebox-title">Nine Box — Unidad Mercado Masivo</div>
+    <div class="nb-grid-wrapper">
+      <div class="nb-axis-y">POTENCIAL →</div>
+      <div class="ninebox-grid" id="nineBoxGrid"></div>
+      <div></div>
+      <div class="nb-axis-x">DESEMPEÑO →</div>
+    </div>
+  </div>
+
+  <div class="table-section">
+    <div class="table-title">Colaboradores — Unidad Mercado Masivo</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Exp.</th>
+            <th>Nombre</th>
+            <th>Cargo</th>
+            <th>Gerencia</th>
+            <th>Región</th>
+            <th>Antig.</th>
+            <th>Nine Box</th>
+            <th>Des. 2024</th>
+            <th>Des. 2025</th>
+            <th>Des. 2026</th>
+            <th>Digital</th>
+            <th>Dueño</th>
+            <th>Líder</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="ficha-modal" id="fichaModal">
+  <button class="ficha-close" onclick="closeFicha()">×</button>
+  <div class="ficha-modal-inner" id="fichaContent"></div>
+</div>
+
+<script src="ficha_data.js"></script>
+<script>
+const D = window.DATA;
+const SUC = window.SUCESORES || [];
+
+// All 19 UMM people (7 existing + 12 new)
+const UMM_IDS = [
+  '88227648','79628903','93235739','29284580','88002967','91506857','71384327',
+  '28489014','4517372','51986597','11223493','32228053','1144029706',
+  '16767270','72229277','42118566','94527210','52085624','1129515915'
+];
+
+// Nine Box mapping from Nine Box sheet
+const NB_BOXES = {
+  '28489014': {box: 4, label: 'EXPERTO EN DESARROLLO', desem: 'Esperado', pot: 'Bajo'},
+  '4517372': {box: 3, label: 'A GESTIONAR', desem: 'Bajo', pot: 'Alto'},
+  '51986597': {box: 5, label: 'SÓLIDO EN DESARROLLO', desem: 'Esperado', pot: 'Medio'},
+  '11223493': {box: 2, label: 'EN REVISIÓN', desem: 'Bajo', pot: 'Medio'},
+  '32228053': {box: 5, label: 'SÓLIDO EN DESARROLLO', desem: 'Esperado', pot: 'Medio'},
+  '1144029706': {box: 3, label: 'A GESTIONAR', desem: 'Bajo', pot: 'Alto'},
+  '16767270': {box: 5, label: 'SÓLIDO EN DESARROLLO', desem: 'Esperado', pot: 'Medio'},
+  '72229277': {box: 6, label: 'ALTO POTENCIAL EN DESARROLLO', desem: 'Esperado', pot: 'Alto'},
+  '42118566': {box: 2, label: 'EN REVISIÓN', desem: 'Bajo', pot: 'Medio'},
+  '94527210': {box: 5, label: 'SÓLIDO EN DESARROLLO', desem: 'Esperado', pot: 'Medio'},
+  '52085624': {box: 5, label: 'SÓLIDO EN DESARROLLO', desem: 'Esperado', pot: 'Medio'},
+  '1129515915': {box: 6, label: 'ALTO POTENCIAL EN DESARROLLO', desem: 'Esperado', pot: 'Alto'}
+};
+
+const NB_LABELS = {
+  1: 'EN REVISIÓN', 2: 'EN REVISIÓN', 3: 'A GESTIONAR',
+  4: 'EXPERTO EN DESARROLLO', 5: 'SÓLIDO EN DESARROLLO', 6: 'ALTO POTENCIAL EN DESARROLLO',
+  7: 'ESTRELLA', 8: 'LÍDER PROMETEDOR', 9: 'ALTO DESEMPEÑO Y POTENCIAL'
+};
+
+const NB_CLASSES = {1:'gestionar',2:'revision',3:'gestionar',4:'experto',5:'solido',6:'alto-pot',7:'experto',8:'solido',9:'alto-pot'};
+
+function getRegion(gerencia) {
+  const m = gerencia.match(/Region\s*(\d)/i);
+  return m ? 'Región ' + m[1] : gerencia || '-';
+}
+
+function scoreClass(v) {
+  if (v >= 100) return 'score-high';
+  if (v >= 90) return 'score-mid';
+  return 'score-low';
+}
+
+// Build nine box grid
+function buildNineBox() {
+  const grid = document.getElementById('nineBoxGrid');
+  const boxNames = [
+    [4,7,9],[2,5,8],[1,3,6]
+  ];
+  const potLabels = ['Alto','Medio','Bajo'];
+  const desLabels = ['Bajo','Esperado','Alto'];
+
+  const peopleByBox = {};
+  UMM_IDS.forEach(id => {
+    const nb = NB_BOXES[id];
+    if (!nb) return;
+    if (!peopleByBox[nb.box]) peopleByBox[nb.box] = [];
+    const info = D.informacion[id];
+    peopleByBox[nb.box].push({id, name: info ? info.nombre : id});
+  });
+
+  let html = '';
+  for (let row = 0; row < 3; row++) {
+    for (let col = 0; col < 3; col++) {
+      const boxNum = boxNames[row][col];
+      const people = peopleByBox[boxNum] || [];
+      const cls = NB_CLASSES[boxNum] || '';
+      html += '<div class="nb-cell ' + cls + '">';
+      html += '<div class="nb-label">' + NB_LABELS[boxNum] + ' (Caja ' + boxNum + ')</div>';
+      html += '<div class="nb-count">' + people.length + '</div>';
+      html += '<div class="nb-names">';
+      people.forEach(p => {
+        html += '<span class="nb-name" onclick="openFicha(\'' + p.id + '\')">' + p.name + '</span>';
+      });
+      html += '</div></div>';
+    }
+  }
+  grid.innerHTML = html;
+}
+
+// Build table
+function buildTable() {
+  const tbody = document.getElementById('tableBody');
+  let html = '';
+  UMM_IDS.forEach(id => {
+    const info = D.informacion[id];
+    if (!info) return;
+    const nb = NB_BOXES[id] || {};
+    const desp = D.desempeno[id] || {};
+    const tal = D.talentos[id] || [];
+    const talMap = {};
+    tal.forEach(t => talMap[t.talento] = t.score);
+    html += '<tr onclick="openFicha(\'' + id + '\')">';
+    html += '<td><strong>' + id + '</strong></td>';
+    html += '<td>' + info.nombre + '</td>';
+    html += '<td>' + (info.cargo || '-') + '</td>';
+    html += '<td>' + (info.gerencia || '-') + '</td>';
+    html += '<td>' + getRegion(info.gerencia) + '</td>';
+    html += '<td>' + (info.antiguedad ? info.antiguedad.toFixed(1) + ' a' : '-') + '</td>';
+    html += '<td><span class="nb-badge nb-' + (nb.box || 1) + '">' + (nb.label || '-') + '</span></td>';
+    html += '<td><span class="score-pill ' + scoreClass(desp.y2024 || 0) + '">' + (desp.y2024 ? desp.y2024.toFixed(1) : '-') + '</span></td>';
+    html += '<td><span class="score-pill ' + scoreClass(desp.y2025 || 0) + '">' + (desp.y2025 ? desp.y2025.toFixed(1) : '-') + '</span></td>';
+    html += '<td><span class="score-pill ' + scoreClass(desp.y2026 || 0) + '">' + (desp.y2026 ? desp.y2026.toFixed(1) : '-') + '</span></td>';
+    html += '<td><span class="score-pill ' + scoreClass(talMap['Soy Digital'] || 0) + '">' + (talMap['Soy Digital'] || '-') + '</span></td>';
+    html += '<td><span class="score-pill ' + scoreClass(talMap['Soy Dueño'] || 0) + '">' + (talMap['Soy Dueño'] || '-') + '</span></td>';
+    html += '<td><span class="score-pill ' + scoreClass(talMap['Soy Lider'] || 0) + '">' + (talMap['Soy Lider'] || '-') + '</span></td>';
+    html += '</tr>';
+  });
+  tbody.innerHTML = html;
+}
+
+// Stats
+function buildStats() {
+  const el = document.getElementById('headerStats');
+  let totalDes = 0, countDes = 0;
+  UMM_IDS.forEach(id => {
+    const d = D.desempeno[id];
+    if (d && d.y2026) { totalDes += d.y2026; countDes++; }
+  });
+  el.innerHTML = '<div class="stat">Colaboradores<strong>' + UMM_IDS.length + '</strong></div>' +
+    '<div class="stat">Prom. Desempeño 2026<strong>' + (countDes ? (totalDes/countDes).toFixed(1) : '-') + '</strong></div>' +
+    '<div class="stat">Con ficha<strong>' + UMM_IDS.filter(id => D.informacion[id]).length + '</strong></div>';
+}
+
+// Ficha modal
+function openFicha(id) {
+  const info = D.informacion[id];
+  if (!info) return;
+  const form = D.formacion[id] || {};
+  const desp = D.desempeno[id] || {};
+  const tal = D.talentos[id] || [];
+  const obj = D.objetivos[id] || [];
+  const clim = D.clima[id] || [];
+  const t60 = D.tres60[id] || [];
+  const nb = NB_BOXES[id] || {};
+  const photoPath = 'FOTOS/' + id + '.png';
+
+  let html = '<div style="padding:24px;">';
+  html += '<div style="background:#fff;border:1px solid #e2e5ea;border-radius:12px;padding:20px;display:flex;gap:20px;align-items:center;margin-bottom:20px;">';
+  html += '<div style="width:120px;height:120px;border-radius:8px;background:#e2e5ea;border:3px solid #e21836;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;">';
+  html += '<img src="' + photoPath + '" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;#999&quot; stroke-width=&quot;1.5&quot;><path d=&quot;M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2&quot;/><circle cx=&quot;12&quot; cy=&quot;7&quot; r=&quot;4&quot;/></svg>\'">';
+  html += '</div>';
+  html += '<div><div style="font-family:Space Grotesk,sans-serif;font-size:20px;font-weight:700;">' + info.nombre + '</div>';
+  html += '<div style="font-size:13px;color:#6b7280;margin-top:4px;">' + id + ' · ' + (info.cargo || '-') + '</div>';
+  html += '<div style="font-size:12px;color:#6b7280;margin-top:2px;">' + (info.gerencia || '') + ' · ' + (info.jefe || '') + '</div>';
+  html += '<div style="margin-top:6px;"><span class="nb-badge nb-' + (nb.box || 1) + '">' + (nb.label || '-') + '</span></div></div></div>';
+
+  // Desempeño bars
+  if (desp.y2024 || desp.y2025 || desp.y2026) {
+    html += '<div style="background:#fff;border:1px solid #e2e5ea;border-radius:12px;padding:16px;margin-bottom:16px;">';
+    html += '<div style="font-weight:700;font-size:13px;margin-bottom:12px;color:#0891b2;">DESEMPEÑO</div>';
+    ['y2024','y2025','y2026'].forEach(y => {
+      const v = desp[y] || 0;
+      const pct = Math.min(v, 120) / 120 * 100;
+      const color = v >= 100 ? '#16a34a' : v >= 90 ? '#e97b1a' : '#e21836';
+      html += '<div style="display:flex;align-items:center;gap:10px;margin:6px 0;">';
+      html += '<div style="width:50px;font-size:12px;color:#6b7280;text-align:right;">' + y.replace('y','') + '</div>';
+      html += '<div style="flex:1;height:18px;background:#e5e7eb;border-radius:100px;overflow:hidden;"><div style="width:' + pct + '%;height:100%;background:' + color + ';border-radius:100px;"></div></div>';
+      html += '<div style="width:50px;font-size:13px;font-weight:700;">' + v.toFixed(1) + '</div></div>';
+    });
+    html += '</div>';
+  }
+
+  // Talentos
+  if (tal.length) {
+    html += '<div style="background:#fff;border:1px solid #e2e5ea;border-radius:12px;padding:16px;margin-bottom:16px;">';
+    html += '<div style="font-weight:700;font-size:13px;margin-bottom:12px;color:#e97b1a;">TALENTO</div>';
+    tal.forEach(t => {
+      const pct = Math.min(t.score, 120) / 120 * 100;
+      const color = t.score >= 100 ? '#16a34a' : t.score >= 90 ? '#e97b1a' : '#e21836';
+      html += '<div style="display:flex;align-items:center;gap:10px;margin:6px 0;">';
+      html += '<div style="width:90px;font-size:12px;color:#6b7280;text-align:right;">' + t.talento + '</div>';
+      html += '<div style="flex:1;height:18px;background:#e5e7eb;border-radius:100px;overflow:hidden;"><div style="width:' + pct + '%;height:100%;background:' + color + ';border-radius:100px;"></div></div>';
+      html += '<div style="width:50px;font-size:13px;font-weight:700;">' + t.score + '</div></div>';
+    });
+    html += '</div>';
+  }
+
+  // Formacion
+  if (form.cargos_int && form.cargos_int.length || form.cargos_ext && form.cargos_ext.length || form.titulos && form.titulos.length) {
+    html += '<div style="background:#fff;border:1px solid #e2e5ea;border-radius:12px;padding:16px;margin-bottom:16px;">';
+    html += '<div style="font-weight:700;font-size:13px;margin-bottom:12px;color:#1e40af;">FORMACIÓN</div>';
+    if (form.titulos && form.titulos.length) {
+      html += '<div style="margin-bottom:8px;"><strong style="font-size:12px;">Títulos:</strong><ul style="margin:4px 0 0 16px;font-size:12px;color:#6b7280;">';
+      form.titulos.forEach(t => html += '<li>' + t + '</li>');
+      html += '</ul></div>';
+    }
+    if (form.cargos_int && form.cargos_int.length) {
+      html += '<div style="margin-bottom:8px;"><strong style="font-size:12px;">Cargos Claro/Telmex/Comcel:</strong><ul style="margin:4px 0 0 16px;font-size:12px;color:#6b7280;">';
+      form.cargos_int.forEach(c => html += '<li>' + c + '</li>');
+      html += '</ul></div>';
+    }
+    if (form.cargos_ext && form.cargos_ext.length) {
+      html += '<div><strong style="font-size:12px;">Experiencia Externa:</strong><ul style="margin:4px 0 0 16px;font-size:12px;color:#6b7280;">';
+      form.cargos_ext.forEach(c => html += '<li>' + c + '</li>');
+      html += '</ul></div>';
+    }
+    html += '</div>';
+  }
+
+  // Objetivos
+  if (obj.length) {
+    html += '<div style="background:#fff;border:1px solid #e2e5ea;border-radius:12px;padding:16px;margin-bottom:16px;">';
+    html += '<div style="font-weight:700;font-size:13px;margin-bottom:12px;color:#16a34a;">OBJETIVOS DE DESARROLLO</div>';
+    obj.forEach(o => {
+      html += '<div style="display:grid;grid-template-columns:100px 1fr;gap:0;border:1px solid #e2e5ea;border-radius:6px;overflow:hidden;margin-bottom:6px;">';
+      html += '<div style="background:#1a1d23;color:#fff;padding:8px 10px;font-size:11px;font-weight:600;">' + (o.talento || '-') + '</div>';
+      html += '<div style="padding:8px 12px;font-size:12px;color:#6b7280;">' + (o.obj || '-') + '</div></div>';
+    });
+    html += '</div>';
+  }
+
+  html += '</div>';
+  document.getElementById('fichaContent').innerHTML = html;
+  document.getElementById('fichaModal').classList.add('active');
+}
+
+function closeFicha() {
+  document.getElementById('fichaModal').classList.remove('active');
+}
+
+document.getElementById('fichaModal').addEventListener('click', function(e) {
+  if (e.target === this) closeFicha();
+});
+
+// Init
+buildStats();
+buildNineBox();
+buildTable();
+</script>
+</body>
+</html>
