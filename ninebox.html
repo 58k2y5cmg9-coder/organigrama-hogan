@@ -1582,9 +1582,7 @@ function renderTable(){
       const isCD=['52185300','79947402','80425417','1128466768','85467103','32781111','79516122','80150353','1138186'].includes(p.expediente);
       const isPresidencia=['79577126','79695754','1020751309'].includes(p.expediente);
       const showNo = isCD || isPresidencia;
-      const fichaLink = (sucesorVal==='si'||isCD||isPresidencia)
-        ? `<a href="ficha_talento.html?expediente=${p.expediente}" target="_blank" onclick="event.stopPropagation()" style="color:#fff;background:var(--crimson);padding:4px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">Ver Ficha</a>`
-        : '—';
+      const fichaLink = `<a href="ficha_talento.html?expediente=${p.expediente}" target="_blank" onclick="event.stopPropagation()" style="color:#fff;background:var(--crimson);padding:4px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">Ver Ficha</a>`;
       const cajaOptions = Object.entries(BOX_META).map(([k,v])=>`<option value="${k}" ${parseInt(k)===p.caja?'selected':''}>${k} · ${v.short}</option>`).join('');
       return `<tr data-exp="${p.expediente}" data-name="${encodeURIComponent(p.nombre)}">
         <td class="name name-cell-drag" draggable="true">${p.nombre}</td>
@@ -2489,9 +2487,7 @@ function renderOtrosTable(){
     const sucesorBadge = sucesorVal === 'si'
       ? `<span class="chip" style="background:#059669;color:#fff">Sí</span>`
       : `<span style="color:#9ca3af">No</span>`;
-    const fichaLink = sucesorVal === 'si'
-      ? `<a href="ficha_talento.html?expediente=${p.exp}" target="_blank" onclick="event.stopPropagation()" style="color:#fff;background:var(--crimson);padding:4px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">Ver Ficha</a>`
-      : '—';
+    const fichaLink = `<a href="ficha_talento.html?expediente=${p.exp}" target="_blank" onclick="event.stopPropagation()" style="color:#fff;background:var(--crimson);padding:4px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">Ver Ficha</a>`;
     return `<tr data-exp="${p.exp}">
       <td class="name">${p.nombre}</td>
       <td>${p.cargo || '—'}</td>
