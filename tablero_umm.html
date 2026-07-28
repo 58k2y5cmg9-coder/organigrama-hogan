@@ -99,12 +99,14 @@ tr:hover{cursor:pointer;}
             <th>Región</th>
             <th>Antig.</th>
             <th>Nine Box</th>
+            <th>Sucesión</th>
             <th>Des. 2024</th>
             <th>Des. 2025</th>
             <th>Des. 2026</th>
             <th>Digital</th>
             <th>Dueño</th>
             <th>Líder</th>
+            <th>Ficha</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -122,6 +124,7 @@ tr:hover{cursor:pointer;}
 <script>
 const D = window.DATA;
 const SUC = window.SUCESORES || [];
+const SUCESION = window.SUCESION || {};
 
 // All 19 UMM people (7 existing + 12 new)
 const UMM_IDS = [
@@ -194,7 +197,9 @@ function buildNineBox() {
       html += '<div class="nb-count">' + people.length + '</div>';
       html += '<div class="nb-names">';
       people.forEach(p => {
-        html += '<span class="nb-name" onclick="openFicha(\'' + p.id + '\')">' + p.name + '</span>';
+        const suc = SUCESION[p.id] || {};
+        const sucLabel = suc.sucesor === 'Si' ? ' <span style="font-size:9px;color:#16a34a;font-weight:700;">(' + suc.tiempo + ')</span>' : '';
+        html += '<span class="nb-name" onclick="openFicha(\'' + p.id + '\')">' + p.name + sucLabel + '</span>';
       });
       html += '</div></div>';
     }
@@ -222,12 +227,17 @@ function buildTable() {
     html += '<td>' + getRegion(info.gerencia) + '</td>';
     html += '<td>' + (info.antiguedad ? info.antiguedad.toFixed(1) + ' a' : '-') + '</td>';
     html += '<td><span class="nb-badge nb-' + (nb.box || 1) + '">' + (nb.label || '-') + '</span></td>';
+    // Sucesion
+    const suc = SUCESION[id] || {};
+    const sucColor = suc.sucesor === 'Si' ? '#16a34a' : '#6b7280';
+    html += '<td><span style="font-size:11px;font-weight:600;color:' + sucColor + ';">' + (suc.sucesor === 'Si' ? suc.tiempo : '-') + '</span></td>';
     html += '<td><span class="score-pill ' + scoreClass(desp.y2024 || 0) + '">' + (desp.y2024 ? desp.y2024.toFixed(1) : '-') + '</span></td>';
     html += '<td><span class="score-pill ' + scoreClass(desp.y2025 || 0) + '">' + (desp.y2025 ? desp.y2025.toFixed(1) : '-') + '</span></td>';
     html += '<td><span class="score-pill ' + scoreClass(desp.y2026 || 0) + '">' + (desp.y2026 ? desp.y2026.toFixed(1) : '-') + '</span></td>';
     html += '<td><span class="score-pill ' + scoreClass(talMap['Soy Digital'] || 0) + '">' + (talMap['Soy Digital'] || '-') + '</span></td>';
     html += '<td><span class="score-pill ' + scoreClass(talMap['Soy Dueño'] || 0) + '">' + (talMap['Soy Dueño'] || '-') + '</span></td>';
     html += '<td><span class="score-pill ' + scoreClass(talMap['Soy Lider'] || 0) + '">' + (talMap['Soy Lider'] || '-') + '</span></td>';
+    html += '<td><a href="ficha_talento.html?expediente=' + id + '" target="_blank" style="display:inline-block;background:#e21836;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:600;text-decoration:none;">Ver ficha</a></td>';
     html += '</tr>';
   });
   tbody.innerHTML = html;
@@ -267,7 +277,15 @@ function openFicha(id) {
   html += '<div><div style="font-family:Space Grotesk,sans-serif;font-size:20px;font-weight:700;">' + info.nombre + '</div>';
   html += '<div style="font-size:13px;color:#6b7280;margin-top:4px;">' + id + ' · ' + (info.cargo || '-') + '</div>';
   html += '<div style="font-size:12px;color:#6b7280;margin-top:2px;">' + (info.gerencia || '') + ' · ' + (info.jefe || '') + '</div>';
-  html += '<div style="margin-top:6px;"><span class="nb-badge nb-' + (nb.box || 1) + '">' + (nb.label || '-') + '</span></div></div></div>';
+  html += '<div style="margin-top:6px;"><span class="nb-badge nb-' + (nb.box || 1) + '">' + (nb.label || '-') + '</span></div>';
+  // Sucesion
+  const suc = SUCESION[id] || {};
+  if (suc.sucesor === 'Si') {
+    html += '<div style="margin-top:6px;font-size:12px;"><span style="background:#dcfce7;color:#166534;padding:3px 8px;border-radius:4px;font-weight:600;">Sucesor: ' + suc.tiempo + '</span></div>';
+  }
+  // Ficha redirect button
+  html += '<div style="margin-top:8px;"><a href="ficha_talento.html?expediente=' + id + '" target="_blank" style="display:inline-block;background:#e21836;color:#fff;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;">Ver ficha completa</a></div>';
+  html += '</div></div>';
 
   // Desempeño bars
   if (desp.y2024 || desp.y2025 || desp.y2026) {
