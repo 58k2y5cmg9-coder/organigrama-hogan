@@ -2,6 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Planeación de Talento · Ficha de Talento — Claro Colombia</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -260,7 +263,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
   <span>Planeación de Talento · Ficha de Talento — Claro Colombia 2026</span>
 </footer>
 
-<script src="ficha_data.js?v=7908a2ff"></script>
+<script src="ficha_data.js?v=202607282230"></script>
 <script>
 
 // Populate datalist
@@ -451,13 +454,16 @@ function renderDesempeno(d){
   const card=document.getElementById('cardDesempeno');
   if(!d||(!d.y2024&&!d.y2025&&!d.y2026)){card.style.display='none';return;}
   card.style.display='';
-  const vals=[d.y2024||0,d.y2025||0,d.y2026||0];
-  const max=Math.max(...vals,1);
-  const colors=['var(--red)','var(--green)','var(--orange)'];
-  const labels=['2024','2025','2026'];
-  el.innerHTML=vals.map((v,i)=>{
-    const h=Math.round((v/max)*130);
-    return '<div class="bar-col"><span class="bar-value">'+(typeof v==='number'?Math.round(v):v)+'</span><div class="bar" style="height:'+h+'px;background:'+colors[i]+';"></div><span class="bar-label">'+labels[i]+'</span></div>';
+  const allVals=[
+    {v:d.y2024,label:'2024',color:'var(--red)'},
+    {v:d.y2025,label:'2025',color:'var(--green)'},
+    {v:d.y2026,label:'2026',color:'var(--orange)'}
+  ].filter(x=>x.v!=null);
+  if(!allVals.length){card.style.display='none';return;}
+  const max=Math.max(...allVals.map(x=>x.v),1);
+  el.innerHTML=allVals.map(x=>{
+    const h=Math.round((x.v/max)*130);
+    return '<div class="bar-col"><span class="bar-value">'+Math.round(x.v)+'</span><div class="bar" style="height:'+h+'px;background:'+x.color+';"></div><span class="bar-label">'+x.label+'</span></div>';
   }).join('');
 }
 

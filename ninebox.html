@@ -1079,9 +1079,8 @@ const BOX_META = {
   3:{ name:'A gestionar',                 short:'A gestionar',            color:'var(--c3)', row:2, col:2 },
   2:{ name:'En revisión',                 short:'En revisión',            color:'var(--c2)', row:2, col:1 },
   1:{ name:'En riesgo',                   short:'En riesgo',              color:'var(--c1)', row:2, col:0 },
-  0:{ name:'Sin ubicación',              short:'Sin ubicación',          color:'#6b7280',  row:2, col:2 },
 };
-const RENDER_ORDER = [7,8,9,4,5,6,1,2,3,0];
+const RENDER_ORDER = [7,8,9,4,5,6,1,2,3];
 
 const state = {
   search:'', direccion:'', gerencia:'', jefe:'', region:'', ciudad:'', sucesor:'',
@@ -1337,7 +1336,7 @@ function applyFilters(list){
       const sVal = state.sucesor.toUpperCase();
       if(dVal !== sVal) return false;
     }
-    if(state.nivelReporte.length > 0 && state.nivelReporte.includes(d.nivel_reporte)) return false;
+    if(state.nivelReporte.length > 0 && !state.nivelReporte.includes(d.nivel_reporte)) return false;
     if(state.caja && d.caja !== state.caja) return false;
     return true;
   });
