@@ -1203,6 +1203,9 @@ fillSelect('fRegion', unique('region'));
     document.getElementById('compDirSection').style.display = 'none';
   }
   renderOptions();
+  // Start with all unchecked
+  state.direccion = [];
+  updateBtn();
   btn.addEventListener('click', e => { e.stopPropagation(); container.classList.toggle('open'); });
   document.addEventListener('click', e => { if(!container.contains(e.target)) container.classList.remove('open'); });
   document.getElementById('dirSelectAll').addEventListener('click', () => {
@@ -1394,7 +1397,7 @@ const OTROS_SUCESORES = [
 ];
 
 updateAllCascading();
-state.direccion = unique('direccion');
+//Direccion starts empty - user selects what they want
 
 document.getElementById('btnReset').addEventListener('click', ()=>{
   state.search=''; state.direccion=[]; state.gerencia=''; state.jefe=''; state.region=''; state.ciudad='';
@@ -2594,21 +2597,46 @@ function renderOtrosTable(){
     const caja = p.caja || 0;
     const meta = BOX_META[caja] || BOX_FALLBACK;
     const sucesorVal = (p.sucesor || '').toLowerCase();
-    const sucesorBadge = sucesorVal === 'si'
-      ? `<span class="chip" style="background:#059669;color:#fff">Sí</span>`
-      : `<span style="color:#9ca3af">No</span>`;
+    const cajaOpts = Object.entries(BOX_META).map(([k,v]) => `<option value="${k}" ${parseInt(k)===caja?'selected':''}>${k} · ${v.short}</option>`).join('');
     const fichaLink = (sucesorVal==='si' && FICHA_IDS.has(p.exp))
       ? `<a href="ficha_talento.html?expediente=${p.exp}" target="_blank" onclick="event.stopPropagation()" style="color:#fff;background:var(--crimson);padding:4px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">Ver Ficha</a>`
       : '—';
     return `<tr data-exp="${p.exp}">
       <td class="name">${p.nombre}</td>
       <td>${p.cargo || '—'}</td>
-      <td><span class="chip" style="background:${meta.color}">${caja} · ${meta.short}</span></td>
-      <td>${sucesorBadge}</td>
-      <td>${p.tiempo || '—'}</td>
+      <td><select class="edit-caja" data-exp="${p.exp}" style="background:var(--bg-1);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:Inter,sans-serif;width:100%;">${cajaOpts}</select></td>
+      <td><select class="edit-sucesor" data-exp="${p.exp}" style="background:var(--bg-1);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:Inter,sans-serif;width:100%;"><option value="Si" ${sucesorVal==='si'?'selected':''}>Sí</option><option value="No" ${sucesorVal==='no'?'selected':''}>No</option></select></td>
+      <td><input class="edit-tiempo" data-exp="${p.exp}" value="${(p.tiempo||'').replace(/"/g,'&quot;')}" style="background:var(--bg-1);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:Inter,sans-serif;width:100%;box-sizing:border-box;" placeholder="Ej: 2 Años"></td>
       <td>${fichaLink}</td>
     </tr>`;
   }).join('');
+
+  // Inline edit handlers
+  tbody.querySelectorAll('.edit-caja').forEach(sel => {
+    sel.addEventListener('change', e => {
+      e.stopPropagation();
+      const exp = sel.dataset.exp;
+      const person = OTROS_SUCESORES.find(d => d.exp === exp);
+      if(person){ person.caja = parseInt(sel.value); renderOtrosTable(); }
+    });
+  });
+  tbody.querySelectorAll('.edit-sucesor').forEach(sel => {
+    sel.addEventListener('change', e => {
+      e.stopPropagation();
+      const exp = sel.dataset.exp;
+      const person = OTROS_SUCESORES.find(d => d.exp === exp);
+      if(person){ person.sucesor = sel.value; renderOtrosTable(); }
+    });
+  });
+  tbody.querySelectorAll('.edit-tiempo').forEach(inp => {
+    inp.addEventListener('change', e => {
+      e.stopPropagation();
+      const exp = inp.dataset.exp;
+      const person = OTROS_SUCESORES.find(d => d.exp === exp);
+      if(person) person.tiempo = inp.value;
+    });
+    inp.addEventListener('click', e => e.stopPropagation());
+  });
 
   tbody.querySelectorAll('tr').forEach(tr=>{
     tr.addEventListener('click', ()=>{
