@@ -773,32 +773,32 @@ function renderHogan(h, exp){
     const hasDesc=!!(h.descarriladores&&h.descarriladores.trim());
     const hasOport=!!(h.oportunidades&&h.oportunidades.trim());
     const hasMotiv=!!(h.motivadores&&h.motivadores.trim());
-    const visibleCards=[hasDesc?'desc':hasOport?'oport':null,'fort'].filter(Boolean);
-    textSection.style.gridTemplateColumns=visibleCards.length<=1?'1fr':'1fr 1fr';
+    textSection.style.gridTemplateColumns='1fr 1fr 1fr';
 
     fortEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#a16207;padding:6px 16px;background:#fef9c3;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>FORTALEZAS (HPI)</div>'+
       '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+formatBullets(h.fortalezas)+'</div>';
-    fortEl.style.display=(h.fortalezas&&h.fortalezas.trim())?'':'none';
+    fortEl.style.display='';
 
     if(hasDesc){
       mejEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#b91c1c;padding:6px 16px;background:#fee2e2;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>DESCARRILADORES (HDS)</div>'+
         '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+formatBullets(h.descarriladores)+'</div>';
-      mejEl.style.display='';
     } else if(hasOport){
       mejEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#b91c1c;padding:6px 16px;background:#fee2e2;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>OPORTUNIDADES DE DESARROLLO</div>'+
         '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+formatBullets(h.oportunidades)+'</div>';
-      mejEl.style.display='';
     } else {
-      mejEl.style.display='none';
+      mejEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#b91c1c;padding:6px 16px;background:#fee2e2;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>DESCARRILADORES (HDS)</div>'+
+        '<div style="font-size:11px;color:var(--text-dim);font-style:italic;text-align:center;padding:8px;">Sin datos</div>';
     }
+    mejEl.style.display='';
 
     if(hasMotiv){
       movEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#1d4ed8;padding:6px 16px;background:#dbeafe;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>MOTIVADORES (MVPI)</div>'+
         '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+formatBullets(h.motivadores)+'</div>';
-      movEl.style.display='';
     } else {
-      movEl.style.display='none';
+      movEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#1d4ed8;padding:6px 16px;background:#dbeafe;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>MOTIVADORES (MVPI)</div>'+
+        '<div style="font-size:11px;color:var(--text-dim);font-style:italic;text-align:center;padding:8px;">Sin datos</div>';
     }
+    movEl.style.display='';
 
     if(h.foco&&h.foco.trim()){
       const topHpi=Object.entries(h.hpi).sort((a,b)=>b[1]-a[1]).slice(0,3);
@@ -806,12 +806,14 @@ function renderHogan(h, exp){
       let focoLines='<div style="font-size:12px;color:#a16207;margin-bottom:4px;text-align:center;">HPI Fortalezas: '+hpiLine+'</div>';
       if(hasHds){const topHds=Object.entries(h.hds).sort((a,b)=>b[1]-a[1]).slice(0,3);focoLines+='<div style="font-size:12px;color:#dc2626;margin-bottom:4px;text-align:center;">HDS Riesgo: '+topHds.map(([n,v])=>'<b>'+n+'</b> '+v).join(' · ')+'</div>';}
       if(hasMvpi){const topMvpi=Object.entries(h.mvpi).sort((a,b)=>b[1]-a[1]).slice(0,3);focoLines+='<div style="font-size:12px;color:#2563eb;margin-bottom:12px;text-align:center;">MVPI Motivadores: '+topMvpi.map(([n,v])=>'<b>'+n+'</b> '+v).join(' · ')+'</div>';}
+      const focoItems=h.foco.split(/•\s*/).map(s=>s.trim()).filter(Boolean);
+      const focoBullets=focoItems.map(item=>'<div style="display:flex;gap:6px;margin-bottom:4px;font-size:11px;color:var(--text);line-height:1.5;"><span style="color:#15803d;flex-shrink:0;">•</span><span>'+item+'</span></div>').join('');
       focoEl.style.display='block';
       focoEl.innerHTML=
         '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:14px;font-weight:700;color:#15803d;text-align:center;margin-bottom:10px;">FOCO DE DESARROLLO</div>'+
         '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:20px 24px;">'+
           focoLines+
-          '<div style="font-size:11px;color:var(--text);line-height:1.7;white-space:pre-line;">'+h.foco+'</div>'+
+          '<div style="margin-top:8px;">'+focoBullets+'</div>'+
         '</div>';
     }
     return;
