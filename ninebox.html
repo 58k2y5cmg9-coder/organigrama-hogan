@@ -1080,6 +1080,7 @@ const BOX_META = {
   2:{ name:'En revisión',                 short:'En revisión',            color:'var(--c2)', row:2, col:1 },
   1:{ name:'En riesgo',                   short:'En riesgo',              color:'var(--c1)', row:2, col:0 },
 };
+const BOX_FALLBACK = {name:'Sin ubicación',short:'Sin ubicación',color:'#6b7280',row:2,col:2};
 const RENDER_ORDER = [7,8,9,4,5,6,1,2,3];
 
 const state = {
@@ -1736,8 +1737,8 @@ let dragData = null;
 const changeLog = [];
 
 function showConfirmDialog(nombre, oldCaja, newCaja, onConfirm){
-  const oldMeta = BOX_META[oldCaja] || BOX_META[0];
-  const newMeta = BOX_META[newCaja] || BOX_META[0];
+  const oldMeta = BOX_META[oldCaja] || BOX_FALLBACK;
+  const newMeta = BOX_META[newCaja] || BOX_FALLBACK;
   const overlay = document.createElement('div');
   overlay.className = 'confirm-overlay';
   overlay.innerHTML = `
@@ -2257,7 +2258,7 @@ function exportPDF(){
   // Table rows
   sorted.forEach((p,pi)=>{
     checkY(6);
-    const meta=BOX_META[p.caja]||BOX_META[0];
+    const meta=BOX_META[p.caja]||BOX_FALLBACK;
     const rowBg=pi%2===0?[255,255,255]:[248,249,250];
     doc.setFillColor(...rowBg);
     doc.roundedRect(margin,y-3,W-margin*2,6,1,1,'F');
@@ -2491,7 +2492,7 @@ function renderOtrosTable(){
 
   tbody.innerHTML = data.map(p => {
     const caja = p.caja || 0;
-    const meta = BOX_META[caja] || BOX_META[0];
+    const meta = BOX_META[caja] || BOX_FALLBACK;
     const sucesorVal = (p.sucesor || '').toLowerCase();
     const sucesorBadge = sucesorVal === 'si'
       ? `<span class="chip" style="background:#059669;color:#fff">Sí</span>`
@@ -2519,7 +2520,7 @@ function renderOtrosTable(){
 }
 function openOtrosModal(p){
   const caja = p.caja || 0;
-  const meta = BOX_META[caja] || BOX_META[0];
+  const meta = BOX_META[caja] || BOX_FALLBACK;
   document.getElementById('modalName').textContent = p.nombre;
   document.getElementById('modalCargo').textContent = p.cargo;
   const badge = document.getElementById('modalBoxBadge');
