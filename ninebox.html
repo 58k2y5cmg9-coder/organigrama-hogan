@@ -873,7 +873,13 @@ footer{
       </div>
       <div class="field">
         <label>Dirección</label>
-        <select id="fDireccion"><option value="">Todas</option></select>
+        <div class="nivel-select" id="direccionSelect">
+          <button class="nivel-btn" id="direccionBtn" type="button">
+            <span id="direccionText">Todas</span>
+            <svg width="10" height="6" viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z" fill="currentColor"/></svg>
+          </button>
+          <div class="nivel-dropdown" id="direccionDropdown"></div>
+        </div>
       </div>
       <div class="field">
         <label>Gerencia</label>
@@ -1084,7 +1090,7 @@ const BOX_FALLBACK = {name:'Sin ubicación',short:'Sin ubicación',color:'#6b728
 const RENDER_ORDER = [7,8,9,4,5,6,1,2,3];
 
 const state = {
-  search:'', direccion:'', gerencia:'', jefe:'', region:'', ciudad:'', sucesor:'',
+  search:'', direccion:[], gerencia:'', jefe:'', region:'', ciudad:'', sucesor:'',
   nivelReporte: [],
   caja: null,
   distMode:'direccion',
@@ -1107,8 +1113,37 @@ function fillSelect(id, values){
   });
 }
 
-fillSelect('fDireccion', unique('direccion'));
 fillSelect('fRegion', unique('region'));
+
+// Multi-select for Direccion
+(function setupDireccionMultiSelect(){
+  const container = document.getElementById('direccionSelect');
+  const btn = document.getElementById('direccionBtn');
+  const dropdown = document.getElementById('direccionDropdown');
+  const textEl = document.getElementById('direccionText');
+  const dirs = unique('direccion');
+  dirs.forEach(d => {
+    const label = document.createElement('label');
+    label.className = 'nivel-opt';
+    label.innerHTML = '<input type="checkbox" value="' + d + '" checked> ' + d;
+    dropdown.appendChild(label);
+  });
+  btn.addEventListener('click', e => { e.stopPropagation(); container.classList.toggle('open'); });
+  document.addEventListener('click', e => { if(!container.contains(e.target)) container.classList.remove('open'); });
+  dropdown.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      state.direccion = Array.from(dropdown.querySelectorAll('input[type="checkbox"]')).filter(c => c.checked).map(c => c.value);
+      const count = state.direccion.length;
+      textEl.textContent = count === 0 ? 'Ninguna' : count === dirs.length ? 'Todas' : count + ' seleccionada' + (count > 1 ? 's' : '');
+      state.gerencia = ''; state.jefe = ''; state.page = 1;
+      updateAllCascading();
+      renderAll();
+      renderOtrosTable();
+      const compSection = document.getElementById('compDirSection');
+      compSection.style.display = 'none';
+    });
+  });
+})();
 
 // Multi-select for Nivel de Reporte
 function setupMultiSelect(){
@@ -1167,27 +1202,28 @@ function rebuildSelect(id, values){
 }
 
 function updateGerenciaFilter(){
-  const dir = state.direccion;
-  const gerencias = uniqueFiltered('gerencia', dir ? {direccion:dir} : {});
+  const dirs = state.direccion;
+  const gerencias = dirs.length > 0
+    ? [...new Set(RAW.filter(d => dirs.some(dd => norm(dd) === norm(d.direccion))).map(d => d.gerencia).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'))
+    : unique('gerencia');
   rebuildSelect('fGerencia', gerencias);
   if(state.gerencia && !gerencias.includes(state.gerencia)){ state.gerencia=''; document.getElementById('fGerencia').value=''; }
 }
 
 function updateJefeFilter(){
-  const dir = state.direccion;
+  const dirs = state.direccion;
   const ger = state.gerencia;
-  const filters = {};
-  if(dir) filters.direccion = dir;
-  if(ger) filters.gerencia = ger;
-  const jefesRAW = uniqueFiltered('jefe', filters);
-  // Normalize: sort words alphabetically to match same person in different order
+  const filtered = RAW.filter(d => {
+    if(dirs.length > 0 && !dirs.some(dd => norm(dd) === norm(d.direccion))) return false;
+    if(ger && d.gerencia !== ger) return false;
+    return d.jefe;
+  });
+  const jefesRAW = [...new Set(filtered.map(d => d.jefe))].sort((a,b)=>a.localeCompare(b,'es'));
   const normName = n => n.split(/\s+/).filter(Boolean).sort((a,b)=>a.localeCompare(b,'es')).join(' ');
-  // Build map: sortedKey -> best display name (prefer RAW format: APELLIDO NOMBRE)
   const byNorm = new Map();
   jefesRAW.forEach(j => byNorm.set(normName(j), j));
-  // Add OTROS jefes, but only if not already present (by sorted key)
   OTROS_SUCESORES.filter(p=>{
-    if(dir && p.direccion !== dir) return false;
+    if(dirs.length > 0 && !dirs.some(dd => norm(dd) === norm(p.direccion))) return false;
     return p.jefe;
   }).forEach(p => {
     const key = normName(p.jefe);
@@ -1210,23 +1246,6 @@ function updateAllCascading(){
   updateJefeFilter();
   updateCiudadFilter();
 }
-
- document.getElementById('fDireccion').addEventListener('change', e=>{
-  state.direccion = e.target.value;
-  state.gerencia=''; state.jefe=''; state.page=1;
-  state.search=''; document.getElementById('fSearch').value='';
-  updateAllCascading();
-  renderAll();
-    renderOtrosTable();
-  // Show/hide competency chart
-  const compSection=document.getElementById('compDirSection');
-  if(state.direccion){
-    compSection.style.display='';
-    renderCompDir(state.direccion);
-  }else{
-    compSection.style.display='none';
-  }
-});
 
 document.getElementById('fGerencia').addEventListener('change', e=>{
   state.gerencia = e.target.value;
@@ -1302,12 +1321,16 @@ const OTROS_SUCESORES = [
 ];
 
 updateAllCascading();
+state.direccion = unique('direccion');
 
 document.getElementById('btnReset').addEventListener('click', ()=>{
-  state.search=''; state.direccion=''; state.gerencia=''; state.jefe=''; state.region=''; state.ciudad='';
+  state.search=''; state.direccion=[]; state.gerencia=''; state.jefe=''; state.region=''; state.ciudad='';
   state.sucesor=''; state.nivelReporte=[]; state.caja=null; state.page=1;
   document.getElementById('fSearch').value='';
-  ['fDireccion','fGerencia','fJefe','fRegion','fCiudad','fSucesor'].forEach(id=> document.getElementById(id).value='');
+  document.querySelectorAll('#direccionDropdown input[type="checkbox"]').forEach(cb=> cb.checked=true);
+  state.direccion = unique('direccion');
+  document.getElementById('direccionText').textContent='Todas';
+  ['fGerencia','fJefe','fRegion','fCiudad','fSucesor'].forEach(id=> document.getElementById(id).value='');
   document.querySelectorAll('#nivelReporteDropdown input[type="checkbox"]').forEach(cb=> cb.checked=false);
   document.getElementById('nivelReporteText').textContent='Todos';
   updateAllCascading();
@@ -1328,7 +1351,7 @@ function applyFilters(list){
     if(state.jefe){
       if(d.jefe !== state.jefe) return false;
     }
-    if(state.direccion && norm(d.direccion) !== norm(state.direccion)) return false;
+    if(state.direccion.length > 0 && !state.direccion.some(dd => norm(dd) === norm(d.direccion))) return false;
     if(state.gerencia && norm(d.gerencia) !== norm(state.gerencia)) return false;
     if(state.region && d.region !== state.region) return false;
     if(state.ciudad && d.ciudad !== state.ciudad) return false;
@@ -1931,10 +1954,12 @@ fSearch.addEventListener('input', ()=>{
   state.search = fSearch.value;
   state.page = 1;
   if(state.search){
-    state.direccion=''; state.gerencia=''; state.jefe='';
+    state.direccion=[]; state.gerencia=''; state.jefe='';
    
     state.region=''; state.ciudad=''; state.sucesor='';
-    ['fDireccion','fGerencia','fJefe','fRegion','fCiudad','fSucesor'].forEach(id=> document.getElementById(id).value='');
+    document.querySelectorAll('#direccionDropdown input[type="checkbox"]').forEach(cb=> cb.checked=true);
+    state.direccion = unique('direccion');
+    ['fGerencia','fJefe','fRegion','fCiudad','fSucesor'].forEach(id=> document.getElementById(id).value='');
   }
   renderSuggestions();
   renderAll();
