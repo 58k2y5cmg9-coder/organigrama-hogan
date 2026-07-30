@@ -843,8 +843,6 @@ function renderHogan(h, exp){
           '<div style="margin-top:8px;">'+focoBullets+'</div>'+
         '</div>';
     }
-
-    return;
   }
 
   // Competencias section (independent of HPI/HDS/MVPI)
@@ -950,7 +948,7 @@ function renderHogan(h, exp){
       compDes.innerHTML=desHtml;
       compDesSection.style.display='block';
     }
-  }
+    return;
   }
 
   // Fallback: old format from observaciones
