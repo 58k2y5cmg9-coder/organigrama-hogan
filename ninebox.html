@@ -2604,9 +2604,11 @@ function renderOtrosTable(){
     return `<tr data-exp="${p.exp}">
       <td class="name">${p.nombre}</td>
       <td>${p.cargo || '—'}</td>
-      <td><select class="edit-caja" data-exp="${p.exp}" style="background:var(--bg-1);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:Inter,sans-serif;width:100%;">${cajaOpts}</select></td>
-      <td><select class="edit-sucesor" data-exp="${p.exp}" style="background:var(--bg-1);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:Inter,sans-serif;width:100%;"><option value="Si" ${sucesorVal==='si'?'selected':''}>Sí</option><option value="No" ${sucesorVal==='no'?'selected':''}>No</option></select></td>
-      <td><input class="edit-tiempo" data-exp="${p.exp}" value="${(p.tiempo||'').replace(/"/g,'&quot;')}" style="background:var(--bg-1);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;font-family:Inter,sans-serif;width:100%;box-sizing:border-box;" placeholder="Ej: 2 Años"></td>
+      <td><select class="edit-caja" style="background:${meta.color}" data-exp="${p.exp}">${cajaOpts}</select></td>
+      <td><span class="edit-sucesor ${sucesorVal==='si'?'si':'no'}" data-exp="${p.exp}">${sucesorVal==='si'?'Sí':'No'}</span></td>
+      <td><select class="edit-tiempo" data-exp="${p.exp}" style="background:var(--card-bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:11px;cursor:pointer;">
+        ${['N/A','Listo ya','1 Año','2 Años','3 Años','4 Años'].map(opt => `<option value="${opt}" ${(p.tiempo||'N/A')===opt?'selected':''}>${opt}</option>`).join('')}
+      </select></td>
       <td>${fichaLink}</td>
     </tr>`;
   }).join('');
@@ -2620,22 +2622,23 @@ function renderOtrosTable(){
       if(person){ person.caja = parseInt(sel.value); renderOtrosTable(); }
     });
   });
-  tbody.querySelectorAll('.edit-sucesor').forEach(sel => {
+  tbody.querySelectorAll('.edit-sucesor').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const exp = btn.dataset.exp;
+      const person = OTROS_SUCESORES.find(d => d.exp === exp);
+      if(!person) return;
+      person.sucesor = person.sucesor === 'si' ? 'no' : 'si';
+      renderOtrosTable();
+    });
+  });
+  tbody.querySelectorAll('.edit-tiempo').forEach(sel => {
     sel.addEventListener('change', e => {
       e.stopPropagation();
       const exp = sel.dataset.exp;
       const person = OTROS_SUCESORES.find(d => d.exp === exp);
-      if(person){ person.sucesor = sel.value; renderOtrosTable(); }
+      if(person) person.tiempo = sel.value;
     });
-  });
-  tbody.querySelectorAll('.edit-tiempo').forEach(inp => {
-    inp.addEventListener('change', e => {
-      e.stopPropagation();
-      const exp = inp.dataset.exp;
-      const person = OTROS_SUCESORES.find(d => d.exp === exp);
-      if(person) person.tiempo = inp.value;
-    });
-    inp.addEventListener('click', e => e.stopPropagation());
   });
 
   tbody.querySelectorAll('tr').forEach(tr=>{
