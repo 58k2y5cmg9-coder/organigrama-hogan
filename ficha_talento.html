@@ -259,30 +259,32 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
     <div class="chart-card" id="hoganFoco" style="margin-top:12px;display:none;"></div>
   </div>
 
-  <!-- Competencias Hogan (10 competencias) -->
-  <div id="competenciasSection" style="margin-top:16px;display:none;">
-    <!-- Title bar like Excel -->
-    <div style="background:#333;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;padding:8px 16px;border-radius:6px 6px 0 0;">PERFIL DE COMPETENCIAS (HOGAN) — ESCALA 0 A 100</div>
-    <div style="background:#fff;border:1px solid #ddd;border-top:none;border-radius:0 0 6px 6px;padding:20px;">
+  <!-- Resultados Hogan -->
+  <div id="competenciasSection" style="display:none;">
+    <div class="section-title" style="background:#1a1a2e;">Resultados Hogan</div>
+    <div class="chart-card">
+      <div class="chart-title">Perfil de Competencias — Escala 0 a 100</div>
       <div id="competenciasChart"></div>
     </div>
-    
-    <!-- FORTALEZAS -->
-    <div id="compFortalezasSection" style="margin-top:16px;display:none;">
-      <div style="background:#2d5a27;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;padding:6px 16px;border-radius:6px 6px 0 0;">FORTALEZAS</div>
-      <div id="compFortalezas" style="background:#fff;border:1px solid #ddd;border-top:none;border-radius:0 0 6px 6px;"></div>
+    <div class="grid-2" style="margin-top:12px;">
+      <div id="compFortalezasSection" style="display:none;">
+        <div class="chart-card" style="text-align:left;">
+          <div class="chart-title" style="color:var(--green);font-weight:700;">Fortalezas</div>
+          <div id="compFortalezas"></div>
+        </div>
+      </div>
+      <div id="compOportunidadesSection" style="display:none;">
+        <div class="chart-card" style="text-align:left;">
+          <div class="chart-title" style="color:var(--crimson);font-weight:700;">Oportunidades</div>
+          <div id="compOportunidades"></div>
+        </div>
+      </div>
     </div>
-    
-    <!-- OPORTUNIDADES -->
-    <div id="compOportunidadesSection" style="margin-top:16px;display:none;">
-      <div style="background:#8b2500;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;padding:6px 16px;border-radius:6px 6px 0 0;">OPORTUNIDADES</div>
-      <div id="compOportunidades" style="background:#fff;border:1px solid #ddd;border-top:none;border-radius:0 0 6px 6px;"></div>
-    </div>
-    
-    <!-- SUGERENCIAS DE DESARROLLO -->
-    <div id="compDesarrolloSection" style="margin-top:16px;display:none;">
-      <div style="background:#1a1a2e;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;padding:6px 16px;border-radius:6px 6px 0 0;">SUGERENCIAS DE DESARROLLO PARA SER SUCESOR</div>
-      <div id="compDesarrollo" style="background:#fff;border:1px solid #ddd;border-top:none;border-radius:0 0 6px 6px;"></div>
+    <div id="compDesarrolloSection" style="display:none;margin-top:12px;">
+      <div class="chart-card" style="text-align:left;">
+        <div class="chart-title" style="font-weight:700;">Sugerencias de Desarrollo para ser Sucesor</div>
+        <div id="compDesarrollo"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -290,7 +292,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
   <span>Planeación de Talento · Ficha de Talento — Claro Colombia 2026</span>
 </footer>
 
-<script src="ficha_data.js?v=202607301900"></script>
+<script src="ficha_data.js?v=202607302000"></script>
 <script>
 
 // Populate datalist
@@ -857,18 +859,12 @@ function renderHogan(h, exp){
     const compDes=document.getElementById('compDesarrollo');
     
     compSection.style.display='block';
-    compSection.style.background='var(--card-bg)';
-    compSection.style.border='1px solid var(--border)';
-    compSection.style.borderRadius='12px';
-    compSection.style.padding='20px';
     
     // Sort competencias alphabetically like Excel
     const sorted=[...h.competencias].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
     
-    // Render bar chart like Excel (horizontal red bars with gridlines)
-    let chartHtml='<div style="position:relative;">';
-    chartHtml+='<div style="font-size:11px;color:#666;margin-bottom:8px;font-weight:600;">Puntaje</div>';
-    chartHtml+='<div style="display:flex;flex-direction:column;gap:6px;">';
+    // Render bar chart (horizontal red bars with gridlines, scores inside)
+    let chartHtml='<div style="display:flex;flex-direction:column;gap:6px;">';
     sorted.forEach(c=>{
       chartHtml+='<div style="display:flex;align-items:center;gap:8px;">';
       chartHtml+='<div style="width:180px;text-align:right;font-size:12px;color:#333;font-weight:500;flex-shrink:0;">'+c.nombre+'</div>';
@@ -879,71 +875,65 @@ function renderHogan(h, exp){
       }
       // Bar
       chartHtml+='<div style="position:absolute;left:0;top:0;bottom:0;width:'+c.puntaje+'%;background:#c0392b;"></div>';
+      // Score inside bar
+      chartHtml+='<div style="position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.3);">'+c.puntaje+'</div>';
       chartHtml+='</div>';
-      chartHtml+='<div style="width:36px;text-align:left;font-size:12px;font-weight:700;color:#c0392b;flex-shrink:0;">'+c.puntaje+'</div>';
       chartHtml+='</div>';
     });
     chartHtml+='</div>';
-    // X-axis labels
-    chartHtml+='<div style="display:flex;margin-left:188px;margin-top:4px;">';
-    for(let g=0;g<=100;g+=10){
-      chartHtml+='<div style="flex:1;text-align:center;font-size:10px;color:#666;">'+g+'</div>';
-    }
-    chartHtml+='</div>';
-    chartHtml+='</div>';
     compChart.innerHTML=chartHtml;
     
-    // Render fortalezas (green header, table rows)
+    // Render fortalezas (no scores, just names)
     if(h.fortalezas&&h.fortalezas.trim()){
       const fortLines=h.fortalezas.split('•').map(s=>s.trim()).filter(Boolean);
       let fortHtml='';
       fortLines.forEach(line=>{
-        const match=line.match(/^(.+?)\s*\((\d+)\)\s*[—–-]?\s*(.*)$/);
+        const match=line.match(/^(.+?)\s*\(\d+\)\s*[—–-]?\s*(.*)$/);
         if(match){
-          fortHtml+='<div style="display:flex;border-bottom:1px solid #eee;">';
-          fortHtml+='<div style="width:220px;padding:8px 12px;font-size:12px;font-weight:700;color:#333;background:#f9f9f9;flex-shrink:0;">'+match[1].trim()+' ('+match[2]+')</div>';
-          fortHtml+='<div style="flex:1;padding:8px 12px;font-size:12px;color:#333;line-height:1.5;">'+match[3]+'</div>';
+          fortHtml+='<div style="padding:8px 0;border-bottom:1px solid #eee;font-size:12px;color:#333;">';
+          fortHtml+='<span style="font-weight:700;">'+match[1].trim()+'</span>';
+          if(match[2]) fortHtml+=' — '+match[2];
           fortHtml+='</div>';
         } else {
-          fortHtml+='<div style="padding:8px 12px;font-size:12px;color:#333;border-bottom:1px solid #eee;">• '+line+'</div>';
+          fortHtml+='<div style="padding:8px 0;border-bottom:1px solid #eee;font-size:12px;color:#333;">• '+line+'</div>';
         }
       });
       compFort.innerHTML=fortHtml;
       compFortSection.style.display='block';
     }
     
-    // Render oportunidades (red header, table rows)
+    // Render oportunidades (no scores, just names)
     if(h.oportunidades&&h.oportunidades.trim()){
       const oportLines=h.oportunidades.split('•').map(s=>s.trim()).filter(Boolean);
       let oportHtml='';
       oportLines.forEach(line=>{
-        const match=line.match(/^(.+?)\s*\((\d+)\)\s*[—–-]?\s*(.*)$/);
+        const match=line.match(/^(.+?)\s*\(\d+\)\s*[—–-]?\s*(.*)$/);
         if(match){
-          oportHtml+='<div style="display:flex;border-bottom:1px solid #eee;">';
-          oportHtml+='<div style="width:220px;padding:8px 12px;font-size:12px;font-weight:700;color:#333;background:#f9f9f9;flex-shrink:0;">'+match[1].trim()+' ('+match[2]+')</div>';
-          oportHtml+='<div style="flex:1;padding:8px 12px;font-size:12px;color:#333;line-height:1.5;">'+match[3]+'</div>';
+          oportHtml+='<div style="padding:8px 0;border-bottom:1px solid #eee;font-size:12px;color:#333;">';
+          oportHtml+='<span style="font-weight:700;">'+match[1].trim()+'</span>';
+          if(match[2]) oportHtml+=' — '+match[2];
           oportHtml+='</div>';
         } else {
-          oportHtml+='<div style="padding:8px 12px;font-size:12px;color:#333;border-bottom:1px solid #eee;">• '+line+'</div>';
+          oportHtml+='<div style="padding:8px 0;border-bottom:1px solid #eee;font-size:12px;color:#333;">• '+line+'</div>';
         }
       });
       compOport.innerHTML=oportHtml;
       compOportSection.style.display='block';
     }
     
-    // Render desarrollo (dark header, table rows)
+    // Render desarrollo
     if(h.desarrollo&&h.desarrollo.trim()){
       const desLines=h.desarrollo.split('•').map(s=>s.trim()).filter(Boolean);
       let desHtml='';
       desLines.forEach(line=>{
         const match=line.match(/^(.+?):\s*(.*)$/);
         if(match){
-          desHtml+='<div style="display:flex;border-bottom:1px solid #eee;">';
-          desHtml+='<div style="width:220px;padding:8px 12px;font-size:12px;font-weight:700;color:#333;background:#f9f9f9;flex-shrink:0;">'+match[1].trim()+'</div>';
-          desHtml+='<div style="flex:1;padding:8px 12px;font-size:12px;color:#333;line-height:1.5;">'+match[2]+'</div>';
+          desHtml+='<div style="padding:8px 0;border-bottom:1px solid #eee;font-size:12px;color:#333;">';
+          desHtml+='<span style="font-weight:700;">'+match[1].trim()+'</span>';
+          if(match[2]) desHtml+=' — '+match[2];
           desHtml+='</div>';
         } else {
-          desHtml+='<div style="padding:8px 12px;font-size:12px;color:#333;border-bottom:1px solid #eee;">• '+line+'</div>';
+          desHtml+='<div style="padding:8px 0;border-bottom:1px solid #eee;font-size:12px;color:#333;">• '+line+'</div>';
         }
       });
       compDes.innerHTML=desHtml;
