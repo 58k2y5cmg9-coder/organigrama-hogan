@@ -2623,7 +2623,7 @@ function renderOtrosTable(){
     const caja = p.caja || 0;
     const meta = BOX_META[caja] || BOX_FALLBACK;
     const sucesorVal = (p.sucesor || '').toLowerCase();
-    const cajaOpts = Object.entries(BOX_META).map(([k,v]) => `<option value="${k}" ${parseInt(k)===caja?'selected':''}>${k} · ${v.short}</option>`).join('');
+    const cajaOpts = '<option value="0" '+(caja===0?'selected':'')+'>0 · Sin ubicación</option>' + Object.entries(BOX_META).map(([k,v]) => `<option value="${k}" ${parseInt(k)===caja?'selected':''}>${k} · ${v.short}</option>`).join('');
     const fichaLink = (sucesorVal==='si' && FICHA_IDS.has(p.exp))
       ? `<a href="ficha_talento.html?expediente=${p.exp}" target="_blank" onclick="event.stopPropagation()" style="color:#fff;background:var(--crimson);padding:4px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">Ver Ficha</a>`
       : '—';
