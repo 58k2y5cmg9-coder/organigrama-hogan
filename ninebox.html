@@ -2569,7 +2569,7 @@ function renderOtrosTable(){
   const searchQ = norm(state.search || '');
   const hasJefeFilter = !!state.jefe;
   const jefeNorm = hasJefeFilter ? normJ(state.jefe) : '';
-  const searchMatchesJefe = searchQ && otrosJefesSet.has(normJ(searchQ));
+  const searchMatchesJefe = searchQ && OTROS_SUCESORES.some(p => norm(p.jefe).includes(searchQ));
   const jefeHasOtros = hasJefeFilter && otrosJefesSet.has(jefeNorm);
 
   if(!jefeHasOtros && !searchMatchesJefe){
@@ -2579,11 +2579,12 @@ function renderOtrosTable(){
   section.style.display = '';
 
   // Filter OTROS_SUCESORES by the active jefe or search
-  const filterKey = jefeHasOtros ? jefeNorm : normJ(searchQ);
-  let data = OTROS_SUCESORES.filter(p => {
-    const pJefeNorm = normJ(p.jefe);
-    return pJefeNorm === filterKey;
-  });
+  let data;
+  if(hasJefeFilter && jefeHasOtros){
+    data = OTROS_SUCESORES.filter(p => normJ(p.jefe) === jefeNorm);
+  } else {
+    data = OTROS_SUCESORES.filter(p => norm(p.jefe).includes(searchQ));
+  }
 
   const search = (document.getElementById('otrosSearch')?.value || '').toLowerCase();
   if(search) data = data.filter(p => p.nombre.toLowerCase().includes(search) || p.exp.includes(search));
