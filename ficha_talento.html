@@ -863,22 +863,18 @@ function renderHogan(h, exp){
     // Sort competencias alphabetically like Excel
     const sorted=[...h.competencias].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
     
-    // Render bar chart (horizontal red bars with gridlines, scores inside at end)
+    // Render bar chart (horizontal red bars, scores right after bar)
     let chartHtml='<div style="display:flex;flex-direction:column;gap:6px;">';
     sorted.forEach(c=>{
       chartHtml+='<div style="display:flex;align-items:center;gap:8px;">';
       chartHtml+='<div style="width:180px;text-align:right;font-size:12px;color:#333;font-weight:500;flex-shrink:0;">'+c.nombre+'</div>';
       chartHtml+='<div style="flex:1;position:relative;height:24px;background:#f5f5f5;border:1px solid #ddd;">';
-      // Gridlines
       for(let g=0;g<=100;g+=10){
         chartHtml+='<div style="position:absolute;left:'+g+'%;top:0;bottom:0;width:1px;background:#e0e0e0;"></div>';
       }
-      // Bar
       chartHtml+='<div style="position:absolute;left:0;top:0;bottom:0;width:'+c.puntaje+'%;background:#c0392b;"></div>';
-      // Score inside bar at the end (5px from end of bar)
-      const scoreLeft = Math.max(c.puntaje - 5, 0);
-      chartHtml+='<div style="position:absolute;left:'+scoreLeft+'%;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:#c0392b;white-space:nowrap;padding-left:2px;">'+c.puntaje+'</div>';
       chartHtml+='</div>';
+      chartHtml+='<div style="width:32px;text-align:left;font-size:13px;font-weight:800;color:#c0392b;flex-shrink:0;">'+c.puntaje+'</div>';
       chartHtml+='</div>';
     });
     chartHtml+='</div>';
