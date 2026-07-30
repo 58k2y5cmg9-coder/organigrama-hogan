@@ -1336,7 +1336,11 @@ function updateJefeFilter(){
   });
   const jefes = [...byNorm.values()].sort((a,b)=>a.localeCompare(b,'es'));
   rebuildSelect('fJefe', jefes);
-  if(state.jefe && !jefes.includes(state.jefe)){ state.jefe=''; document.getElementById('fJefe').value=''; }
+  if(state.jefe && !jefes.some(j => norm(j) === norm(state.jefe))){
+    const matched = jefes.find(j => norm(j) === norm(state.jefe));
+    if(matched){ state.jefe = matched; document.getElementById('fJefe').value = matched; }
+    else { state.jefe=''; document.getElementById('fJefe').value=''; }
+  }
 }
 
 function updateCiudadFilter(){
@@ -1362,13 +1366,16 @@ document.getElementById('fGerencia').addEventListener('change', e=>{
 });
 
 document.getElementById('fJefe').addEventListener('change', e=>{
-  state.jefe = e.target.value;
+  const selectedJefe = e.target.value;
+  state.jefe = selectedJefe;
   state.page = 1;
   state.search=''; document.getElementById('fSearch').value='';
   state.region=''; state.ciudad=''; state.sucesor='';
   ['fRegion','fCiudad','fSucesor'].forEach(id=> document.getElementById(id).value='');
   renderOtrosTable();
   updateAllCascading();
+  state.jefe = selectedJefe;
+  document.getElementById('fJefe').value = selectedJefe;
   renderAll();
   document.getElementById('compDirSection').style.display='none';
 });
