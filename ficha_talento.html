@@ -292,7 +292,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
   <span>Planeación de Talento · Ficha de Talento — Claro Colombia 2026</span>
 </footer>
 
-<script src="ficha_data.js?v=202607302000"></script>
+<script src="ficha_data.js?v=202607302100"></script>
 <script>
 
 // Populate datalist
@@ -863,7 +863,7 @@ function renderHogan(h, exp){
     // Sort competencias alphabetically like Excel
     const sorted=[...h.competencias].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
     
-    // Render bar chart (horizontal red bars with gridlines, scores inside)
+    // Render bar chart (horizontal red bars with gridlines, scores inside at end)
     let chartHtml='<div style="display:flex;flex-direction:column;gap:6px;">';
     sorted.forEach(c=>{
       chartHtml+='<div style="display:flex;align-items:center;gap:8px;">';
@@ -875,15 +875,16 @@ function renderHogan(h, exp){
       }
       // Bar
       chartHtml+='<div style="position:absolute;left:0;top:0;bottom:0;width:'+c.puntaje+'%;background:#c0392b;"></div>';
-      // Score inside bar
-      chartHtml+='<div style="position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.3);">'+c.puntaje+'</div>';
+      // Score inside bar at the end (5px from end of bar)
+      const scoreLeft = Math.max(c.puntaje - 5, 0);
+      chartHtml+='<div style="position:absolute;left:'+scoreLeft+'%;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:#c0392b;white-space:nowrap;padding-left:2px;">'+c.puntaje+'</div>';
       chartHtml+='</div>';
       chartHtml+='</div>';
     });
     chartHtml+='</div>';
     compChart.innerHTML=chartHtml;
     
-    // Render fortalezas (no scores, just names)
+    // Render fortalezas (no scores, colored names)
     if(h.fortalezas&&h.fortalezas.trim()){
       const fortLines=h.fortalezas.split('•').map(s=>s.trim()).filter(Boolean);
       let fortHtml='';
@@ -891,7 +892,7 @@ function renderHogan(h, exp){
         const match=line.match(/^(.+?)\s*\(\d+\)\s*[—–-]?\s*(.*)$/);
         if(match){
           fortHtml+='<div style="padding:8px 0;border-bottom:1px solid #eee;font-size:12px;color:#333;">';
-          fortHtml+='<span style="font-weight:700;">'+match[1].trim()+'</span>';
+          fortHtml+='<span style="font-weight:700;color:#2d5a27;">'+match[1].trim()+'</span>';
           if(match[2]) fortHtml+=' — '+match[2];
           fortHtml+='</div>';
         } else {
@@ -902,7 +903,7 @@ function renderHogan(h, exp){
       compFortSection.style.display='block';
     }
     
-    // Render oportunidades (no scores, just names)
+    // Render oportunidades (no scores, colored names)
     if(h.oportunidades&&h.oportunidades.trim()){
       const oportLines=h.oportunidades.split('•').map(s=>s.trim()).filter(Boolean);
       let oportHtml='';
@@ -910,7 +911,7 @@ function renderHogan(h, exp){
         const match=line.match(/^(.+?)\s*\(\d+\)\s*[—–-]?\s*(.*)$/);
         if(match){
           oportHtml+='<div style="padding:8px 0;border-bottom:1px solid #eee;font-size:12px;color:#333;">';
-          oportHtml+='<span style="font-weight:700;">'+match[1].trim()+'</span>';
+          oportHtml+='<span style="font-weight:700;color:#8b2500;">'+match[1].trim()+'</span>';
           if(match[2]) oportHtml+=' — '+match[2];
           oportHtml+='</div>';
         } else {
