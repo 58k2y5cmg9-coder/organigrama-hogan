@@ -258,6 +258,19 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
     </div>
     <div class="chart-card" id="hoganFoco" style="margin-top:12px;display:none;"></div>
   </div>
+
+  <!-- Competencias Hogan (10 competencias) -->
+  <div id="competenciasSection" style="margin-top:16px;display:none;">
+    <div class="section-title" style="color:#eab308;">Competencias Hogan — Escala 0 a 100</div>
+    <div class="chart-card" style="padding:16px 20px;">
+      <div id="competenciasChart"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px;">
+      <div class="chart-card" id="compFortalezas" style="text-align:left;"></div>
+      <div class="chart-card" id="compOportunidades" style="text-align:left;"></div>
+      <div class="chart-card" id="compDesarrollo" style="text-align:left;"></div>
+    </div>
+  </div>
 </div>
 <footer style="margin-top:32px;padding:16px 32px;border-top:1px solid var(--border);text-align:center;color:var(--text-dim);font-size:12px;font-family:'Inter',sans-serif;">
   <span>Planeación de Talento · Ficha de Talento — Claro Colombia 2026</span>
@@ -815,6 +828,59 @@ function renderHogan(h, exp){
           focoLines+
           '<div style="margin-top:8px;">'+focoBullets+'</div>'+
         '</div>';
+    }
+
+    // Render competencias section (10 competencias from Excel)
+    const compSection=document.getElementById('competenciasSection');
+    const compChart=document.getElementById('competenciasChart');
+    const compFort=document.getElementById('compFortalezas');
+    const compOport=document.getElementById('compOportunidades');
+    const compDes=document.getElementById('compDesarrollo');
+    
+    if(h.competencias&&h.competencias.length>0){
+      compSection.style.display='block';
+      
+      // Sort competencias by score descending
+      const sorted=[...h.competencias].sort((a,b)=>b.puntaje-a.puntaje);
+      
+      // Render bar chart
+      let chartHtml='<div style="display:flex;flex-direction:column;gap:8px;">';
+      sorted.forEach(c=>{
+        const color=c.puntaje>=80?'#059669':c.puntaje>=60?'#eab308':c.puntaje>=40?'#f97316':'#dc2626';
+        chartHtml+='<div style="display:flex;align-items:center;gap:10px;">';
+        chartHtml+='<div style="width:160px;text-align:right;font-size:12px;color:var(--text-dim);flex-shrink:0;">'+c.nombre+'</div>';
+        chartHtml+='<div style="flex:1;height:18px;background:var(--border);border-radius:4px;overflow:hidden;">';
+        chartHtml+='<div style="width:'+c.puntaje+'%;height:100%;background:'+color+';border-radius:4px;transition:width 0.6s;"></div>';
+        chartHtml+='</div>';
+        chartHtml+='<div style="width:32px;font-size:13px;font-weight:700;color:var(--text);text-align:right;">'+c.puntaje+'</div>';
+        chartHtml+='</div>';
+      });
+      chartHtml+='</div>';
+      compChart.innerHTML=chartHtml;
+      
+      // Render fortalezas
+      if(h.fortalezas&&h.fortalezas.trim()){
+        const fortItems=h.fortalezas.split('•').map(s=>s.trim()).filter(Boolean);
+        compFort.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#059669;padding:6px 16px;background:#ecfdf5;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>FORTALEZAS</div>'+
+          '<div style="font-size:11px;color:var(--text);line-height:1.7;">'+fortItems.map(f=>'<div style="margin-bottom:4px;">• '+f+'</div>').join('')+'</div>';
+        compFort.style.display='';
+      }
+      
+      // Render oportunidades
+      if(h.oportunidades&&h.oportunidades.trim()){
+        const oportItems=h.oportunidades.split('•').map(s=>s.trim()).filter(Boolean);
+        compOport.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#dc2626;padding:6px 16px;background:#fee2e2;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>OPORTUNIDADES</div>'+
+          '<div style="font-size:11px;color:var(--text);line-height:1.7;">'+oportItems.map(o=>'<div style="margin-bottom:4px;">• '+o+'</div>').join('')+'</div>';
+        compOport.style.display='';
+      }
+      
+      // Render desarrollo
+      if(h.desarrollo&&h.desarrollo.trim()){
+        const desItems=h.desarrollo.split('•').map(s=>s.trim()).filter(Boolean);
+        compDes.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#2563eb;padding:6px 16px;background:#dbeafe;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>DESARROLLO</div>'+
+          '<div style="font-size:11px;color:var(--text);line-height:1.7;">'+desItems.map(d=>'<div style="margin-bottom:4px;">• '+d+'</div>').join('')+'</div>';
+        compDes.style.display='';
+      }
     }
     return;
   }
