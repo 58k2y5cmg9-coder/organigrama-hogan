@@ -1271,7 +1271,7 @@ function setupMultiSelect(){
     cb.addEventListener('change', ()=>{
       state.nivelReporte = Array.from(checkboxes).filter(c=>c.checked).map(c=>parseInt(c.value));
       const count = state.nivelReporte.length;
-      textEl.textContent = count === 0 ? 'Todos' : count === 1 ? `Excluir Nivel ${state.nivelReporte[0]}` : `Excluir ${count} niveles`;
+      textEl.textContent = count === 0 ? 'Todos' : count === 1 ? `Incluir Nivel ${state.nivelReporte[0]}` : `Incluir ${count} niveles`;
       state.page = 1;
       renderAll();
   renderOtrosTable();
