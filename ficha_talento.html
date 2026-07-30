@@ -261,14 +261,28 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
 
   <!-- Competencias Hogan (10 competencias) -->
   <div id="competenciasSection" style="margin-top:16px;display:none;">
-    <div class="section-title" style="color:#eab308;">Competencias Hogan — Escala 0 a 100</div>
-    <div class="chart-card" style="padding:16px 20px;">
+    <!-- Title bar like Excel -->
+    <div style="background:#333;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;padding:8px 16px;border-radius:6px 6px 0 0;">PERFIL DE COMPETENCIAS (HOGAN) — ESCALA 0 A 100</div>
+    <div style="background:#fff;border:1px solid #ddd;border-top:none;border-radius:0 0 6px 6px;padding:20px;">
       <div id="competenciasChart"></div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px;">
-      <div class="chart-card" id="compFortalezas" style="text-align:left;"></div>
-      <div class="chart-card" id="compOportunidades" style="text-align:left;"></div>
-      <div class="chart-card" id="compDesarrollo" style="text-align:left;"></div>
+    
+    <!-- FORTALEZAS -->
+    <div id="compFortalezasSection" style="margin-top:16px;display:none;">
+      <div style="background:#2d5a27;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;padding:6px 16px;border-radius:6px 6px 0 0;">FORTALEZAS</div>
+      <div id="compFortalezas" style="background:#fff;border:1px solid #ddd;border-top:none;border-radius:0 0 6px 6px;"></div>
+    </div>
+    
+    <!-- OPORTUNIDADES -->
+    <div id="compOportunidadesSection" style="margin-top:16px;display:none;">
+      <div style="background:#8b2500;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;padding:6px 16px;border-radius:6px 6px 0 0;">OPORTUNIDADES</div>
+      <div id="compOportunidades" style="background:#fff;border:1px solid #ddd;border-top:none;border-radius:0 0 6px 6px;"></div>
+    </div>
+    
+    <!-- SUGERENCIAS DE DESARROLLO -->
+    <div id="compDesarrolloSection" style="margin-top:16px;display:none;">
+      <div style="background:#1a1a2e;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;padding:6px 16px;border-radius:6px 6px 0 0;">SUGERENCIAS DE DESARROLLO PARA SER SUCESOR</div>
+      <div id="compDesarrollo" style="background:#fff;border:1px solid #ddd;border-top:none;border-radius:0 0 6px 6px;"></div>
     </div>
   </div>
 </div>
@@ -833,53 +847,102 @@ function renderHogan(h, exp){
     // Render competencias section (10 competencias from Excel)
     const compSection=document.getElementById('competenciasSection');
     const compChart=document.getElementById('competenciasChart');
+    const compFortSection=document.getElementById('compFortalezasSection');
     const compFort=document.getElementById('compFortalezas');
+    const compOportSection=document.getElementById('compOportunidadesSection');
     const compOport=document.getElementById('compOportunidades');
+    const compDesSection=document.getElementById('compDesarrolloSection');
     const compDes=document.getElementById('compDesarrollo');
     
     if(h.competencias&&h.competencias.length>0){
       compSection.style.display='block';
       
-      // Sort competencias by score descending
-      const sorted=[...h.competencias].sort((a,b)=>b.puntaje-a.puntaje);
+      // Sort competencias alphabetically like Excel
+      const sorted=[...h.competencias].sort((a,b)=>a.nombre.localeCompare(b.nombre,'es'));
       
-      // Render bar chart
-      let chartHtml='<div style="display:flex;flex-direction:column;gap:8px;">';
+      // Render bar chart like Excel (horizontal red bars with gridlines)
+      let chartHtml='<div style="position:relative;">';
+      chartHtml+='<div style="font-size:11px;color:#666;margin-bottom:8px;font-weight:600;">Puntaje</div>';
+      chartHtml+='<div style="display:flex;flex-direction:column;gap:6px;">';
       sorted.forEach(c=>{
-        const color=c.puntaje>=80?'#059669':c.puntaje>=60?'#eab308':c.puntaje>=40?'#f97316':'#dc2626';
-        chartHtml+='<div style="display:flex;align-items:center;gap:10px;">';
-        chartHtml+='<div style="width:160px;text-align:right;font-size:12px;color:var(--text-dim);flex-shrink:0;">'+c.nombre+'</div>';
-        chartHtml+='<div style="flex:1;height:18px;background:var(--border);border-radius:4px;overflow:hidden;">';
-        chartHtml+='<div style="width:'+c.puntaje+'%;height:100%;background:'+color+';border-radius:4px;transition:width 0.6s;"></div>';
+        chartHtml+='<div style="display:flex;align-items:center;gap:8px;">';
+        chartHtml+='<div style="width:180px;text-align:right;font-size:12px;color:#333;font-weight:500;flex-shrink:0;">'+c.nombre+'</div>';
+        chartHtml+='<div style="flex:1;position:relative;height:24px;background:#f5f5f5;border:1px solid #ddd;">';
+        // Gridlines
+        for(let g=0;g<=100;g+=10){
+          chartHtml+='<div style="position:absolute;left:'+g+'%;top:0;bottom:0;width:1px;background:#e0e0e0;"></div>';
+        }
+        // Bar
+        chartHtml+='<div style="position:absolute;left:0;top:0;bottom:0;width:'+c.puntaje+'%;background:#c0392b;"></div>';
         chartHtml+='</div>';
-        chartHtml+='<div style="width:32px;font-size:13px;font-weight:700;color:var(--text);text-align:right;">'+c.puntaje+'</div>';
         chartHtml+='</div>';
       });
       chartHtml+='</div>';
+      // X-axis labels
+      chartHtml+='<div style="display:flex;margin-left:188px;margin-top:4px;">';
+      for(let g=0;g<=100;g+=10){
+        chartHtml+='<div style="flex:1;text-align:center;font-size:10px;color:#666;">'+g+'</div>';
+      }
+      chartHtml+='</div>';
+      chartHtml+='</div>';
       compChart.innerHTML=chartHtml;
       
-      // Render fortalezas
+      // Render fortalezas (green header, table rows)
       if(h.fortalezas&&h.fortalezas.trim()){
-        const fortItems=h.fortalezas.split('•').map(s=>s.trim()).filter(Boolean);
-        compFort.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#059669;padding:6px 16px;background:#ecfdf5;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>FORTALEZAS</div>'+
-          '<div style="font-size:11px;color:var(--text);line-height:1.7;">'+fortItems.map(f=>'<div style="margin-bottom:4px;">• '+f+'</div>').join('')+'</div>';
-        compFort.style.display='';
+        const fortLines=h.fortalezas.split('•').map(s=>s.trim()).filter(Boolean);
+        let fortHtml='';
+        fortLines.forEach(line=>{
+          // Parse "Competencia (score) — Descripcion" or "Competencia (score) Descripcion"
+          const match=line.match(/^(.+?)\s*\((\d+)\)\s*[—–-]?\s*(.*)$/);
+          if(match){
+            fortHtml+='<div style="display:flex;border-bottom:1px solid #eee;">';
+            fortHtml+='<div style="width:220px;padding:8px 12px;font-size:12px;font-weight:700;color:#333;background:#f9f9f9;flex-shrink:0;">'+match[1].trim()+' ('+match[2]+')</div>';
+            fortHtml+='<div style="flex:1;padding:8px 12px;font-size:12px;color:#333;line-height:1.5;">'+match[3]+'</div>';
+            fortHtml+='</div>';
+          } else {
+            fortHtml+='<div style="padding:8px 12px;font-size:12px;color:#333;border-bottom:1px solid #eee;">• '+line+'</div>';
+          }
+        });
+        compFort.innerHTML=fortHtml;
+        compFortSection.style.display='block';
       }
       
-      // Render oportunidades
+      // Render oportunidades (red header, table rows)
       if(h.oportunidades&&h.oportunidades.trim()){
-        const oportItems=h.oportunidades.split('•').map(s=>s.trim()).filter(Boolean);
-        compOport.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#dc2626;padding:6px 16px;background:#fee2e2;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>OPORTUNIDADES</div>'+
-          '<div style="font-size:11px;color:var(--text);line-height:1.7;">'+oportItems.map(o=>'<div style="margin-bottom:4px;">• '+o+'</div>').join('')+'</div>';
-        compOport.style.display='';
+        const oportLines=h.oportunidades.split('•').map(s=>s.trim()).filter(Boolean);
+        let oportHtml='';
+        oportLines.forEach(line=>{
+          const match=line.match(/^(.+?)\s*\((\d+)\)\s*[—–-]?\s*(.*)$/);
+          if(match){
+            oportHtml+='<div style="display:flex;border-bottom:1px solid #eee;">';
+            oportHtml+='<div style="width:220px;padding:8px 12px;font-size:12px;font-weight:700;color:#333;background:#f9f9f9;flex-shrink:0;">'+match[1].trim()+' ('+match[2]+')</div>';
+            oportHtml+='<div style="flex:1;padding:8px 12px;font-size:12px;color:#333;line-height:1.5;">'+match[3]+'</div>';
+            oportHtml+='</div>';
+          } else {
+            oportHtml+='<div style="padding:8px 12px;font-size:12px;color:#333;border-bottom:1px solid #eee;">• '+line+'</div>';
+          }
+        });
+        compOport.innerHTML=oportHtml;
+        compOportSection.style.display='block';
       }
       
-      // Render desarrollo
+      // Render desarrollo (dark header, table rows)
       if(h.desarrollo&&h.desarrollo.trim()){
-        const desItems=h.desarrollo.split('•').map(s=>s.trim()).filter(Boolean);
-        compDes.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#2563eb;padding:6px 16px;background:#dbeafe;justify-content:center;border-radius:8px;margin-bottom:10px;"><svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>DESARROLLO</div>'+
-          '<div style="font-size:11px;color:var(--text);line-height:1.7;">'+desItems.map(d=>'<div style="margin-bottom:4px;">• '+d+'</div>').join('')+'</div>';
-        compDes.style.display='';
+        const desLines=h.desarrollo.split('•').map(s=>s.trim()).filter(Boolean);
+        let desHtml='';
+        desLines.forEach(line=>{
+          const match=line.match(/^(.+?):\s*(.*)$/);
+          if(match){
+            desHtml+='<div style="display:flex;border-bottom:1px solid #eee;">';
+            desHtml+='<div style="width:220px;padding:8px 12px;font-size:12px;font-weight:700;color:#333;background:#f9f9f9;flex-shrink:0;">'+match[1].trim()+'</div>';
+            desHtml+='<div style="flex:1;padding:8px 12px;font-size:12px;color:#333;line-height:1.5;">'+match[2]+'</div>';
+            desHtml+='</div>';
+          } else {
+            desHtml+='<div style="padding:8px 12px;font-size:12px;color:#333;border-bottom:1px solid #eee;">• '+line+'</div>';
+          }
+        });
+        compDes.innerHTML=desHtml;
+        compDesSection.style.display='block';
       }
     }
     return;
