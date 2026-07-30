@@ -290,7 +290,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);min-h
   <span>Planeación de Talento · Ficha de Talento — Claro Colombia 2026</span>
 </footer>
 
-<script src="ficha_data.js?v=202607301800"></script>
+<script src="ficha_data.js?v=202607301900"></script>
 <script>
 
 // Populate datalist
@@ -880,6 +880,7 @@ function renderHogan(h, exp){
       // Bar
       chartHtml+='<div style="position:absolute;left:0;top:0;bottom:0;width:'+c.puntaje+'%;background:#c0392b;"></div>';
       chartHtml+='</div>';
+      chartHtml+='<div style="width:36px;text-align:left;font-size:12px;font-weight:700;color:#c0392b;flex-shrink:0;">'+c.puntaje+'</div>';
       chartHtml+='</div>';
     });
     chartHtml+='</div>';
