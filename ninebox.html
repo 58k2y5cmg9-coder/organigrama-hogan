@@ -999,9 +999,9 @@ footer{
       </div>
       <div class="matrix-main">
         <div class="matrix-xaxis">
-          <div class="xlabel">Profundidad</div>
-          <div class="xlabel">Versatilidad media</div>
-          <div class="xlabel">Alta versatilidad</div>
+          <div class="xlabel">Experto</div>
+          <div class="xlabel">Sólido</div>
+          <div class="xlabel">Versátil</div>
         </div>
         <div class="matrix-cells" id="matrixCells"></div>
       </div>
@@ -1504,7 +1504,7 @@ function renderExecSummary(){
   const total = data.filter(d=>d.caja>0).length;
   if(!total){ document.getElementById('execGrid').innerHTML=''; return; }
 
-  // Cajas: col0=Profundidad(7,4,1), col1=Versatilidad media(8,5,2), col2=Alta versatilidad(9,6,3)
+  // Cajas: col0=Experto(7,4,1), col1=Sólido(8,5,2), col2=Versátil(9,6,3)
   const profundidad = data.filter(d=>[7,4,1].includes(d.caja)).length;
   const versMedia = data.filter(d=>[8,5,2].includes(d.caja)).length;
   const altaVers = data.filter(d=>[9,6,3].includes(d.caja)).length;
@@ -1515,7 +1515,7 @@ function renderExecSummary(){
 
   const items = [
     {
-      label:'Profundidad',
+      label:'Experto',
       value: pctProf+'%',
       sub: profundidad+' personas — especialistas con conocimiento profundo',
       bar: pctProf,
@@ -1523,7 +1523,7 @@ function renderExecSummary(){
       highlight: false
     },
     {
-      label:'Versatilidad media',
+      label:'Sólido',
       value: pctVersM+'%',
       sub: versMedia+' personas — equilibrio entre especialización y versatilidad',
       bar: pctVersM,
@@ -1531,7 +1531,7 @@ function renderExecSummary(){
       highlight: false
     },
     {
-      label:'Alta versatilidad',
+      label:'Versátil',
       value: pctAltaV+'%',
       sub: altaVers+' personas — alta capacidad de adaptación y cruzar funciones',
       bar: pctAltaV,
@@ -2212,9 +2212,9 @@ function exportPDF(){
   const altV=data.filter(d=>[9,6,3].includes(d.caja)).length;
 
   const summaryItems=[
-    {label:'Profundidad',count:prof,pct:Math.round(prof/total*100),color:[29,110,140],bg:[219,234,254]},
-    {label:'Versatilidad media',count:versM,pct:Math.round(versM/total*100),color:[156,106,46],bg:[255,237,213]},
-    {label:'Alta versatilidad',count:altV,pct:Math.round(altV/total*100),color:[30,122,78],bg:[209,250,229]}
+    {label:'Experto',count:prof,pct:Math.round(prof/total*100),color:[29,110,140],bg:[219,234,254]},
+    {label:'Sólido',count:versM,pct:Math.round(versM/total*100),color:[156,106,46],bg:[255,237,213]},
+    {label:'Versátil',count:altV,pct:Math.round(altV/total*100),color:[30,122,78],bg:[209,250,229]}
   ];
 
   const cardW=(W-margin*2-8)/3;
@@ -2281,7 +2281,7 @@ function exportPDF(){
   });
 
   // X-axis labels
-  const xLabels=['Profundidad','Versatilidad media','Alta versatilidad'];
+  const xLabels=['Experto','Sólido','Versátil'];
   doc.setFontSize(5.5);doc.setFont('helvetica','bold');doc.setTextColor(...GRAY);
   xLabels.forEach((lbl,i)=>{
     doc.text(lbl,margin+14+i*(gridW+gap)+gridW/2,y-1,{align:'center'});
