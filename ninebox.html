@@ -1593,9 +1593,11 @@ function renderGrid(){
     }
     return p.caja && p.caja > 0;
   });
+  const baseExpSet = new Set(base.map(d=>d.expediente));
+  const dedupedOtros = otrosFiltered.filter(p => !baseExpSet.has(p.exp));
   const container = document.getElementById('matrixCells');
   container.innerHTML = '';
-  const maxCount = Math.max(1, ...RENDER_ORDER.map(n=> base.filter(d=>d.caja===n).length + otrosFiltered.filter(d=>d.caja===n).length));
+  const maxCount = Math.max(1, ...RENDER_ORDER.map(n=> base.filter(d=>d.caja===n).length + dedupedOtros.filter(d=>d.caja===n).length));
   
   // Check if filtering by jefe or search (for showing names)
   const showNames = state.jefe || state.search;
@@ -1603,7 +1605,7 @@ function renderGrid(){
   RENDER_ORDER.forEach(n=>{
     const meta = BOX_META[n];
     const people = base.filter(d=>d.caja===n);
-    const otrosPeople = otrosFiltered.filter(d=>d.caja===n);
+    const otrosPeople = dedupedOtros.filter(d=>d.caja===n);
     const totalCount = people.length + otrosPeople.length;
     const cell = document.createElement('div');
     cell.className = 'cell';
