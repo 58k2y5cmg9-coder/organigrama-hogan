@@ -1330,6 +1330,12 @@ function updateJefeFilter(){
     const key = normName(p.jefe);
     if(!byNorm.has(key)) byNorm.set(key, p.jefe);
   });
+  if(dirs.length > 0 && dirs.some(dd => norm(dd) === norm('Comité Directivo'))){
+    RAW.filter(d => norm(d.direccion) === norm('Comité Directivo')).forEach(d => {
+      const key = normName(d.nombre);
+      if(!byNorm.has(key)) byNorm.set(key, d.nombre);
+    });
+  }
   const jefes = [...byNorm.values()].sort((a,b)=>a.localeCompare(b,'es'));
   rebuildSelect('fJefe', jefes);
   if(state.jefe && !jefes.some(j => norm(j) === norm(state.jefe))){
@@ -1434,7 +1440,7 @@ function applyFilters(list){
       if(matchName && !matchJefe && jefeSet.has(d.nombre)) return false;
     }
     if(state.jefe){
-      if(d.jefe !== state.jefe) return false;
+      if(d.jefe !== state.jefe && d.nombre !== state.jefe) return false;
     }
     if(state.direccion.length > 0 && !state.direccion.some(dd => norm(dd) === norm(d.direccion))) return false;
     if(state.gerencia && norm(d.gerencia) !== norm(state.gerencia)) return false;
