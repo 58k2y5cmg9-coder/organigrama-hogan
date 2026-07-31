@@ -1222,7 +1222,7 @@ const OTROS_SUCESORES = [
     textEl.textContent = count === 0 ? 'Ninguna' : count === total ? 'Todas' : count + ' de ' + total;
     headerEl.textContent = count + ' de ' + total + ' seleccionadas';
     state.gerencia = ''; state.jefe = ''; state.page = 1;
-    updateAllCascading();
+    try { updateAllCascading(); } catch(e){ console.error('updateAllCascading error:', e); }
     renderAll();
     renderOtrosTable();
     document.getElementById('compDirSection').style.display = 'none';
@@ -1362,7 +1362,7 @@ document.getElementById('fGerencia').addEventListener('change', e=>{
   state.gerencia = e.target.value;
   state.jefe=''; state.page=1;
   state.search=''; document.getElementById('fSearch').value='';
-  updateJefeFilter();
+  try { updateJefeFilter(); } catch(err){ console.error('updateJefeFilter error:', err); }
   renderAll();
   document.getElementById('compDirSection').style.display='none';
 });
@@ -1374,7 +1374,7 @@ document.getElementById('fJefe').addEventListener('change', e=>{
   state.search=''; document.getElementById('fSearch').value='';
   state.region=''; state.ciudad=''; state.sucesor='';
   ['fRegion','fCiudad','fSucesor'].forEach(id=> document.getElementById(id).value='');
-  updateCiudadFilter();
+  try { updateCiudadFilter(); } catch(err){ console.error('updateCiudadFilter error:', err); }
   renderAll();
   renderOtrosTable();
   document.getElementById('compDirSection').style.display='none';
@@ -1383,23 +1383,20 @@ document.getElementById('fJefe').addEventListener('change', e=>{
 document.getElementById('fRegion').addEventListener('change', e=>{
   state.region = e.target.value;
   state.ciudad=''; state.page=1;
-  state.search=''; document.ge
-    tElementById('fSearch').value='';
+  state.search=''; document.getElementById('fSearch').value='';
   updateCiudadFilter();
   renderAll();
 });
 
 document.getElementById('fCiudad').addEventListener('change', e=>{
   state.ciudad = e.target.value;
-
-     state.page = 1;
+  state.page = 1;
   state.search=''; document.getElementById('fSearch').value='';
   renderAll();
 });
 
 document.getElementById('fSucesor').addEventListener('change', e=>{
-  state.su
-    cesor = e.target.value;
+  state.sucesor = e.target.value;
   state.page = 1;
   state.search=''; document.getElementById('fSearch').value='';
   renderAll();
