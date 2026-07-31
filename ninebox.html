@@ -1321,7 +1321,7 @@ function updateJefeFilter(){
     if(ger && d.gerencia !== ger) return false;
     return d.jefe;
   });
-  const jefesRAW = [...new Set(filtered.map(d => d.jefe))].sort((a,b)=>a.localeCompare(b,'es'));
+  const jefesRAW = [...new Set(filtered.map(d => d.jefe))].filter(j => j !== 'DE GUSMAO RIBEIRO RODRIGO').sort((a,b)=>a.localeCompare(b,'es'));
   const normName = n => n.split(/\s+/).filter(Boolean).sort((a,b)=>a.localeCompare(b,'es')).join(' ');
   const byNorm = new Map();
   jefesRAW.forEach(j => byNorm.set(normName(j), j));
