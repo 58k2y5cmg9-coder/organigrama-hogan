@@ -1702,7 +1702,7 @@ function renderTable(){
   });
 
   document.getElementById('resultCount').innerHTML = `<strong>${data.length}</strong> de ${RAW.length} participantes`;
-  document.getElementById('lastFilterInfo').textContent = state.caja ? `Filtrando caja ${state.caja} · ${BOX_META[state.caja].name}` : '';
+  document.getElementById('lastFilterInfo').textContent = state.caja ? `Filtrando caja ${state.caja} · ${(BOX_META[state.caja]||BOX_FALLBACK).name}` : '';
 
   const totalPages = Math.max(1, Math.ceil(data.length/state.pageSize));
   if(state.page>totalPages) state.page = totalPages;
@@ -1714,7 +1714,7 @@ function renderTable(){
     tbody.innerHTML = `<tr class="empty-row"><td colspan="${COLUMNS.length}">No se encontraron participantes con estos filtros.</td></tr>`;
   } else {
     tbody.innerHTML = pageData.map(p=>{
-      const meta = BOX_META[p.caja];
+      const meta = BOX_META[p.caja] || BOX_FALLBACK;
       const sucesorVal = (p.sucesor || '').toLowerCase();
       const isCD=['52185300','79947402','80425417','1128466768','85467103','32781111','79516122','80150353','1138186'].includes(p.expediente);
       const isPresidencia=['79577126','79695754','1020751309'].includes(p.expediente);
@@ -1722,7 +1722,7 @@ function renderTable(){
       const fichaLink = (sucesorVal==='si' && FICHA_IDS.has(p.expediente))
         ? `<a href="ficha_talento.html?expediente=${p.expediente}" target="_blank" onclick="event.stopPropagation()" style="color:#fff;background:var(--crimson);padding:4px 10px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;white-space:nowrap;">Ver Ficha</a>`
         : '—';
-      const cajaOptions = Object.entries(BOX_META).map(([k,v])=>`<option value="${k}" ${parseInt(k)===p.caja?'selected':''}>${k} · ${v.short}</option>`).join('');
+      const cajaOptions = '<option value="0" '+(0===p.caja?'selected':'')+'>0 · Sin ubicación</option>' + Object.entries(BOX_META).map(([k,v])=>`<option value="${k}" ${parseInt(k)===p.caja?'selected':''}>${k} · ${v.short}</option>`).join('');
       return `<tr data-exp="${p.expediente}" data-name="${encodeURIComponent(p.nombre)}">
         <td class="name name-cell-drag" draggable="true">${p.nombre}</td>
         <td>${p.cargo || '—'}</td>
@@ -1761,7 +1761,7 @@ function renderTable(){
           cajaAnterior: oldCaja, cajaNueva: newCaja,
           nombreAnterior: oldName, nombreNuevo: newName
         });
-        const newMeta = BOX_META[newCaja];
+        const newMeta = BOX_META[newCaja] || BOX_FALLBACK;
         this.style.background = newMeta.color;
         state.page = 1;
         renderAll();
@@ -1960,7 +1960,7 @@ function initDragDrop(){
 
       state.page = 1;
       renderAll();
-      showToast(`${nombre}: caja ${oldCaja} → ${newCaja} · ${BOX_META[newCaja].short}`);
+      showToast(`${nombre}: caja ${oldCaja} → ${newCaja} · ${(BOX_META[newCaja]||BOX_FALLBACK).short}`);
       document.getElementById('btnExportChanges').style.display = changeLog.length > 0 ? 'flex' : 'none';
       dragData = null;
     });
@@ -2008,7 +2008,7 @@ document.getElementById('btnExportChanges').addEventListener('click', ()=>{
 
 const modalBg = document.getElementById('modalBg');
 function openModal(p){
-  const meta = BOX_META[p.caja];
+  const meta = BOX_META[p.caja] || BOX_FALLBACK;
   document.getElementById('modalName').textContent = p.nombre;
   document.getElementById('modalCargo').textContent = p.cargo;
   const badge = document.getElementById('modalBoxBadge');
