@@ -1374,11 +1374,9 @@ document.getElementById('fJefe').addEventListener('change', e=>{
   state.search=''; document.getElementById('fSearch').value='';
   state.region=''; state.ciudad=''; state.sucesor='';
   ['fRegion','fCiudad','fSucesor'].forEach(id=> document.getElementById(id).value='');
-  renderOtrosTable();
-  updateAllCascading();
-  state.jefe = selectedJefe;
-  document.getElementById('fJefe').value = selectedJefe;
+  updateCiudadFilter();
   renderAll();
+  renderOtrosTable();
   document.getElementById('compDirSection').style.display='none';
 });
 
